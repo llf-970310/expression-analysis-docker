@@ -1,0 +1,9 @@
+.idea/
+venv/
+__pycache__/
+temp_dylanchu/
+audio
+*.xls
+*.xlsx
+ifly/msc
+report.html
