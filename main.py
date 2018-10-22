@@ -30,9 +30,8 @@ class Analysis1(object):
         new_wav_file = '/tmp/exp_1_rcg_processed.wav'
         os.system('rm -f "%s"' % '" "'.join((evl_file, rcg_file, new_wav_file)))
         intervals_lst = utils.find_and_remove_intervals(self.wav_file, new_wav_file)
-        self.wav_file = new_wav_file
-        evl_and_save(self.wav_file, self.std_text_file, evl_file, framerate=8000)
-        rcg_and_save(self.wav_file, rcg_file)
+        evl_and_save(new_wav_file, self.std_text_file, evl_file, framerate=8000)
+        rcg_and_save(new_wav_file, rcg_file)
         feature1 = analysis_single.analysis1(self.wav_file, new_wav_file, evl_file, rcg_file, intervals_lst)
         self.features_return['feature1'] = feature1
         logging.debug('Analysis1 done.')
@@ -49,8 +48,7 @@ class Analysis2(object):
         new_wav_file = '/tmp/exp_2_rcg_processed.wav'
         os.system('rm -f "%s"' % '" "'.join((rcg_file, new_wav_file)))
         intervals_lst = utils.find_and_remove_intervals(self.wav_file, new_wav_file)
-        self.wav_file = new_wav_file
-        rcg_and_save(self.wav_file, rcg_file, segments=3)
+        rcg_and_save(new_wav_file, rcg_file, segments=3)
         feature2 = analysis_single.analysis2(self.wav_file, new_wav_file, rcg_file, intervals_lst)
         self.features_return['feature2'] = feature2
         logging.debug('Analysis2 done.')
@@ -67,8 +65,7 @@ class Analysis3(object):
         new_wav_file = '/tmp/exp_3_rcg_processed.wav'
         os.system('rm -f "%s"' % '" "'.join((rcg_file, new_wav_file)))
         intervals_lst = utils.find_and_remove_intervals(self.wav_file, new_wav_file)
-        self.wav_file = new_wav_file
-        rcg_and_save(self.wav_file, rcg_file, segments=3)
+        rcg_and_save(new_wav_file, rcg_file, segments=3)
         feature3 = analysis_single.analysis3(self.wav_file, new_wav_file, rcg_file, intervals_lst)
         self.features_return['feature3'] = feature3
         logging.debug('Analysis3 done.')
@@ -85,8 +82,7 @@ class Analysis4(object):
         new_wav_file = '/tmp/exp_4_rcg_processed.wav'
         os.system('rm -f "%s"' % '" "'.join((rcg_file, new_wav_file)))
         intervals_lst = utils.find_and_remove_intervals(self.wav_file, new_wav_file)
-        self.wav_file = new_wav_file
-        rcg_and_save(self.wav_file, rcg_file, segments=3)
+        rcg_and_save(new_wav_file, rcg_file, segments=3)
         feature4 = analysis_single.analysis4(self.wav_file, new_wav_file, rcg_file, intervals_lst)
         self.features_return['feature4'] = feature4
         logging.debug('Analysis4 done.')
