@@ -16,6 +16,9 @@ import wave
 from math import ceil
 
 import config
+import io
+
+import utils
 
 
 class RcgCore(threading.Thread):
@@ -28,8 +31,7 @@ class RcgCore(threading.Thread):
         self.result = None
 
     def run(self):
-        with open(self.wav_file, 'rb') as f:   # 以二进制格式只读打开文件读取，bytes
-            file_content = f.read()
+        file_content = utils.read(self.wav_file, 'rb')
         base64_audio = base64.b64encode(file_content)  # 参数是bytes类型，返回也是bytes类型
         body = urllib.parse.urlencode({'audio': base64_audio})
         url = config.XF_RCG_URL
@@ -66,6 +68,8 @@ class RcgCore(threading.Thread):
 
 
 def rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
+    # 音频切段：
+    segment_files = {}
     with wave.open(wav_file, 'rb') as wf:
         params = wf.getparams()
         nchannels, sampwidth, framerate, nframes = params[:4]
@@ -76,13 +80,14 @@ def rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
             logging.debug("Cutting %s by into %d segments..." % (wav_file, segments))
             seg_length = ceil(duration / segments * framerate)  # how many frames per segment
             for i in range(segments):
-                seg_filename = wav_file.split('.wav')[0] + '_rcg_seg_%d.wav' % i
+                segment_files[i] = io.BytesIO()
                 seg_data = wf.readframes(seg_length)
-                with wave.open(seg_filename, 'wb') as seg:
+                with wave.open(segment_files[i], 'wb') as seg:
                     seg.setnchannels(nchannels)
                     seg.setsampwidth(sampwidth)
                     seg.setframerate(framerate)
                     seg.writeframes(seg_data)
+    # 识别：
     if segments == 1:  # return is a 'str' object
         rcg_core = RcgCore(wav_file, timeout, x_appid, api_key)
         rcg_core.start()
@@ -100,8 +105,7 @@ def rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
         results = {}
 
         for i in range(segments):
-            seg_filename = wav_file.split('.wav')[0] + '_rcg_seg_%d.wav' % i
-            threads[i] = RcgCore(seg_filename, timeout, x_appid, api_key)
+            threads[i] = RcgCore(segment_files[i], timeout, x_appid, api_key)
             threads[i].start()
 
         for i in range(segments):
@@ -125,8 +129,7 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_k
         rcg_dict = json.loads(rcg_result)
         logging.debug("Recognition: %s" % rcg_dict.get('desc'))
         if rcg_dict.get('code') == '0':
-            with open(rcg_fp, 'w') as f:
-                f.write(rcg_result)
+            utils.write(rcg_fp, rcg_result, 'w')
         else:
             if stop_on_failure:
                 raise Exception('rcg failure: %s - %s' % (wave_file, rcg_dict.get('code')))
@@ -158,12 +161,11 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_k
             rcgs_dict[0]['data'] = ''.join(data_lst)
         else:  # 手动指定分段的保存各次识别结果为列表
             rcgs_dict[0]['data'] = data_lst
-        with open(rcg_fp, 'w') as ff:
-            ff.write(json.dumps(rcgs_dict[0], ensure_ascii=False))  # dump as utf-8
-    if not os.path.exists(rcg_fp):
-        with open(rcg_fp, 'w') as f:
+        utils.write(rcg_fp, json.dumps(rcgs_dict[0], ensure_ascii=False), 'w')  # dump as utf-8
+    if isinstance(rcg_fp, str):
+        if not os.path.exists(rcg_fp):
             rcgs_dict = {'code': '0', 'data': '', 'desc': 'None'}
-            f.write(json.dumps(rcgs_dict, ensure_ascii=False))  # dump as utf-8
+            utils.write(rcg_fp, json.dumps(rcgs_dict, ensure_ascii=False), 'w')  # dump as utf-8
 
 
 if __name__ == '__main__':
@@ -171,12 +173,11 @@ if __name__ == '__main__':
                         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
     # result = rcg(config.WAV_FILE_PATH, segments=1, timeout=100)
+    # rcg(config.WAV_FILE_PATH, timeout=10, segments=3)
     # print(isinstance(result, str))
     # print(isinstance(result, dict))
 
-    rcg_fp = 'temp_dylanchu/rcgtest.json'
-    # rcg_and_save(config.WAV_FILE_PATH, rcg_fp, segments=3, timeout=1, stop_on_failure=True)
-    rcg(config.WAV_FILE_PATH, timeout=10, segments=3)
+    rcg_fp = io.StringIO()
+    rcg_and_save('net_test.wav', rcg_fp, segments=3, timeout=1, stop_on_failure=True)
 
-    with open(rcg_fp, 'r') as f:
-        print(f.read())
+    print(utils.read(rcg_fp))

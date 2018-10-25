@@ -9,6 +9,7 @@ import os
 import wave
 import numpy as np
 import webrtcvad
+import io
 
 translation_dict = {
     'num': '字数',
@@ -277,3 +278,19 @@ def excel_check(obj):
         if not keys1 == keys2:
             return False
     return True
+
+
+def read(target, mode='r'):
+    if isinstance(target, io.StringIO) or isinstance(target, io.BytesIO):
+        return target.getvalue()
+    else:
+        with open(target, mode) as f:
+            return f.read()
+
+
+def write(target, content, mode='w'):
+    if isinstance(target, io.StringIO) or isinstance(target, io.BytesIO):
+        return target.write(content)
+    else:
+        with open(target, mode) as f:
+            return f.write(content)
