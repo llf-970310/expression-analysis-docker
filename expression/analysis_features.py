@@ -43,16 +43,19 @@ def analysis1(wave_file, std_text):
         'volume2': 0,  # 音量2
         'volume3': 0  # 音量3
     }
-    # 第一种题型的识别和评测都用没有去除间隔的文件  # todo: FIX: 识别需要去除过长空白！
+    wave_file_processed = io.BytesIO()
+    # 间隔
+    interval_list = utils.find_and_remove_intervals(wave_file, wave_file_processed)
+
     temp_std_text_file = io.StringIO()
     temp_std_text_file.write(std_text)
     rcg_result_file = io.StringIO()
     evl_result_file = io.StringIO()
 
-    xf_recognise.rcg_and_save(wave_file, rcg_result_file, segments=3)
+    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=3)
     rcg_text = rcg_result_file.getvalue()
 
-    xf_evaluate.evl_and_save(wave_file, temp_std_text_file, evl_result_file, framerate=8000)
+    xf_evaluate.evl_and_save(wave_file_processed, temp_std_text_file, evl_result_file, framerate=8000)
     eva_result = evl_result_file.getvalue()
 
     # 字数
@@ -60,8 +63,6 @@ def analysis1(wave_file, std_text):
     # last_time 时长 未擦除的文件
     with wave.open(wave_file) as wav:
         result['last_time'] = wav.getnframes() / wav.getframerate()
-    # 间隔
-    interval_list = utils.find_and_remove_intervals(wave_file)
     for (start, last) in interval_list:
         if last > config.INTERVAL_TIME_THRESHOLD1 and start > 0 and start + last > result['last_time'] - 0.02:
             result['interval_num'] += 1
@@ -84,7 +85,7 @@ def analysis1(wave_file, std_text):
     result['speed'] = numpy.mean(speeds)
     result['speed_deviation'] = numpy.std(speeds)
     # volume
-    volume_list = feature_audio.get_volume(wave_file, 3)
+    volume_list = feature_audio.get_volume(wave_file_processed, 3)
     result['volume1'], result['volume2'], result['volume3'] = volume_list[0], volume_list[1], volume_list[2]
     return result
 
@@ -131,7 +132,7 @@ def analysis2(wave_file, wordbase):
     with wave.open(wave_file) as wav:
         result['last_time'] = wav.getnframes() / wav.getframerate()
     # interval 未擦除的文件
-    wave_file_processed = ''  # todo 使用内存文件地址
+    wave_file_processed = io.BytesIO()
     interval_list = utils.find_and_remove_intervals(wave_file, wave_file_processed)
     for (start, last) in interval_list:
         if last > config.INTERVAL_TIME_THRESHOLD3 and start > 0 and start + last > result['last_time'] - 0.02:
@@ -265,7 +266,7 @@ def analysis3(wave_file, wordbase):
     with wave.open(wave_file) as wav:
         result['last_time'] = wav.getnframes() / wav.getframerate()
     # interval 未擦除的文件
-    wave_file_processed = ''  # todo 使用内存文件地址
+    wave_file_processed = io.BytesIO()
     interval_list = utils.find_and_remove_intervals(wave_file, wave_file_processed)
     for (start, last) in interval_list:
         if last > config.INTERVAL_TIME_THRESHOLD3 and start > 0 and start + last > result['last_time'] - 0.02:
