@@ -69,6 +69,8 @@ class RcgCore(threading.Thread):
 def rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
     # 音频切段：
     segment_files = {}
+    if isinstance(wav_file, io.BytesIO):
+        wav_file.seek(0)  # seek(0) before read
     with wave.open(wav_file, 'rb') as wf:
         params = wf.getparams()
         nchannels, sampwidth, framerate, nframes = params[:4]
@@ -176,7 +178,10 @@ if __name__ == '__main__':
     # print(isinstance(result, str))
     # print(isinstance(result, dict))
 
+    wave_file_processed = io.BytesIO()
+    interval_list = utils.find_and_remove_intervals('net_test.wav', wave_file_processed)
+
     rcg_fp = io.StringIO()
-    rcg_and_save('net_test.wav', rcg_fp, segments=3, timeout=1, stop_on_failure=True)
+    rcg_and_save(wave_file_processed, rcg_fp, segments=3, timeout=1, stop_on_failure=True)
 
     print(utils.read(rcg_fp))

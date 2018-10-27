@@ -95,8 +95,10 @@ translation_dict = {
 }
 
 
-def check_wav_format(file_path, valid_framerate=8000):
-    with wave.open(file_path, 'rb') as f:
+def check_wav_format(wav_file, valid_framerate=8000):
+    if isinstance(wav_file, io.BytesIO):
+        wav_file.seek(0)  # seek(0) before read
+    with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, return tuple
         print(params, '\n')
         nchannels, sampwidth, framerate, nframes = params[:4]
@@ -149,9 +151,11 @@ def save_wave_file(filename, data, framerate=8000):
             wf.writeframes(b"".join(data))
 
 
-def wav_8kto16k(file_path, new_file_path):
+def wav_8kto16k(wav_file, new_file_path):
     """ input wav file must be mono, 8k/16k """
-    with wave.open(file_path, 'rb') as f:
+    if isinstance(wav_file, io.BytesIO):
+        wav_file.seek(0)  # seek(0) before read
+    with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, return tuple
         # print("Wave file header:\n\t", params, '\n')
         nchannels, sampwidth, framerate, nframes = params[:4]
@@ -179,6 +183,8 @@ def find_and_remove_intervals(wav_file, new_wave_file_path=None, threshold=0.4):
     duration = 20  # ms
     MAX_SILENCE_CHUNKS = threshold * 1000 // duration  # 0.4s/20ms = 20
 
+    if isinstance(wav_file, io.BytesIO):
+        wav_file.seek(0)  # seek(0) before read
     with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, return tuple
         # print("Wave file header:\n\t", params, '\n')
@@ -221,6 +227,8 @@ def find_and_remove_intervals(wav_file, new_wave_file_path=None, threshold=0.4):
 
 def auto_magnify_audio(wav_file, new_wav_file_path=None):
     """ support 16bit audio """
+    if isinstance(wav_file, io.BytesIO):
+        wav_file.seek(0)  # seek(0) before read
     with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, tuple
         # print("Wave file header:\n\t", params, '\n')

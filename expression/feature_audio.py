@@ -2,7 +2,7 @@
 # coding: utf-8
 #
 # Created by dylanchu on 18-7-14
-
+import io
 import json
 import re
 from math import ceil
@@ -182,8 +182,10 @@ def get_cfc(str_rcg, str_std):
     return {'clr_ratio': clr_ratio, 'ftl_ratio': ftl_ratio, 'cpl_ratio': cpl_ratio}
 
 
-def read_wave_data(file_path):
-    with wave.open(file_path, 'rb') as f:
+def read_wave_data(wav_file):
+    if isinstance(wav_file, io.BytesIO):
+        wav_file.seek(0)  # seek(0) before read
+    with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, return tuple
         # print("Wave file header:\n\t", params, '\n')
         nchannels, sampwidth, framerate, nframes = params[:4]
@@ -217,6 +219,8 @@ def get_ampl(simp_result, wf, **kwargs):
 
 def get_volume(wav_file, segments=1):
     volume_lst = []
+    if isinstance(wav_file, io.BytesIO):
+        wav_file.seek(0)  # seek(0) before read
     with wave.open(wav_file, 'rb') as wf:
         params = wf.getparams()
         nchannels, sampwidth, framerate, nframes = params[:4]
