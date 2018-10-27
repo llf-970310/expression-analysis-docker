@@ -18,11 +18,11 @@ if __name__ == '__main__':
     if len(sys.argv) < 3:
         raise Exception('arguments too less')
 
-    current_id = int(sys.argv[1])
-    q_num = sys.argv[2]
+    current_id = sys.argv[1]
+    q_num = int(sys.argv[2])
     # current_id = "5bcde8f30b9e037b1f67ba4e"
     # q_num = "2"
-    logging.INFO("current_id: %s, q_num: %s" % (current_id, q_num))
+    logging.info("current_id: %s, q_num: %s" % (current_id, q_num))
 
     mongo = db.Mongo()
 
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         feature = analysis_features.analysis3('wav_temp_url', q['wordbase'])
         score = analysis_scores.score3(feature)
     else:
-        logging.ERROR('Invalid question type: %s' % Q_type)
+        logging.error('Invalid question type: %s' % Q_type)
 
-    logging.INFO('Score: %s' % score)
+    logging.info('Score: %s' % score)
     mongo.save_result(current_id, q_num, q_info, feature, score)
