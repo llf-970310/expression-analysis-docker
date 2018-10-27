@@ -19,7 +19,7 @@ if __name__ == '__main__':
         raise Exception('arguments too less')
 
     current_id = sys.argv[1]
-    q_num = int(sys.argv[2])
+    q_num = sys.argv[2]
     # current_id = "5bcde8f30b9e037b1f67ba4e"
     # q_num = "2"
     logging.info("current_id: %s, q_num: %s" % (current_id, q_num))
