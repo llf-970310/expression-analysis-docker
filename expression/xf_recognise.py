@@ -35,7 +35,7 @@ class RcgCore(threading.Thread):
         body = urllib.parse.urlencode({'audio': base64_audio})
         url = config.XF_RCG_URL
         if self.x_appid is None:
-            self.x_appid = config.XF_APP_ID
+            self.x_appid = config.XF_RCG_APP_ID
         if self.api_key is None:
             self.api_key = config.XF_RCG_API_KEY
         param = {"engine_type": config.XF_RCG_ENGINE_TYPE, "aue": "raw"}

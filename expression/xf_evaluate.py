@@ -18,14 +18,15 @@ import io
 def evl(file, std_text, timeout=600):
     """ file can be a file path or an io.BytesIO """
     # text: 180bytes at max, or error10109 will be raised (limit for sentence, not for chapter)
-    file_content = utils.read(file, 'rb')   # 以二进制格式只读打开文件读取，bytes
+    file_content = utils.read(file, 'rb')  # 以二进制格式只读打开文件读取，bytes
     base64_audio = base64.b64encode(file_content)  # 参数是bytes类型，返回也是bytes类型
     body = urllib.parse.urlencode({'audio': base64_audio, 'text': std_text})
 
     url = config.XF_EVL_URL
-    x_appid = config.XF_APP_ID
+    x_appid = config.XF_EVL_APP_ID
     api_key = config.XF_EVL_API_KEY
-    # param = {"aue": "raw", "result_level": "complete", "language": "cn", "category": config.XF_EVL_CATEGORY, "plev": "0"}
+    # param = {"aue": "raw", "result_level": "complete", "language": "cn",
+    #          "category": config.XF_EVL_CATEGORY, "plev": "0"}
 
     param = {"aue": "raw", "result_level": "complete", "language": "cn",
              "category": "read_chapter", "plev": "0"}

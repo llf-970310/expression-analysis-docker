@@ -7,18 +7,11 @@
 XF_RCG_URL = 'https://api.xfyun.cn/v1/service/v1/iat'
 XF_EVL_URL = 'https://api.xfyun.cn/v1/service/v1/ise'
 
-# Professional account (2 weeks till 2018-08-17)
-# XF_APP_ID = '5b481e03'
-# XF_RCG_API_KEY = '2727307781775b887e7323e8428223cb'
-# XF_EVL_API_KEY = 'ac595ef62ad106b4c727a929aeda4a33'
-
 # Ordinary account
-# XF_APP_ID = '5b48203c'
-# XF_RCG_API_KEY = '4698df1be642a83e2c8614ed594c926'
-# XF_EVL_API_KEY = 'cf739d160b9fdf63c04e977bf6daef60'
-XF_APP_ID = '5b482315'
-XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
+XF_EVL_APP_ID = '5b482315'
 XF_EVL_API_KEY = 'd5eabc8c4a8ea2edb03f8e486d7076b3'
+XF_RCG_APP_ID = '5b482315'
+XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
 
 XF_EVL_CATEGORY = "read_chapter"
 # rcg_param

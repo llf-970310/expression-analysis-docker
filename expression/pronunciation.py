@@ -4,6 +4,7 @@
 # Desc    : 探索语音相似度
 from pypinyin import lazy_pinyin
 from zhon.hanzi import punctuation
+
 # import xlrd
 
 alpha, beta = 1, 1  # 分别代表声母和韵母在计算中的权重
@@ -141,9 +142,9 @@ consonant_vowel_destination = [
 
 
 def is_pinyin(pinyin):
-    if not pinyin[:1] in consonants:
-        if not pinyin[:2] in consonants:
-            if not pinyin in vowel_word:
+    if pinyin[:1] not in consonants:
+        if pinyin[:2] not in consonants:
+            if pinyin not in vowel_word:
                 return False
     return True
 
