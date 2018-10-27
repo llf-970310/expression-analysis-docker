@@ -24,27 +24,10 @@ XF_EVL_CATEGORY = "read_chapter"
 # rcg_param
 XF_RCG_ENGINE_TYPE = "sms8k"
 
-# -------------- FILE PATH CONFIG --------------
-# 音频文件
-WAV_FILE_PATH = "audio/Samples2/1/1.wav"
-# WAV_FILE_PATH = "audio/Professional2/8/1.wav"
-# WAV_FILE_PATH = "temp_dylanchu/1.wav"
+BAIDU_APP_ID = '11624605'
+BAIDU_API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
+BAIDU_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
 
-# 文本朗读题
-# std text: 180 bytes at max, or error10109 will be raised
-STD_TEXT_FILE_PATH = "text_files/Papers/朗读题.txt"
-RCG_JSON_FILE_PATH = "text_files/Samples2/rcg_1_1.json"
-EVL_JSON_FILE_PATH = "text_files/Samples2/evl_1_1.json"
-# RCG_JSON_FILE_PATH = "text_files/Professional2/rcg_8_1.json"
-# EVL_JSON_FILE_PATH = "text_files/Professional2/evl_8_1.json"
-
-# 计算cfc(清晰度，无效表达，完成度)应使用识别结果(rcg_xxx.json)而非评测结果，使用评测结果可能过于宽松
-#
-# # 主旨题
-# SUMMARY_ORIGINAL_FILE = "text_files/Papers/主旨题1.txt"
-# SUMMARY_STD_ANSWER_FILE = "text_files/Papers/主旨题1_std_answer.txt"
-# # 观点表述题
-# OPINION_STATEMENT_FILE = "text_files/demo/观点表述题_回答.txt"
 # # jieba分词用户词典
 # JIEBA_USER_DICT = "text_files/jieba_userdict.txt"
 
@@ -54,6 +37,7 @@ MONGODB_PORT = 27017  # 默认27017
 MONGODB_DBNAME = 'expression'
 MONGODB_COLLECTION_CURRENT = 'current'
 MONGODB_COLLECTION_QUESTIONS = 'questions'
+MONGODB_COLLECTION_APIS = 'api_accounts'
 # MONGODB_NEED_AUTH = True
 MONGODB_NEED_AUTH = False
 MONGODB_USERNAME = 'iselab'

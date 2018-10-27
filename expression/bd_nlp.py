@@ -1,11 +1,8 @@
 # -*— coding: utf-8 -*-
 from aip import AipNlp
+import config
 
-APP_ID = '11624605'
-API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
-SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
-
-client = AipNlp(APP_ID, API_KEY, SECRET_KEY)
+client = AipNlp(config.BAIDU_APP_ID, config.BAIDU_API_KEY, config.BAIDU_SECRET_KEY)
 
 
 # 20000字节 词法分析
