@@ -3,8 +3,6 @@
 #
 # Created by dylanchu on 18-7-13
 import logging
-import os
-import socket
 import urllib.parse
 import urllib.request
 import time
@@ -61,7 +59,7 @@ def evl_and_save(wave_file, std_txt_file, evl_file, framerate=16000, stop_on_fai
         tmp_wav_path = io.BytesIO()
         utils.wav_8kto16k(wave_file, tmp_wav_path)
         wave_file = tmp_wav_path
-        text = utils.read(std_txt_file)
+    text = utils.read(std_txt_file)
     result = evl(wave_file, text)
     tmp_evl_dict = json.loads(result)
     logging.debug("Evaluation: %s" % tmp_evl_dict.get('desc'))

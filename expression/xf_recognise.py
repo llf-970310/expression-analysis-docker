@@ -160,7 +160,7 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_k
         if segments == 0:  # 自动分段的结果自动合并
             rcgs_dict[0]['data'] = ''.join(data_lst)
         else:  # 手动指定分段的保存各次识别结果为列表
-            rcgs_dict[0]['data'] = data_lst
+            rcgs_dict[0]['data'] = data_lst.__str__()
         utils.write(rcg_fp, json.dumps(rcgs_dict[0], ensure_ascii=False), 'w')  # dump as utf-8
     if isinstance(rcg_fp, str):
         if not os.path.exists(rcg_fp):
