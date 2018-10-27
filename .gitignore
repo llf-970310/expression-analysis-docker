@@ -10,3 +10,4 @@ ifly/msc
 report.html
 *.json
 *.csv
+Pipfile.lock

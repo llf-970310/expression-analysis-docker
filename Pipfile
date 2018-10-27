@@ -9,8 +9,9 @@ numpy = "*"
 baidu-aip = "*"
 webrtcvad = "*"
 python-levenshtein = "*"
-timeout-decorator = "*"
 pymongo = "*"
+pypinyin = "*"
+zhon = "*"
 
 [dev-packages]
 
