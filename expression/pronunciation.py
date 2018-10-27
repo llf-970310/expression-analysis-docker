@@ -4,7 +4,7 @@
 # Desc    : 探索语音相似度
 from pypinyin import lazy_pinyin
 from zhon.hanzi import punctuation
-import xlrd
+# import xlrd
 
 alpha, beta = 1, 1  # 分别代表声母和韵母在计算中的权重
 similar_threshold = 0.3  # 相似度阈值
@@ -248,37 +248,37 @@ def in_pronunciation(word, sentence):
         return False
 
 
-def write_excel_into_file():
-    excel_file = xlrd.open_workbook(r'source/汉语拼音距离.xlsx')
-    string = '韵母距离\n'
-    sheet0 = excel_file.sheet_by_index(0)
-    list0 = []
-    for i in range(1, 34):
-        temp = []
-        for j in range(1, 34):
-            temp.append(float(sheet0.cell(i, j).value))
-        list0.append(temp)
-    string += list0.__str__() + '\n\n声母距离\n'
-    sheet1 = excel_file.sheet_by_index(1)
-    list1 = []
-    for i in range(1, 23):
-        temp = []
-        for j in range(1, 23):
-            temp.append(float(sheet1.cell(i, j).value))
-        list1.append(temp)
-    string += list1.__str__() + '\n\n单独成字与声母距离\n'
-    sheet2 = excel_file.sheet_by_index(2)
-    list2 = []
-    for i in range(1, 24):
-        temp = []
-        for j in range(1, 11):
-            temp.append(float(sheet2.cell(i, j).value))
-        list2.append(temp)
-    string += list2.__str__()
-
-    string = string.replace('],', '],\n')
-    with open('pro.txt', 'w') as f:
-        f.write(string)
+# def write_excel_into_file():
+#     excel_file = xlrd.open_workbook(r'source/汉语拼音距离.xlsx')
+#     string = '韵母距离\n'
+#     sheet0 = excel_file.sheet_by_index(0)
+#     list0 = []
+#     for i in range(1, 34):
+#         temp = []
+#         for j in range(1, 34):
+#             temp.append(float(sheet0.cell(i, j).value))
+#         list0.append(temp)
+#     string += list0.__str__() + '\n\n声母距离\n'
+#     sheet1 = excel_file.sheet_by_index(1)
+#     list1 = []
+#     for i in range(1, 23):
+#         temp = []
+#         for j in range(1, 23):
+#             temp.append(float(sheet1.cell(i, j).value))
+#         list1.append(temp)
+#     string += list1.__str__() + '\n\n单独成字与声母距离\n'
+#     sheet2 = excel_file.sheet_by_index(2)
+#     list2 = []
+#     for i in range(1, 24):
+#         temp = []
+#         for j in range(1, 11):
+#             temp.append(float(sheet2.cell(i, j).value))
+#         list2.append(temp)
+#     string += list2.__str__()
+#
+#     string = string.replace('],', '],\n')
+#     with open('pro.txt', 'w') as f:
+#         f.write(string)
 
 
 if __name__ == '__main__':

@@ -4,7 +4,6 @@
 # Created by dylanchu on 18-7-13
 import logging
 import os
-import socket
 import threading
 import urllib.parse
 import urllib.request

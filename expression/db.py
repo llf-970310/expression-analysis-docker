@@ -31,7 +31,7 @@ class Mongo(object):
     def get_question_info(self, current_id, q_num):
         return self.current.find_one({"_id": ObjectId(current_id)})['questions'][q_num]
 
-    def get_wave_path_and_question(self, question_info, q_num):  # current_id and q_num should be strings
+    def get_wave_path_and_question(self, question_info):  # current_id and q_num should be strings
         """ 获取： 音频文件路径 和 要分析问题的详细信息
         要使用传入的 q_num 而不使用 current表中的 current_q_num，因为 current_q_num 只是django维护的临时标记，随时会改变。
         """
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     # db = Mongo()
     # q_info = db.get_question_info(current_id, q_num)
-    # wf, q = db.get_wave_path_and_question(q_info, q_num)
+    # wf, q = db.get_wave_path_and_question(q_info)
     # feature = {}
     # score = 60
     # db.save_result(current_id, q_num, q_info, feature, score)
