@@ -1,5 +1,5 @@
 # -*— coding: utf-8 -*-
-import bd_nlp as nlp
+import bd_nlp
 import time
 import re
 from expression.pronunciation import in_pronunciation
@@ -13,7 +13,7 @@ def proportion(text):
     parts = ['n', 'f', 's', 't', 'nr', 'ns', 'nt', 'nw', 'nz', 'v', 'vd', 'vn', 'a', 'ad', 'an', 'd', 'm', 'q', 'r',
              'p', 'c', 'u', 'xc', 'w', 'ne']
     nouns_parts = ['n', 'nr', 'ns', 'nt', 'nw', 'nz', 'ne']
-    result = nlp.divide_words(text)
+    result = bd_nlp.divide_words(text)
     proportions = {
         'nouns': []
     }
@@ -50,7 +50,7 @@ def parse(text):
     group = divide_text_to_sentence(text)
     for sentence in group:
         if not sentence == '':
-            result = nlp.parser(sentence)
+            result = bd_nlp.parser(sentence)
             proportions['all'] = len(result['all'])
             for key in parts:
                 if key in result.keys():
@@ -68,7 +68,7 @@ def fluency(text):
     group = divide_text_to_sentence(text)
     for temp in group:
         if not temp == '':
-            result += nlp.smooth_of_text(temp) * len(temp)
+            result += bd_nlp.smooth_of_text(temp) * len(temp)
             time.sleep(0.1)
     if not len_without_punctuation(text) == 0:
         return 0
@@ -81,7 +81,7 @@ def fluency(text):
 
 
 def similarity(text, standard):
-    result = nlp.similar_of_texts(text, standard)
+    result = bd_nlp.similar_of_texts(text, standard)
     if len(text) == 0:
         return 0
     return result
@@ -93,7 +93,7 @@ def similarity(text, standard):
 
 
 def classify(text):
-    result = nlp.text_classify(text)
+    result = bd_nlp.text_classify(text)
     return result
 
 
@@ -106,7 +106,7 @@ def emotion(text):
     pessimistic, neutral = 0, 0
     group = divide_text_to_sentence(text)
     for temp in group:
-        result = nlp.emotion(temp)
+        result = bd_nlp.emotion(temp)
         pessimistic += result['pessimistic'] * len(temp)
         neutral += result['neutral'] * len(temp)
     if len_without_punctuation(text) == 0:
