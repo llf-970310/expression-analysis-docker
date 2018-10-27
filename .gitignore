@@ -7,3 +7,5 @@ audio
 *.xlsx
 ifly/msc
 report.html
+*.json
+*.csv

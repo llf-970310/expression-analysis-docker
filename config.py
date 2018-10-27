@@ -20,7 +20,6 @@ XF_APP_ID = '5b482315'
 XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
 XF_EVL_API_KEY = 'd5eabc8c4a8ea2edb03f8e486d7076b3'
 
-
 XF_EVL_CATEGORY = "read_chapter"
 # rcg_param
 XF_RCG_ENGINE_TYPE = "sms8k"
@@ -60,3 +59,9 @@ MONGODB_NEED_AUTH = False
 MONGODB_USERNAME = 'iselab'
 MONGODB_PASSWORD = 'iselab###nju.cn'
 MONGODB_AUTH_MECHANISM = 'SCRAM-SHA-1'
+
+# -------------- UAAM CONFIG --------------
+INTERVAL_TIME_THRESHOLD1 = 0.7  # 第一种题型的间隔时间阈值
+INTERVAL_TIME_THRESHOLD2 = 2.0  # 第二中题型的间隔时间阈值
+INTERVAL_TIME_THRESHOLD3 = 2.0  # 第三种题型的间隔时间阈值
+MAIN_IDEA_WORD_COUNT = 30  # 计算主旨关键词是否在前面说到时所用的字数

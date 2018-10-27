@@ -2,6 +2,7 @@
 import bd_nlp as nlp
 import time
 import re
+from pronunciation import in_pronunciation
 
 '''
 文本特性1：给定一段文本，给出其中各种词性的占比
@@ -133,6 +134,19 @@ def words(text, answers):
 
 
 '''
+文本特性7.1：给定一段文本，给出其在特定词库上的踩点率（谐音）
+'''
+
+
+def words_pronunciation(text, answers):
+    n = 0
+    for answer in answers:
+        if in_pronunciation(word=answer, sentence=text):
+            n += 1
+    return n
+
+
+'''
 文本特性8：给定一段文本，给出其在特定词库上的击中率（同义词同音词算一个）
 '''
 
@@ -189,6 +203,7 @@ def len_without_punctuation(text):
 
 
 if __name__ == '__main__':
-    print(similarity('嗯，肯德基和麦当劳作为，嗯，当下最火的两大快餐品牌，嗯，他们都诞生于1957年，然后并且都分布在全世界110，多个国家，但是能在中',
-                     '肯德基和麦当劳是两大餐厅巨头。很多中国人觉得肯德基比麦当劳大，但事实上，麦当劳才是世界上最大的快餐企业。'))
+    print(words_pronunciation('2011年我们签订了很多条款', ['2011', '我', '挑款']))
+    # print(similarity('嗯，肯德基和麦当劳作为，嗯，当下最火的两大快餐品牌，嗯，他们都诞生于1957年，然后并且都分布在全世界110，多个国家，但是能在中',
+    #                  '肯德基和麦当劳是两大餐厅巨头。很多中国人觉得肯德基比麦当劳大，但事实上，麦当劳才是世界上最大的快餐企业。'))
     # print(words_frequency(['肯德基', '肯德基']))

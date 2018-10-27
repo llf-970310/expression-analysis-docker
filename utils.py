@@ -277,3 +277,27 @@ def excel_check(obj):
         if not keys1 == keys2:
             return False
     return True
+
+
+def get_sentence_durations(simp_result):
+    sd = list()
+    for sentence in simp_result:
+        words_pos = sentence['words_pos']
+        duration = 0
+        word_count = 0
+        for wp in words_pos:
+            if wp[0] != 'sil' and wp[0] != 'silv' and wp[0] != 'fil':
+                word_count += 1
+            duration += (wp[2] - wp[1])
+            if wp == words_pos[-1]:
+                if words_pos[0] == 'sil' or words_pos[0] == 'silv':
+                    word_count -= 1
+                    duration -= (words_pos[0][2] - words_pos[0][1])
+                if words_pos[-1] == 'sil' or words_pos[-1] == 'silv':
+                    word_count -= 1
+                    duration -= (words_pos[-1][2] - words_pos[-1][1])
+                if word_count > 0 and duration > 0:
+                    sd.append((word_count, duration / 100))
+                duration = 0
+                word_count = 0
+    return sd
