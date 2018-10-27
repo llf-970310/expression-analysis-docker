@@ -2,7 +2,7 @@
 import bd_nlp
 import time
 import re
-from expression.pronunciation import in_pronunciation
+from pronunciation import in_pronunciation
 
 '''
 文本特性1：给定一段文本，给出其中各种词性的占比
