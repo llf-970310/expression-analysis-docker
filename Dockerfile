@@ -9,7 +9,8 @@ RUN apk add --no-cache tzdata && \
 
 RUN apk add --no-cache make cmake gcc g++ gfortran && \
     pip install numpy baidu-aip webrtcvad python-levenshtein pymongo pypinyin zhon && \
-    apk del make cmake gcc g++ gfortran
+    apk del make cmake gcc g++ gfortran && \
+    rm -rf /root/.cache/pip
 
 COPY expression /expression
 WORKDIR expression
