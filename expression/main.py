@@ -4,122 +4,61 @@
 # Created by dylanchu on 18-8-18
 
 import logging
-import os
-import socket
 import sys
-
 import config
-from xf_evaluate import evl_and_save
-from xf_recognise import rcg_and_save
-import timeout_decorator
-
-import utils
-import analysis_single
+import db
+import analysis_features
+import analysis_scores
 
 
-class Analysis1(object):
-    def __init__(self, wav_file, std_text_file, features_return):
-        self.wav_file = wav_file
-        self.features_return = features_return
-        self.std_text_file = std_text_file
-
-    def run(self):
-        logging.debug('Analysis1 now running...')
-        evl_file = "/tmp/exp_1_evl.json"
-        rcg_file = "/tmp/exp_1_rcg.json"
-        new_wav_file = '/tmp/exp_1_rcg_processed.wav'
-        os.system('rm -f "%s"' % '" "'.join((evl_file, rcg_file, new_wav_file)))
-        intervals_lst = utils.find_and_remove_intervals(self.wav_file, new_wav_file)
-        evl_and_save(new_wav_file, self.std_text_file, evl_file, framerate=8000)
-        rcg_and_save(new_wav_file, rcg_file)
-        feature1 = analysis_single.analysis1(self.wav_file, new_wav_file, evl_file, rcg_file, intervals_lst)
-        self.features_return['feature1'] = feature1
-        logging.debug('Analysis1 done.')
-
-
-class Analysis2(object):
-    def __init__(self, wave_file, features_return):
-        self.wav_file = wave_file
-        self.features_return = features_return
-
-    def run(self):
-        logging.debug('Analysis2 now running...')
-        rcg_file = "/tmp/exp_2_rcg.json"
-        new_wav_file = '/tmp/exp_2_rcg_processed.wav'
-        os.system('rm -f "%s"' % '" "'.join((rcg_file, new_wav_file)))
-        intervals_lst = utils.find_and_remove_intervals(self.wav_file, new_wav_file)
-        rcg_and_save(new_wav_file, rcg_file, segments=3)
-        feature2 = analysis_single.analysis2(self.wav_file, new_wav_file, rcg_file, intervals_lst)
-        self.features_return['feature2'] = feature2
-        logging.debug('Analysis2 done.')
-
-
-class Analysis3(object):
-    def __init__(self, wave_file, features_return):
-        self.wav_file = wave_file
-        self.features_return = features_return
-
-    def run(self):
-        logging.debug('Analysis3 now running...')
-        rcg_file = "/tmp/exp_3_rcg.json"
-        new_wav_file = '/tmp/exp_3_rcg_processed.wav'
-        os.system('rm -f "%s"' % '" "'.join((rcg_file, new_wav_file)))
-        intervals_lst = utils.find_and_remove_intervals(self.wav_file, new_wav_file)
-        rcg_and_save(new_wav_file, rcg_file, segments=3)
-        feature3 = analysis_single.analysis3(self.wav_file, new_wav_file, rcg_file, intervals_lst)
-        self.features_return['feature3'] = feature3
-        logging.debug('Analysis3 done.')
-
-
-class Analysis4(object):
-    def __init__(self, wave_file, features_return):
-        self.wav_file = wave_file
-        self.features_return = features_return
-
-    def run(self):
-        logging.debug('Analysis4 now running...')
-        rcg_file = "/tmp/exp_4_rcg.json"
-        new_wav_file = '/tmp/exp_4_rcg_processed.wav'
-        os.system('rm -f "%s"' % '" "'.join((rcg_file, new_wav_file)))
-        intervals_lst = utils.find_and_remove_intervals(self.wav_file, new_wav_file)
-        rcg_and_save(new_wav_file, rcg_file, segments=3)
-        feature4 = analysis_single.analysis4(self.wav_file, new_wav_file, rcg_file, intervals_lst)
-        self.features_return['feature4'] = feature4
-        logging.debug('Analysis4 done.')
-
-
-def get_data(Qnum):
-    pass
-
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         raise Exception('arguments too less')
-    Qnum = int(sys.argv[1])
-    wav_file = sys.argv[2]
-    print(Qnum, wav_file)
 
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
+    current_id = int(sys.argv[1])
+    q_num = sys.argv[2]
+    # current_id = "5bcde8f30b9e037b1f67ba4e"
+    # q_num = "2"
+    logging.INFO("current_id: %s, q_num: %s" % (current_id, q_num))
+
+    mongo = db.Mongo()
+
+    # get api accounts
+    evl_account = mongo.get_evl_account()
+    rcg_account = mongo.get_rcg_account()
+    baidu_account = mongo.get_baidu_account()
+    config.XF_EVL_APP_ID = evl_account['appid']
+    config.XF_EVL_API_KEY = evl_account['key']
+    config.XF_RCG_APP_ID = rcg_account['appid']
+    config.XF_RCG_API_KEY = rcg_account['key']
+    config.BAIDU_APP_ID = baidu_account['appid']
+    config.BAIDU_API_KEY = baidu_account['api_key']
+    config.BAIDU_SECRET_KEY = baidu_account['secret_key']
 
     features = dict()
+    feature = {}
+    score = 60
+    # feature = get_feature(wf, q)
+    # score = get_score(q, feature)
 
-    #std_text = get_std_text(Qnum=1)
+    q_info = mongo.get_question_info(current_id, q_num)
+    wf, q = mongo.get_wave_path_and_question(q_info)
 
-    if Qnum == 1:
-        std_text = "text_files/Papers/朗读提.txt"
-        analysis = Analysis1(wav_file, std_text, features)
-        analysis.run()
-    elif Qnum == 2:
-        analysis = Analysis2(wav_file, features)
-        analysis.run()
-    elif Qnum == 3:
-        analysis = Analysis3(wav_file, features)
-        analysis.run()
-    elif Qnum == 4:
-        analysis = Analysis4(wav_file, features)
-        analysis.run()
+    Q_type = q['q_type']
+    if Q_type == 1:
+        feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'])
+        score = analysis_scores.score1(feature)
+    elif Q_type == 2:
+        feature = analysis_features.analysis2('wav_temp_url', q['wordbase'])
+        score = analysis_scores.score2(feature)
+    elif Q_type == 3:
+        feature = analysis_features.analysis3('wav_temp_url', q['wordbase'])
+        score = analysis_scores.score3(feature)
     else:
-        print('invalid question number')
+        logging.ERROR('Invalid question type: %s' % Q_type)
 
-    print(features)
+    logging.INFO('Score: %s' % score)
+    mongo.save_result(current_id, q_num, q_info, feature, score)
