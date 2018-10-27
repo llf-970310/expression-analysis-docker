@@ -93,7 +93,6 @@ translation_dict = {
     'logistic': '逻辑分',
     'total-score': '总分'
 }
-MAX_SILENCE_CHUNKS = 20  # 20ms*20 = 0.4s
 
 
 def check_wav_format(file_path, valid_framerate=8000):
@@ -172,12 +171,13 @@ def wav_8kto16k(file_path, new_file_path):
         wf.writeframes(wave_data.tobytes())
 
 
-def find_and_remove_intervals(wav_file, new_wave_file_path=None):
+def find_and_remove_intervals(wav_file, new_wave_file_path=None, threshold=0.4):
     """ support 8k, 16k, 32k framerate, mono audio """
     intervals_lst = list()
     vad = webrtcvad.Vad()
     vad.set_mode(2)
     duration = 20  # ms
+    MAX_SILENCE_CHUNKS = threshold * 1000 // duration  # 0.4s/20ms = 20
 
     with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, return tuple
