@@ -28,7 +28,8 @@ BAIDU_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
 
 
 # -------- MongoDB --------
-MONGODB_HOST = '127.0.0.1'
+# MONGODB_HOST = '127.0.0.1'
+MONGODB_HOST = '172.17.0.1'  # docker0
 # MONGODB_HOST = '47.98.174.59'
 MONGODB_PORT = 27017  # 默认27017
 # {
