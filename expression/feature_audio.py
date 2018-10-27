@@ -37,6 +37,8 @@ def simplify_result(evl_file_content, **kwargs):
         raise Exception('Please make sure you are simplifying the result of "read_chapter"')
     # sentences - words - syllables - rec_node_type - sil|fil|paper
     simp_result = list()
+    if isinstance(evl_file_content, str):
+        evl_file_content = json.loads(evl_file_content)
     result = evl_file_content['data']['read_chapter']['rec_paper']['read_chapter']
     sentences = list()
     if isinstance(result['sentence'], dict):  # dict or list

@@ -3,6 +3,11 @@
 # Time    : 2018/10/23 下午11:43
 # Author  : tangdaye
 # Desc    : 统一音频分析模型UAAM
+
+# # do NOT use xf_recognise.rcg directly
+# # do NOT use xf_evaluate.evl directly
+
+import io
 import xf_recognise
 import xf_evaluate
 import feature_text
@@ -38,9 +43,18 @@ def analysis1(wave_file, std_text):
         'volume2': 0,  # 音量2
         'volume3': 0  # 音量3
     }
-    # 第一种题型的识别和评测都用没有去除间隔的文件
-    rcg_text = xf_recognise.rcg(wav_file=wave_file)['data']  # todo:异常处理
-    eva_result = xf_evaluate.evl(filename=wave_file, std_text=std_text)  # todo:异常处理
+    # 第一种题型的识别和评测都用没有去除间隔的文件  # todo: FIX: 识别需要去除过长空白！
+    temp_std_text_file = io.StringIO()
+    temp_std_text_file.write(std_text)
+    rcg_result_file = io.StringIO()
+    evl_result_file = io.StringIO()
+
+    xf_recognise.rcg_and_save(wave_file, rcg_result_file, segments=3)
+    rcg_text = rcg_result_file.getvalue()
+
+    xf_evaluate.evl_and_save(wave_file, temp_std_text_file, evl_result_file, framerate=8000)
+    eva_result = evl_result_file.getvalue()
+
     # 字数
     result['num'] = feature_text.len_without_punctuation(rcg_text)
     # last_time 时长 未擦除的文件
@@ -128,7 +142,9 @@ def analysis2(wave_file, wordbase):
     else:
         result['interval_ratio'] /= result['last_time']
     # 识别用擦除过的文件
-    temp = xf_recognise.rcg(wav_file=wave_file_processed, segments=3)['data']  # todo:异常处理
+    rcg_result_file = io.StringIO()
+    xf_recognise.rcg_and_save(wave_file, rcg_result_file, segments=3)
+    temp = rcg_result_file.getvalue()
     if temp and len(temp) == 3:
         rcg_text1, rcg_text2, rcg_text3 = temp[0], temp[1], temp[2]
     else:
@@ -260,7 +276,9 @@ def analysis3(wave_file, wordbase):
     else:
         result['interval_ratio'] /= result['last_time']
     # 识别用擦除过的文件
-    temp = xf_recognise.rcg(wav_file=wave_file_processed, segments=3)['data']  # todo:异常处理
+    rcg_result_file = io.StringIO()
+    xf_recognise.rcg_and_save(wave_file, rcg_result_file, segments=3)
+    temp = rcg_result_file.getvalue()
     if temp and len(temp) == 3:
         rcg_text1, rcg_text2, rcg_text3 = temp[0], temp[1], temp[2]
     else:
