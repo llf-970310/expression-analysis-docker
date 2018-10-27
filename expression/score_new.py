@@ -4,6 +4,7 @@
 # Author  : tangdaye
 # Desc    : 统一评分模型USM
 
+# todo 参数化
 """
 Desc:   第一种题型评分规则
 Input:  第一题的特征列表

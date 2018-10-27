@@ -3,8 +3,6 @@
 #
 # Created by dylanchu on 18-7-13
 import logging
-import os
-import socket
 import urllib.parse
 import urllib.request
 import time
@@ -14,12 +12,13 @@ import base64
 
 import config
 import utils
+import io
 
 
-def evl(filename, std_text, timeout=600):
-    # text: 180bytes at max, or error10109 will be raised
-    with open(filename, 'rb') as f:   # 以二进制格式只读打开文件读取，bytes
-        file_content = f.read()
+def evl(file, std_text, timeout=600):
+    """ file can be a file path or an io.BytesIO """
+    # text: 180bytes at max, or error10109 will be raised (limit for sentence, not for chapter)
+    file_content = utils.read(file, 'rb')   # 以二进制格式只读打开文件读取，bytes
     base64_audio = base64.b64encode(file_content)  # 参数是bytes类型，返回也是bytes类型
     body = urllib.parse.urlencode({'audio': base64_audio, 'text': std_text})
 
@@ -54,19 +53,18 @@ def evl(filename, std_text, timeout=600):
     return result
 
 
-def evl_and_save(wave_file, std_txt_file, evl_fp, framerate=16000, stop_on_failure=True):
+def evl_and_save(wave_file, std_txt_file, evl_file, framerate=16000, stop_on_failure=True):
+    """ std_txt_file and evl_fp can be file_paths or io.StringIOs """
     if framerate == 8000 or framerate == "8000" or framerate == "8k" or framerate == "8K":
-        tmp_wav_path = "/tmp/evl_tmp_16000.wav"
+        tmp_wav_path = io.BytesIO()
         utils.wav_8kto16k(wave_file, tmp_wav_path)
         wave_file = tmp_wav_path
-    with open(std_txt_file, 'rb') as f:
-        text = f.read()
+    text = utils.read(std_txt_file)
     result = evl(wave_file, text)
     tmp_evl_dict = json.loads(result)
     logging.debug("Evaluation: %s" % tmp_evl_dict.get('desc'))
     if tmp_evl_dict['code'] == '0':
-        with open(evl_fp, 'w') as f:
-            f.write(result)
+        utils.write(evl_file, result, 'w')
     else:
         print(result)
         if stop_on_failure:
@@ -78,8 +76,11 @@ def evl_and_save(wave_file, std_txt_file, evl_fp, framerate=16000, stop_on_failu
 
 
 if __name__ == '__main__':
-    # evl_and_save(config.WAV_FILE_PATH, config.STD_TEXT_FILE_PATH, config.EVL_JSON_FILE_PATH, framerate=8000)
-    evl(config.WAV_FILE_PATH, config.STD_TEXT_FILE_PATH)
+    text = io.StringIO()
+    text.write("愿你有好运气")
+    evl_fp = io.StringIO()
+    evl_and_save('net_test.wav', text, evl_fp, framerate=8000)
+    print(evl_fp.getvalue())
 
     # with open(config.EVL_JSON_FILE_PATH, 'r') as f:
     #     print(f.read())

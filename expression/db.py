@@ -48,7 +48,7 @@ class Mongo(object):
         question_info['status'] = 'finished'
         question_info['feature'] = feature
         question_info['score'] = score
-        question_info['analysis_end_time'] = datetime.datetime.now().__str__()
+        question_info['analysis_end_time'] = datetime.datetime.utcnow().__str__()
         self.current.update_one({'_id': ObjectId(current_id)}, {'$set': {'questions.%s' % q_num: dict(question_info)}}, True)  # 参数分别是：条件，更新内容，不存在时是否插入
 
     # def test_insert_data(self):
