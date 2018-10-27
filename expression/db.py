@@ -4,7 +4,6 @@
 # Created by dylanchu on 18-10-19
 
 import datetime
-import json
 import pymongo
 import config
 from bson.objectid import ObjectId
@@ -27,6 +26,7 @@ class Mongo(object):
         mdb = client[config.MONGODB_DBNAME]  # db
         self.current = mdb[config.MONGODB_COLLECTION_CURRENT]  # collection
         self.questions = mdb[config.MONGODB_COLLECTION_QUESTIONS]
+        self.api_accounts = mdb[config.MONGODB_COLLECTION_APIS]
 
     def get_question_info(self, current_id, q_num):
         return self.current.find_one({"_id": ObjectId(current_id)})['questions'][q_num]
@@ -49,7 +49,8 @@ class Mongo(object):
         question_info['feature'] = feature
         question_info['score'] = score
         question_info['analysis_end_time'] = datetime.datetime.utcnow().__str__()
-        self.current.update_one({'_id': ObjectId(current_id)}, {'$set': {'questions.%s' % q_num: dict(question_info)}}, True)  # 参数分别是：条件，更新内容，不存在时是否插入
+        self.current.update_one({'_id': ObjectId(current_id)}, {'$set': {'questions.%s' % q_num: dict(question_info)}},
+                                True)  # 参数分别是：条件，更新内容，不存在时是否插入
 
     # def test_insert_data(self):
     #     with open('/tmp/current.json', 'r') as f:
@@ -61,17 +62,52 @@ class Mongo(object):
     #     current_item = self.current.find_one({"_id": "5bcdc98e0b9e0365ce135a68"})  # format wrong! not found!
     #     print(current_item)
 
+    def get_evl_account(self):
+        """
+        :return: dict like {'appid': 'xxx', 'key': 'xxx', 'used_times': 6}
+        """
+        evl_accounts = self.api_accounts.find_one({"type": "xf_evl"})
+        all_accounts = evl_accounts['accounts']
+        all_accounts = sorted(all_accounts, key=lambda a: a['used_times'], reverse=False)
+        all_accounts[0]['used_times'] += 1
+        self.api_accounts.update_one({'_id': evl_accounts['_id']}, {'$set': {'accounts': list(all_accounts)}}, False)
+        return all_accounts[0]
+
+    def get_rcg_account(self):
+        """
+        :return: dict like {'appid': 'xxx', 'key': 'xxx', 'used_times': 6}
+        """
+        rcg_accounts = self.api_accounts.find_one({"type": "xf_rcg"})
+        all_accounts = rcg_accounts['accounts']
+        all_accounts = sorted(all_accounts, key=lambda a: a['used_times'], reverse=False)
+        all_accounts[0]['used_times'] += 1
+        self.api_accounts.update_one({'_id': rcg_accounts['_id']}, {'$set': {'accounts': list(all_accounts)}}, False)
+        return all_accounts[0]
+
+    def get_baidu_account(self):
+        """
+        :return: dict like {'appid': 'xxx', 'api_key': 'xxx', 'secret_key': 'xxx', 'used_times': 6}
+        """
+        baidu_accounts = self.api_accounts.find_one({"type": "baidu"})
+        all_accounts = baidu_accounts['accounts']
+        all_accounts = sorted(all_accounts, key=lambda a: a['used_times'], reverse=False)
+        all_accounts[0]['used_times'] += 1
+        self.api_accounts.update_one({'_id': baidu_accounts['_id']}, {'$set': {'accounts': list(all_accounts)}}, False)
+        return all_accounts[0]
+
 
 if __name__ == '__main__':
     current_id = "5bcde8f30b9e037b1f67ba4e"
     q_num = "2"
 
-    db = Mongo()
-    q_info = db.get_question_info(current_id, q_num)
-    wf, q = db.get_wave_path_and_question(q_info, q_num)
+    # db = Mongo()
+    # q_info = db.get_question_info(current_id, q_num)
+    # wf, q = db.get_wave_path_and_question(q_info, q_num)
+    # feature = {}
+    # score = 60
+    # db.save_result(current_id, q_num, q_info, feature, score)
 
-    # feature, score = analysis(wf, q)
-    feature = {}
-    score = 60
-
-    db.save_result(current_id, q_num, q_info, feature, score)
+    m = Mongo()
+    print(m.get_evl_account())
+    print(m.get_rcg_account())
+    print(m.get_baidu_account())
