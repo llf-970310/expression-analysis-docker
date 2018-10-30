@@ -65,7 +65,7 @@ def score1(features):
     tone_quality *= features['cpl_ratio']
     if tone_quality < 0:
         tone_quality = 0
-    return tone_quality
+    return {"quality": tone_quality}
 
 
 def score2(features):
@@ -107,7 +107,7 @@ def score2(features):
     for temp in details_num:
         if temp[0] == 0:
             detail -= 20
-    return main_idea, detail
+    return {"main": main_idea, "detail": detail}
 
 
 def score3(features):
@@ -118,7 +118,7 @@ def score3(features):
     # 击中2类词库对应分数70
     # 击中0-1类词库对应分数55
     # 按照字数加分和减分
-    structure, logistic = 0, 0
+    structure, logic = 0, 0
     [a1, a2, a3, a4, a5] = [features['sum-aspects_num'] > 0, features['aspects_num'] > 0,
                             features['example_num'] > 0, features['opinion_num'] > 0,
                             features['sum_num'] > 0]
@@ -148,19 +148,19 @@ def score3(features):
     [a1, a2, a3, a4] = [features['cause-affect_num'] > 0, features['transition_num'] > 0,
                         features['progressive_num'] > 0, features['parallel_num'] > 0]
     if a1 + a2 + a3 + a4 >= 3:
-        logistic = 80
+        logic = 80
     elif a1 + a2 + a3 + a4 == 2:
-        logistic = 75
+        logic = 75
     else:
-        logistic = 60
+        logic = 60
     if features['num'] > 280:
-        logistic *= 1.2
+        logic *= 1.2
     if 45 <= features['num'] < 120:
-        logistic *= 0.5
+        logic *= 0.5
     if 10 <= features['num'] < 45:
-        logistic *= 0.25
+        logic *= 0.25
     if 5 <= features['num'] < 10:
-        logistic *= 0.05
+        logic *= 0.05
     if features['num'] < 5:
-        logistic = 0
-    return structure, logistic
+        logic = 0
+    return {"structure": structure, "logic": logic}

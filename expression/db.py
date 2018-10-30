@@ -100,14 +100,14 @@ if __name__ == '__main__':
     current_id = "5bcde8f30b9e037b1f67ba4e"
     q_num = "2"
 
-    # db = Mongo()
-    # q_info = db.get_question_info(current_id, q_num)
-    # wf, q = db.get_wave_path_and_question(q_info)
-    # feature = {}
-    # score = 60
-    # db.save_result(current_id, q_num, q_info, feature, score)
+    db = Mongo()
+    q_info = db.get_question_info(current_id, q_num)
+    wf, q = db.get_wave_path_and_question(q_info)
+    feature = {}
+    score = {"main": 60, "detail": 80}
+    db.save_result(current_id, q_num, q_info, feature, score)
 
-    m = Mongo()
-    print(m.get_evl_account())
-    print(m.get_rcg_account())
-    print(m.get_baidu_account())
+    # m = Mongo()
+    # print(m.get_evl_account())
+    # print(m.get_rcg_account())
+    # print(m.get_baidu_account())
