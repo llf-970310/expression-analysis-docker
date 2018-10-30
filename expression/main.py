@@ -2,6 +2,7 @@
 # coding: utf-8
 #
 # Created by dylanchu on 18-8-18
+import os
 
 import logging
 import sys
@@ -52,13 +53,15 @@ if __name__ == '__main__':
         feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'])
         score = analysis_scores.score1(feature)
     elif Q_type == 2:
-        feature = analysis_features.analysis2('wav_temp_url', q['wordbase'])
+        feature = analysis_features.analysis2(q_info['wav_temp_url'], q['wordbase'])
         score = analysis_scores.score2(feature)
     elif Q_type == 3:
-        feature = analysis_features.analysis3('wav_temp_url', q['wordbase'])
+        feature = analysis_features.analysis3(q_info['wav_temp_url'], q['wordbase'])
         score = analysis_scores.score3(feature)
     else:
         logging.error('Invalid question type: %s' % Q_type)
 
     logging.info('Score: %s' % score)
     mongo.save_result(current_id, q_num, q_info, feature, score)
+    os.system('rm %s' % q_info['wav_temp_url'])
+    os.system('rmdir %s > /dev/null 2>&1' % os.path.dirname(q_info['wav_temp_url']))
