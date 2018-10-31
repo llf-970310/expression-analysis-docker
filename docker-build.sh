@@ -2,4 +2,6 @@
 
 cd `dirname $0`
 pwd
-docker build ./ -t exp-analysis:$(date +%Y%m%d-%H%M)
+tags=$(date +%Y%m%d-%H%M)
+docker build ./ -t exp-analysis:$tags
+docker tag exp-analysis:$tags exp-analysis:latest

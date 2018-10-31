@@ -41,13 +41,14 @@ class Mongo(object):
         print(wave_path, question)
         return wave_path, question
 
-    def save_result(self, current_id, q_num, question_info, feature, score):
+    def save_result(self, current_id, q_num, question_info, feature=None, score=-1, status='finished'):
         """ 根据给定的current_id和q_num，
         设置当前题目status为finished，保存分析结果feature{}，保存该题score，保存分析结束时间analysis_end_time
         """
-        question_info['status'] = 'finished'
-        question_info['feature'] = feature
-        question_info['score'] = score
+        if status == 'finished':
+            question_info['feature'] = feature
+            question_info['score'] = score
+        question_info['status'] = status
         question_info['analysis_end_time'] = datetime.datetime.utcnow().__str__()
         self.current.update_one({'_id': ObjectId(current_id)}, {'$set': {'questions.%s' % q_num: dict(question_info)}},
                                 True)  # 参数分别是：条件，更新内容，不存在时是否插入
@@ -100,14 +101,14 @@ if __name__ == '__main__':
     current_id = "5bcde8f30b9e037b1f67ba4e"
     q_num = "2"
 
-    # db = Mongo()
-    # q_info = db.get_question_info(current_id, q_num)
-    # wf, q = db.get_wave_path_and_question(q_info)
-    # feature = {}
-    # score = 60
-    # db.save_result(current_id, q_num, q_info, feature, score)
+    db = Mongo()
+    q_info = db.get_question_info(current_id, q_num)
+    wf, q = db.get_wave_path_and_question(q_info)
+    feature = {}
+    score = {"main": 60, "detail": 80}
+    db.save_result(current_id, q_num, q_info, feature, score)
 
-    m = Mongo()
-    print(m.get_evl_account())
-    print(m.get_rcg_account())
-    print(m.get_baidu_account())
+    # m = Mongo()
+    # print(m.get_evl_account())
+    # print(m.get_rcg_account())
+    # print(m.get_baidu_account())
