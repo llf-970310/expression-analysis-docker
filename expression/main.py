@@ -27,18 +27,6 @@ if __name__ == '__main__':
 
     mongo = db.Mongo()
 
-    # get api accounts
-    evl_account = mongo.get_evl_account()
-    rcg_account = mongo.get_rcg_account()
-    baidu_account = mongo.get_baidu_account()
-    config.XF_EVL_APP_ID = evl_account['appid']
-    config.XF_EVL_API_KEY = evl_account['key']
-    config.XF_RCG_APP_ID = rcg_account['appid']
-    config.XF_RCG_API_KEY = rcg_account['key']
-    config.BAIDU_APP_ID = baidu_account['appid']
-    config.BAIDU_API_KEY = baidu_account['api_key']
-    config.BAIDU_SECRET_KEY = baidu_account['secret_key']
-
     features = dict()
     feature = {}
     score = 0
@@ -52,6 +40,21 @@ if __name__ == '__main__':
     tries = 0
     while tries <= 3:
         try:
+            # get api accounts
+            evl_account = mongo.get_evl_account()
+            rcg_account = mongo.get_rcg_account()
+            baidu_account = mongo.get_baidu_account()
+            config.XF_EVL_APP_ID = evl_account['appid']
+            config.XF_EVL_API_KEY = evl_account['key']
+            config.XF_RCG_APP_ID = rcg_account['appid']
+            config.XF_RCG_API_KEY = rcg_account['key']
+            config.BAIDU_APP_ID = baidu_account['appid']
+            config.BAIDU_API_KEY = baidu_account['api_key']
+            config.BAIDU_SECRET_KEY = baidu_account['secret_key']
+            logging.info('using EVL account: %s' % evl_account)
+            logging.info('using RCG account: %s' % rcg_account)
+            logging.info('using BAIDU account: %s' % baidu_account)
+
             Q_type = q['q_type']
             if Q_type == 1:
                 feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'])
