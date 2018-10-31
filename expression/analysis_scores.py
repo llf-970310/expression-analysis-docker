@@ -107,6 +107,11 @@ def score2(features):
     for temp in details_num:
         if temp[0] == 0:
             detail -= 20
+    # 其他可用属性：前n秒关键词['keywords_num_main']
+    if main_idea <= 0:
+        main_idea = 0
+    if detail <= 0:
+        detail = 0
     return main_idea, detail
 
 
