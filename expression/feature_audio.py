@@ -4,6 +4,7 @@
 # Created by dylanchu on 18-7-14
 import io
 import json
+import logging
 import re
 from math import ceil
 
@@ -196,7 +197,7 @@ def read_wave_data(wav_file):
     if nchannels == 2:  # stereo
         wave_data.shape = -1, 2  # shape the array to n*2 (format is LRLRLR...)
         wave_data = wave_data.T[0]  # use Left channel only
-        print("THE WAV FILE IS STEREO, MAYBE NOT SUPPORTED BY RECOGNITION API!")
+        logging.warn("THE WAV FILE IS STEREO, MAYBE NOT SUPPORTED BY RECOGNITION API!")
 
     # calculate the time
     time = np.arange(0, nframes) * (1.0 / framerate)

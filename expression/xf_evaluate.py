@@ -34,7 +34,7 @@ def evl(file, std_text, timeout=600):
     x_param = base64.b64encode(json.dumps(param).replace(' ', '').encode('utf-8'))
     x_time = int(int(round(time.time() * 1000)) / 1000)
 
-    # print(x_param)  # bytes
+    # logging.debug(x_param)  # bytes
     x_checksum_content = api_key + str(x_time) + str(x_param, 'utf-8')
     x_checksum = hashlib.md5(x_checksum_content.encode('utf-8')).hexdigest()
     x_header = {'X-Appid': x_appid,
@@ -67,7 +67,7 @@ def evl_and_save(wave_file, std_txt_file, evl_file, framerate=16000, stop_on_fai
     if tmp_evl_dict['code'] == '0':
         utils.write(evl_file, result, 'w')
     else:
-        print(result)
+        logging.error(result)
         if stop_on_failure:
             raise Exception("evl error while processing %s: code %s, desc - %s"
                             % (wave_file, tmp_evl_dict.get('code'), tmp_evl_dict.get('desc')))

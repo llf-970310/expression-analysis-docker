@@ -4,6 +4,7 @@
 # Created by dylanchu on 18-10-19
 
 import datetime
+import logging
 import pymongo
 import config
 from bson.objectid import ObjectId
@@ -35,13 +36,13 @@ class Mongo(object):
         """ 获取： 音频文件路径 和 要分析问题的详细信息
         要使用传入的 q_num 而不使用 current表中的 current_q_num，因为 current_q_num 只是django维护的临时标记，随时会改变。
         """
-        print(question_info)
+        logging.debug(question_info)
         wave_path = question_info['wav_temp_url']
         question = self.questions.find_one({"_id": ObjectId(question_info['q_id'])})
-        print(wave_path, question)
+        logging.debug('wave_path: %s, question: %s' % (wave_path, question))
         return wave_path, question
 
-    def save_result(self, current_id, q_num, question_info, feature=None, score=-1, status='finished'):
+    def save_result(self, current_id, q_num, question_info, feature=None, score=None, status='finished'):
         """ 根据给定的current_id和q_num，
         设置当前题目status为finished，保存分析结果feature{}，保存该题score，保存分析结束时间analysis_end_time
         """
@@ -49,7 +50,7 @@ class Mongo(object):
             question_info['feature'] = feature
             question_info['score'] = score
         question_info['status'] = status
-        question_info['analysis_end_time'] = datetime.datetime.utcnow().__str__()
+        question_info['analysis_end_time'] = datetime.datetime.utcnow()
         self.current.update_one({'_id': ObjectId(current_id)}, {'$set': {'questions.%s' % q_num: dict(question_info)}},
                                 True)  # 参数分别是：条件，更新内容，不存在时是否插入
 
@@ -61,7 +62,7 @@ class Mongo(object):
     # def test_find(self):
     #     current_item = self.current.find_one({"_id": ObjectId("5bcdc98e0b9e0365ce135a68")})  # format right! found!
     #     current_item = self.current.find_one({"_id": "5bcdc98e0b9e0365ce135a68"})  # format wrong! not found!
-    #     print(current_item)
+    #     logging.info(current_item)
 
     def get_evl_account(self):
         """

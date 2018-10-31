@@ -100,12 +100,12 @@ def check_wav_format(wav_file, valid_framerate=8000):
         wav_file.seek(0)  # seek(0) before read
     with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, return tuple
-        print(params, '\n')
+        logging.info(params)
         nchannels, sampwidth, framerate, nframes = params[:4]
     if nchannels != 1:
-        print("---- THE WAV FILE IS NOT MONOPHONIC, MAYBE NOT SUPPORTED BY XUNFEI API!! ----")
+        logging.warn("---- THE WAV FILE IS NOT MONOPHONIC, MAYBE NOT SUPPORTED BY XUNFEI API!! ----")
     if framerate != valid_framerate:
-        print("---- THE FRAMERATE IS %d !! ----" % framerate)
+        logging.warn("---- THE FRAMERATE IS %d !! ----" % framerate)
 
 
 def check_video_count(folder_path):
@@ -114,7 +114,7 @@ def check_video_count(folder_path):
     videos.extend(videos2)
     videos.sort()
     if len(videos) != 4:
-        print("---- Caution: not 4 videos in %s !! ----" % folder_path)
+        logging.warn("---- Caution: not 4 videos in %s !! ----" % folder_path)
         # raise Exception("---- Caution: not 4 videos in %s !! ----" % folder_path)
 
 
@@ -126,7 +126,7 @@ def extract_wav_files(from_folder, **kwargs):
     videos2 = glob.glob(from_folder + "/*.MOV")
     videos.extend(videos2)
     videos.sort()
-    print(videos)
+    logging.info(videos)
     if len(videos) == 4:
         if not os.path.exists(to_folder):
             os.system('mkdir -p "%s"' % to_folder)
@@ -137,7 +137,7 @@ def extract_wav_files(from_folder, **kwargs):
         for i in range(0, 4):
             os.system('ffmpeg -i "%s" -f wav -ar 8000 -y "%s/1.wav" > /dev/null 2>&1' % (videos[i], to_folder))
     else:
-        print("---- NOT PROCESSED: not 4 videos, please check it! FOLDER: %s ----" % from_folder)
+        logging.warn("---- NOT PROCESSED: not 4 videos, please check it! FOLDER: %s ----" % from_folder)
 
 
 def save_wave_file(filename, data, framerate=8000):
@@ -157,7 +157,6 @@ def wav_8kto16k(wav_file, new_file_path):
         wav_file.seek(0)  # seek(0) before read
     with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, return tuple
-        # print("Wave file header:\n\t", params, '\n')
         nchannels, sampwidth, framerate, nframes = params[:4]
         if framerate != 16000 and framerate != 8000 or nchannels != 1:
             raise Exception('RESAMPLE: Input file error: Wrong framerate or Stereo!')
@@ -187,7 +186,6 @@ def find_and_remove_intervals(wav_file, new_wave_file_path=None, threshold=0.4):
         wav_file.seek(0)  # seek(0) before read
     with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, return tuple
-        # print("Wave file header:\n\t", params, '\n')
         nchannels, sampwidth, framerate, nframes = params[:4]
         frame_count = int(framerate * duration / 1000)
         valid_len = 2 * frame_count  # 16bit -> 2B
@@ -219,7 +217,7 @@ def find_and_remove_intervals(wav_file, new_wave_file_path=None, threshold=0.4):
         else:
             if new_wave_file_path is not None:
                 new_wf_frames = np.append(new_wf_frames, np.frombuffer(chunk, dtype=np.int16))
-        # print(binarized_chunks)
+        # logging.debug(binarized_chunks)
         if new_wave_file_path is not None:
             save_wave_file(new_wave_file_path, new_wf_frames)
     return intervals_lst
@@ -231,7 +229,6 @@ def auto_magnify_audio(wav_file, new_wav_file_path=None):
         wav_file.seek(0)  # seek(0) before read
     with wave.open(wav_file, 'rb') as f:
         params = f.getparams()  # file header, tuple
-        # print("Wave file header:\n\t", params, '\n')
         nchannels, sampwidth, framerate, nframes = params[:4]
         data_bytes = f.readframes(nframes)
         wf_data = np.frombuffer(data_bytes, dtype=np.int16)
