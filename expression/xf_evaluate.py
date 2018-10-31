@@ -54,14 +54,14 @@ def evl(file, std_text, timeout=600):
     return result
 
 
-def evl_and_save(wave_file, std_txt_file, evl_file, framerate=16000, stop_on_failure=True):
+def evl_and_save(wave_file, std_txt_file, evl_file, framerate=16000, stop_on_failure=True, timeout=600):
     """ std_txt_file and evl_fp can be file_paths or io.StringIOs """
     if framerate == 8000 or framerate == "8000" or framerate == "8k" or framerate == "8K":
         tmp_wav_path = io.BytesIO()
         utils.wav_8kto16k(wave_file, tmp_wav_path)
         wave_file = tmp_wav_path
     text = utils.read(std_txt_file)
-    result = evl(wave_file, text)
+    result = evl(wave_file, text, timeout=timeout)
     tmp_evl_dict = json.loads(result)
     logging.debug("Evaluation: %s" % tmp_evl_dict.get('desc'))
     if tmp_evl_dict['code'] == '0':
