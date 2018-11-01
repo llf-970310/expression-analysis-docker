@@ -15,7 +15,7 @@ import analysis_features
 import analysis_scores
 
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
 if __name__ == '__main__':

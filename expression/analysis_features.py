@@ -52,7 +52,7 @@ def analysis1(wave_file, std_text, timeout=30):
     rcg_result_file = io.StringIO()
     evl_result_file = io.StringIO()
 
-    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=3, timeout=timeout)
+    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout)
     rcg_text = rcg_result_file.getvalue()
 
     xf_evaluate.evl_and_save(wave_file_processed, temp_std_text_file, evl_result_file, framerate=8000, timeout=timeout)
@@ -144,7 +144,7 @@ def analysis2(wave_file, wordbase, timeout=30):
         result['interval_ratio'] /= result['last_time']
     # 识别用擦除过的文件
     rcg_result_file = io.StringIO()
-    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=3, timeout=timeout)
+    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout)
     temp = rcg_result_file.getvalue()
     if temp and len(temp) == 3:
         rcg_text1, rcg_text2, rcg_text3 = temp[0], temp[1], temp[2]
