@@ -60,13 +60,13 @@ if __name__ == '__main__':
 
             Q_type = q['q_type']
             if Q_type == 1:
-                feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'])
+                feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'], timeout=30)
                 score = analysis_scores.score1(feature)
             elif Q_type == 2:
-                feature = analysis_features.analysis2(q_info['wav_temp_url'], q['wordbase'])
+                feature = analysis_features.analysis2(q_info['wav_temp_url'], q['wordbase'], timeout=30)
                 score = analysis_scores.score2(feature)
             elif Q_type == 3:
-                feature = analysis_features.analysis3(q_info['wav_temp_url'], q['wordbase'])
+                feature = analysis_features.analysis3(q_info['wav_temp_url'], q['wordbase'], timeout=30)
                 score = analysis_scores.score3(feature)
             else:
                 logging.error('Invalid question type: %s' % Q_type)
