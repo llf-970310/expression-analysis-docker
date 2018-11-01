@@ -153,7 +153,7 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_k
                         logging.info('rcg failure: %s SEG %d - %s' % (wave_file, i, rcgs_dict[i].get('code')))
             else:
                 data_lst.append('')
-        logging.debug('Multi segments rcg result: %s' % rcgs_status)
+        logging.info('Multi segments rcg result: %s' % rcgs_status)
 
         if rcg_result[0] is None:
             rcgs_dict[0] = {'code': '0', 'data': '', 'desc': 'None'}
