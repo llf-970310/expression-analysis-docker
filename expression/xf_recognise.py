@@ -128,7 +128,8 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_k
     rcg_result = rcg(wave_file, segments=segments, timeout=timeout, x_appid=x_appid, api_key=api_key)
     if isinstance(rcg_result, str):
         rcg_dict = json.loads(rcg_result)
-        logging.debug("Recognition: %s" % rcg_dict.get('desc'))
+        logging.debug("Recognition: %s" % rcg_dict.get('data'))
+        logging.info("Recognition: %s" % rcg_dict.get('desc'))
         if rcg_dict.get('code') == '0':
             utils.write(rcg_fp, rcg_result, 'w')
         else:
