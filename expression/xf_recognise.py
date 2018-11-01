@@ -60,7 +60,7 @@ class RcgCore(threading.Thread):
             rst = urllib.request.urlopen(req, timeout=self.timeout)
             self.result = rst.read().decode('utf-8')
         except Exception as e:
-            logging.info(e)
+            logging.warn(e)
 
     def get_result(self):
         return self.result

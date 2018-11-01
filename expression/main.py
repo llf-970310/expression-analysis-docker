@@ -6,6 +6,9 @@ import os
 
 import logging
 import sys
+
+import traceback
+
 import config
 import db
 import analysis_features
@@ -70,6 +73,7 @@ if __name__ == '__main__':
             tries = 9999
             break
         except Exception as e:
+            traceback.print_exc()
             logging.error('on retry %s: %s' % (tries, e))
             status = e.__str__()
             tries += 1
