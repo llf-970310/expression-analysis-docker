@@ -11,3 +11,4 @@ report.html
 *.json
 *.csv
 Pipfile.lock
+*.wav
