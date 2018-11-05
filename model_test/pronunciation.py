@@ -244,8 +244,11 @@ def in_pronunciation(word, sentence):
     else:
         for i in range(len_sentence - len_word + 1):
             temp = sentence_pinyin[i:i + len_word]
-            if similar_pronunciation(word_pinyin, temp):
-                return True
+            try:
+                if similar_pronunciation(word_pinyin, temp):
+                    return True
+            except Exception:
+                continue
         return False
 
 
@@ -283,7 +286,7 @@ def in_pronunciation(word, sentence):
 
 
 if __name__ == '__main__':
-    print(in_pronunciation('22%是', '22%是个好数字'))
+    print(in_pronunciation('dan是g', 'dang是个好数字'))
     # write_excel_into_file()
     # print(consonant_destination[11][21],consonant_destination[21][11])
     # print(in_pronunciation('高铁', '中国糕点十分出名'))
