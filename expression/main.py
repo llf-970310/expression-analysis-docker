@@ -77,6 +77,8 @@ if __name__ == '__main__':
             logging.error('on retry %s: %s' % (tries, e))
             status = e.__str__()
             tries += 1
+        else:
+            status = 'finished'
 
     logging.info('Score: %s' % score)
     mongo.save_result(current_id, q_num, q_info, feature, score, status=status)
