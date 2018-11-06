@@ -102,9 +102,12 @@ def score2(features):
                 if detail_wordcount_list[j][0] <= words_count < detail_wordcount_list[j][1]:
                     detail = detail_score_list[i][j]
     keywords_num = features['keywords_num']
+    mainwords_num = features['mainwords_num']
     details_num = features['detailwords_nums']
     # 每少1个主旨关键词扣10分
     main_idea -= (keywords_num[1] - keywords_num[0]) * 10
+    # 每少1个主干关键词扣6分
+    main_idea -= (mainwords_num[1] - mainwords_num[0]) * 6
     # 每少1个细节关键词扣20分
     for temp in details_num:
         if temp[0] == 0:
@@ -175,10 +178,22 @@ def score3(features):
 
 
 if __name__ == '__main__':
-    audio_base = 'Samples2_audio/'
-    text_base = 'Samples2_text/'
-    features_base = 'features/1/'
+    # audio_base = 'Samples2_audio/'
+    # text_base = 'Samples2_text/'
+    # features_base = 'features/1/'
+    # for i in range(1, 117):
+    #     with open(features_base + str(i) + '.json', 'r') as f:
+    #         feature = json.loads(f.read())
+    #         print('%d: %s'%(i,score1(feature).__str__()))
+
+    # features_base = 'features/4/'
+    # for i in range(1, 117):
+    #     with open(features_base + str(i) + '.json', 'r') as f:
+    #         feature = json.loads(f.read())
+    #         print('%d: %s'%(i,score3(feature).__str__()))
+
+    features_base = 'features/2/'
     for i in range(1, 117):
         with open(features_base + str(i) + '.json', 'r') as f:
             feature = json.loads(f.read())
-            print('%d: %s'%(i,score1(feature).__str__()))
+            print('%d: %s' % (i, score2(feature).__str__()))

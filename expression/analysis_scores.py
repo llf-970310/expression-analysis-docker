@@ -100,9 +100,12 @@ def score2(features):
                 if detail_wordcount_list[j][0] <= words_count < detail_wordcount_list[j][1]:
                     detail = detail_score_list[i][j]
     keywords_num = features['keywords_num']
+    mainwords_num = features['mainwords_num']
     details_num = features['detailwords_nums']
     # 每少1个主旨关键词扣10分
     main_idea -= (keywords_num[1] - keywords_num[0]) * 10
+    # 每少1个主干关键词扣6分
+    main_idea -= (mainwords_num[1] - mainwords_num[0]) * 6
     # 每少1个细节关键词扣20分
     for temp in details_num:
         if temp[0] == 0:

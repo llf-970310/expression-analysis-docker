@@ -97,7 +97,6 @@ def analysis2(wave_file, wordbase, timeout=30):
         'last_time': 0,
         'interval_num': 0,
         'interval_ratio': 0,
-        # 'main_idea_similarity': 0,
         'n_ratio': 0,
         'v_ratio': 0,
         'vd_ratio': 0,
@@ -120,14 +119,15 @@ def analysis2(wave_file, wordbase, timeout=30):
         'noun_frequency_3': 0,
         'noun_frequency_4': 0,
         'keywords_num': [0, 1],
+        'mainwords_num': [0, 1],
         'detailwords_nums': [],
         'keywords_num_main': [0, 1],
         'speed1': 0,
         'speed2': 0,
         'speed3': 0,
-        # 'volume1': 0,
-        # 'volume2': 0,
-        # 'volume3': 0
+        'volume1': 0,
+        'volume2': 0,
+        'volume3': 0
     }
     # last_time 时长 未擦除的文件
     with wave.open(wave_file) as wav:
@@ -146,16 +146,15 @@ def analysis2(wave_file, wordbase, timeout=30):
     # 识别用擦除过的文件
     rcg_result_file = io.StringIO()
     # 分段识别
-    # xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=3)
-    # temp = json.loads(rcg_result_file.getvalue()).get('data')
-    # if temp and len(temp) == 3:
-    #     rcg_text1, rcg_text2, rcg_text3 = temp[0], temp[1], temp[2]
-    # else:
-    #     rcg_text1, rcg_text2, rcg_text3 = '', '', ''
-    # rcg_text = rcg_text1 + rcg_text2 + rcg_text3
-    # 自动选择是否分段，不用显式指出分段
-    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout)
-    rcg_text = json.loads(rcg_result_file.getvalue()).get('data')
+    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=3)
+    temp = json.loads(rcg_result_file.getvalue()).get('data')
+    if temp and len(temp) == 3:
+        rcg_text1, rcg_text2, rcg_text3 = temp[0], temp[1], temp[2]
+    else:
+        rcg_text1, rcg_text2, rcg_text3 = '', '', ''
+    rcg_text = rcg_text1 + rcg_text2 + rcg_text3
+    # 字数
+    result['num'] = feature_text.len_without_punctuation(rcg_text)
     # 词性比例
     proportions = feature_text.proportion(rcg_text)
     all_words_num = proportions['all']
@@ -198,7 +197,7 @@ def analysis2(wave_file, wordbase, timeout=30):
     #         ['50']
     #     ]
     # ]
-    keywords, detailwords = wordbase.get('keywords'), wordbase.get('detailwords')
+    keywords, mainwords, detailwords = wordbase.get('keywords'), wordbase.get('mainwords'), wordbase.get('detailwords')
     for word in keywords:
         if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
             result['keywords_num'][0] += 1
@@ -206,6 +205,10 @@ def analysis2(wave_file, wordbase, timeout=30):
             result['keywords_num_main'][0] += 1
     result['keywords_num'][1] = len(keywords)
     result['keywords_num_main'][1] = len(keywords)
+    for word in mainwords:
+        if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
+            result['mainwords_num'][0] += 1
+    result['mainwords_num'][1] = len(mainwords)
     for temp_l in detailwords:
         x = 0
         for word in temp_l:
@@ -213,10 +216,10 @@ def analysis2(wave_file, wordbase, timeout=30):
                 x += 1
         result['detailwords_nums'].append([x, len(temp_l)])
     # speed
-    # if not result['last_time'] == 0:
-    #     result['speed1'] = 3 * feature_text.len_without_punctuation(rcg_text1) / result['last_time']
-    #     result['speed2'] = 3 * feature_text.len_without_punctuation(rcg_text2) / result['last_time']
-    #     result['speed3'] = 3 * feature_text.len_without_punctuation(rcg_text3) / result['last_time']
+    if not result['last_time'] == 0:
+        result['speed1'] = 3 * feature_text.len_without_punctuation(rcg_text1) / result['last_time']
+        result['speed2'] = 3 * feature_text.len_without_punctuation(rcg_text2) / result['last_time']
+        result['speed3'] = 3 * feature_text.len_without_punctuation(rcg_text3) / result['last_time']
     # volume
     volume_list = feature_audio.get_volume(wave_file_processed, 3)
     result['volume1'], result['volume2'], result['volume3'] = volume_list[0], volume_list[1], volume_list[2]
@@ -290,6 +293,8 @@ def analysis3(wave_file, wordbase, timeout=30):
     else:
         rcg_text1, rcg_text2, rcg_text3 = '', '', ''
     rcg_text = rcg_text1 + rcg_text2 + rcg_text3
+    # 字数
+    result['num'] = feature_text.len_without_punctuation(rcg_text)
     # 词性比例
     proportions = feature_text.proportion(rcg_text)
     all_words_num = proportions['all']
