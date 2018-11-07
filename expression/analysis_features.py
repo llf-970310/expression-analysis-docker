@@ -27,6 +27,7 @@ Output: feature列表
 
 def analysis1(wave_file, std_text, timeout=30):
     result = {
+        'rcg_text': '',
         'num': 0,  # 字数
         'last_time': 0,  # 长度
         'interval_num': 0,  # 超过0.7秒时间间隔数量
@@ -55,6 +56,7 @@ def analysis1(wave_file, std_text, timeout=30):
 
     xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout)
     rcg_text = json.loads(rcg_result_file.getvalue()).get('data')  # todo 错误处理
+    result['rcg_text'] = rcg_text
 
     xf_evaluate.evl_and_save(wave_file_processed, temp_std_text_file, evl_result_file, framerate=8000, timeout=timeout)
     eva_result = evl_result_file.getvalue()
@@ -93,6 +95,7 @@ def analysis1(wave_file, std_text, timeout=30):
 
 def analysis2(wave_file, wordbase, timeout=30):
     result = {
+        'rcg_text': 0,
         'num': 0,
         'last_time': 0,
         'interval_num': 0,
@@ -153,6 +156,7 @@ def analysis2(wave_file, wordbase, timeout=30):
     else:
         rcg_text1, rcg_text2, rcg_text3 = '', '', ''
     rcg_text = rcg_text1 + rcg_text2 + rcg_text3
+    result['rcg_text'] = rcg_text
     # 字数
     result['num'] = feature_text.len_without_punctuation(rcg_text)
     # 词性比例
@@ -228,6 +232,7 @@ def analysis2(wave_file, wordbase, timeout=30):
 
 def analysis3(wave_file, wordbase, timeout=30):
     result = {
+        'rcg_text': '',
         'num': 0,
         'last_time': 0,
         'interval_num': 0,
@@ -293,6 +298,7 @@ def analysis3(wave_file, wordbase, timeout=30):
     else:
         rcg_text1, rcg_text2, rcg_text3 = '', '', ''
     rcg_text = rcg_text1 + rcg_text2 + rcg_text3
+    result['rcg_text'] = rcg_text
     # 字数
     result['num'] = feature_text.len_without_punctuation(rcg_text)
     # 词性比例
