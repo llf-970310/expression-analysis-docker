@@ -34,6 +34,7 @@ if __name__ == '__main__':
     feature = {}
     score = 0
     status = 'finished'
+    tr = None
     # feature = get_feature(wf, q)
     # score = get_score(q, feature)
 
@@ -71,16 +72,17 @@ if __name__ == '__main__':
             else:
                 logging.error('Invalid question type: %s' % Q_type)
             tries = 9999
+            status = 'finished'
+            tr = None
             break
         except Exception as e:
-            traceback.print_exc()
+            tr = traceback.format_exc()
+            print(tr)
             logging.error('on retry %s: %s' % (tries, e))
-            status = e.__str__()
+            status = 'error'
             tries += 1
-        else:
-            status = 'finished'
 
     logging.info('Score: %s' % score)
-    mongo.save_result(current_id, q_num, q_info, feature, score, status=status)
+    mongo.save_result(current_id, q_num, q_info, feature, score, status=status, stack=tr)
     os.system('rm %s' % q_info['wav_temp_url'])
     os.system('rmdir %s > /dev/null 2>&1' % os.path.dirname(q_info['wav_temp_url']))
