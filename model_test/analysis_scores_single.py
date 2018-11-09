@@ -104,14 +104,14 @@ def score2(features):
     keywords_num = features['keywords_num']
     mainwords_num = features['mainwords_num']
     details_num = features['detailwords_nums']
-    # 每少1个主旨关键词扣10分
-    main_idea -= (keywords_num[1] - keywords_num[0]) * 10
+    # 按照比例乘
+    main_idea *= (keywords_num[0] / keywords_num[1])
     # 每少1个主干关键词扣6分
     main_idea -= (mainwords_num[1] - mainwords_num[0]) * 6
-    # 每少1个细节关键词扣20分
+    # 按照比例乘
+    single_detail = detail / len(details_num)
     for temp in details_num:
-        if temp[0] == 0:
-            detail -= 20
+        detail -= single_detail * (1 - temp[0] / temp[1])
     # 其他可用属性：前n秒关键词['keywords_num_main']
     if main_idea <= 0:
         main_idea = 0
@@ -193,7 +193,14 @@ if __name__ == '__main__':
     #         print('%d: %s'%(i,score3(feature).__str__()))
 
     features_base = 'features/2/'
+    score_base = 'scores/2'
+    objs = []
     for i in range(1, 117):
         with open(features_base + str(i) + '.json', 'r') as f:
             feature = json.loads(f.read())
-            print('%d: %s' % (i, score2(feature).__str__()))
+            x = score2(feature)
+            x['id'] = i
+            objs.append(x)
+            print(x['main'],x['detail'])
+    with open(score_base + '/2.json', 'w') as f:
+        f.write(json.dumps(objs))

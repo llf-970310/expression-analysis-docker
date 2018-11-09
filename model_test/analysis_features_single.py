@@ -137,7 +137,7 @@ def analysis2(wave_file, wordbase, rcg_file):
     wave_file_processed = io.BytesIO()
     interval_list = utils.find_and_remove_intervals(wave_file, wave_file_processed)
     for (start, last) in interval_list:
-        if last > config.INTERVAL_TIME_THRESHOLD3 and start > 0 and start + last > result['last_time'] - 0.02:
+        if last > config.INTERVAL_TIME_THRESHOLD2 and start > 0 and start + last > result['last_time'] - 0.02:
             result['interval_num'] += 1
             result['interval_ratio'] += last
     if result['last_time'] == 0:
