@@ -8,7 +8,7 @@ from zhon.hanzi import punctuation
 # import xlrd
 
 alpha, beta = 1, 1  # 分别代表声母和韵母在计算中的权重
-similar_threshold = 0.3  # 相似度阈值
+similar_threshold = 0.2  # 相似度阈值
 # 声母表
 consonants = (
     'b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'j', 'q', 'x', 'zh', 'ch', 'sh', 'r', 'z', 'c', 's', 'y',
@@ -185,33 +185,18 @@ def destination(pinyin1, pinyin2):
     if consonant1 and consonant2:
         consonant_dest = consonant_destination[consonants.index(consonant1)][consonants.index(consonant2)]
         vowel_dest = vowel_destination[vowels.index(vowel1)][vowels.index(vowel2)]
-        # 加权调和平均
-        if consonant_dest == 0:
-            return vowel_dest / 2
-        elif vowel_dest == 0:
-            return consonant_dest / 2
-        else:
-            return 1.0 / ((alpha ** 2 / consonant_dest + beta ** 2 / vowel_dest) / (alpha ** 2 + beta ** 2))
+        # 加权算数平均
+        return (alpha * consonant_dest + beta * vowel_dest) / (alpha + beta)
     elif not consonant1 and consonant2:
         consonant_dest = consonant_vowel_destination[consonants.index(consonant2)][vowel_word.index(vowel1)]
         vowel_dest = vowel_destination[vowels.index(vowel1)][vowels.index(vowel2)]
-        # 加权调和平均
-        if consonant_dest == 0:
-            return vowel_dest / 2
-        elif vowel_dest == 0:
-            return consonant_dest / 2
-        else:
-            return 1.0 / ((alpha ** 2 / consonant_dest + beta ** 2 / vowel_dest) / (alpha ** 2 + beta ** 2))
+        # 加权算数平均
+        return (alpha * consonant_dest + beta * vowel_dest) / (alpha + beta)
     elif not consonant2 and consonant1:
         consonant_dest = consonant_vowel_destination[consonants.index(consonant1)][vowel_word.index(vowel2)]
         vowel_dest = vowel_destination[vowels.index(vowel1)][vowels.index(vowel2)]
-        # 加权调和平均
-        if consonant_dest == 0:
-            return vowel_dest / 2
-        elif vowel_dest == 0:
-            return consonant_dest / 2
-        else:
-            return 1.0 / ((alpha ** 2 / consonant_dest + beta ** 2 / vowel_dest) / (alpha ** 2 + beta ** 2))
+        # 加权算数平均
+        return (alpha * consonant_dest + beta * vowel_dest) / (alpha + beta)
     else:
         return vowel_destination[vowels.index(vowel1)][vowels.index(vowel2)] / 2
 

@@ -41,9 +41,8 @@ def analysis1(wave_file, std_text, timeout=30):
         'integrity_score': 0,  # 完整度分
         'speed': 0,  # 平均语速
         'speed_deviation': 0,  # 语速标准差
-        'volume1': 0,  # 音量1
-        'volume2': 0,  # 音量2
-        'volume3': 0  # 音量3
+        'volumes': 0,  # 音量列表
+
     }
     wave_file_processed = io.BytesIO()
     # 间隔
@@ -88,8 +87,8 @@ def analysis1(wave_file, std_text, timeout=30):
     result['speed'] = numpy.mean(speeds)
     result['speed_deviation'] = numpy.std(speeds)
     # volume
-    volume_list = feature_audio.get_volume(wave_file_processed, 3)
-    result['volume1'], result['volume2'], result['volume3'] = volume_list[0], volume_list[1], volume_list[2]
+    volume_list = feature_audio.get_volume(wave_file_processed, config.SEGMENTS_VOLUME1)
+    result['volumes'], result['volume2'], result['volume3'] = volume_list
     return result
 
 
@@ -125,12 +124,8 @@ def analysis2(wave_file, wordbase, timeout=30):
         'mainwords_num': [0, 1],
         'detailwords_nums': [],
         'keywords_num_main': [0, 1],
-        'speed1': 0,
-        'speed2': 0,
-        'speed3': 0,
-        'volume1': 0,
-        'volume2': 0,
-        'volume3': 0
+        'speeds': 0,
+        'volumes': 0,
     }
     # last_time 时长 未擦除的文件
     with wave.open(wave_file) as wav:
@@ -139,7 +134,7 @@ def analysis2(wave_file, wordbase, timeout=30):
     wave_file_processed = io.BytesIO()
     interval_list = utils.find_and_remove_intervals(wave_file, wave_file_processed)
     for (start, last) in interval_list:
-        if last > config.INTERVAL_TIME_THRESHOLD3 and start > 0 and start + last > result['last_time'] - 0.02:
+        if last > config.INTERVAL_TIME_THRESHOLD2 and start > 0 and start + last > result['last_time'] - 0.02:
             result['interval_num'] += 1
             result['interval_ratio'] += last
     if result['last_time'] == 0:
@@ -149,13 +144,12 @@ def analysis2(wave_file, wordbase, timeout=30):
     # 识别用擦除过的文件
     rcg_result_file = io.StringIO()
     # 分段识别
-    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=3)
+    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=config.SEGMENTS_RCG2)
     temp = json.loads(rcg_result_file.getvalue()).get('data')
-    if temp and len(temp) == 3:
-        rcg_text1, rcg_text2, rcg_text3 = temp[0], temp[1], temp[2]
+    if temp and len(temp) == config.SEGMENTS_RCG2:
+        rcg_text = ''.join(temp)
     else:
-        rcg_text1, rcg_text2, rcg_text3 = '', '', ''
-    rcg_text = rcg_text1 + rcg_text2 + rcg_text3
+        rcg_text = ''
     result['rcg_text'] = rcg_text
     # 字数
     result['num'] = feature_text.len_without_punctuation(rcg_text)
@@ -219,14 +213,13 @@ def analysis2(wave_file, wordbase, timeout=30):
             if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
                 x += 1
         result['detailwords_nums'].append([x, len(temp_l)])
-    # speed
+    # speeds
     if not result['last_time'] == 0:
-        result['speed1'] = 3 * feature_text.len_without_punctuation(rcg_text1) / result['last_time']
-        result['speed2'] = 3 * feature_text.len_without_punctuation(rcg_text2) / result['last_time']
-        result['speed3'] = 3 * feature_text.len_without_punctuation(rcg_text3) / result['last_time']
+        result['speeds'] = [
+            config.SEGMENTS_RCG2 * feature_text.len_without_punctuation(rcg_text_seg) / result['last_time'] for
+            rcg_text_seg in temp]
     # volume
-    volume_list = feature_audio.get_volume(wave_file_processed, 3)
-    result['volume1'], result['volume2'], result['volume3'] = volume_list[0], volume_list[1], volume_list[2]
+    result['volumes'] = feature_audio.get_volume(wave_file_processed, config.SEGMENTS_VOLUME2)
     return result
 
 
@@ -268,12 +261,8 @@ def analysis3(wave_file, wordbase, timeout=30):
         'transition_num': 0,
         'progressive_num': 0,
         'parallel_num': 0,
-        'speed1': 0,
-        'speed2': 0,
-        'speed3': 0,
-        'volume1': 0,
-        'volume2': 0,
-        'volume3': 0
+        'speeds': 0,
+        'volumes': 0,
     }
     # last_time 时长 未擦除的文件
     with wave.open(wave_file) as wav:
@@ -289,15 +278,14 @@ def analysis3(wave_file, wordbase, timeout=30):
         result['interval_ratio'] = 1
     else:
         result['interval_ratio'] /= result['last_time']
-    # 识别用擦除过的文件，显式指定分段为3
+    # 识别用擦除过的文件，显式指定分段
     rcg_result_file = io.StringIO()
-    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=3, timeout=timeout)
+    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=config.SEGMENTS_RCG3, timeout=timeout)
     temp = json.loads(rcg_result_file.getvalue()).get('data')
-    if temp and len(temp) == 3:
-        rcg_text1, rcg_text2, rcg_text3 = temp[0], temp[1], temp[2]
+    if temp and len(temp) == config.SEGMENTS_RCG3:
+        rcg_text = ''.join(temp)
     else:
-        rcg_text1, rcg_text2, rcg_text3 = '', '', ''
-    rcg_text = rcg_text1 + rcg_text2 + rcg_text3
+        rcg_text = ''
     result['rcg_text'] = rcg_text
     # 字数
     result['num'] = feature_text.len_without_punctuation(rcg_text)
@@ -342,12 +330,11 @@ def analysis3(wave_file, wordbase, timeout=30):
     result['parallel_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('parallel'))
     # speed
     if not result['last_time'] == 0:
-        result['speed1'] = 3 * feature_text.len_without_punctuation(rcg_text1) / result['last_time']
-        result['speed2'] = 3 * feature_text.len_without_punctuation(rcg_text2) / result['last_time']
-        result['speed3'] = 3 * feature_text.len_without_punctuation(rcg_text3) / result['last_time']
+        result['speeds'] = [
+            config.SEGMENTS_RCG3 * feature_text.len_without_punctuation(rcg_text_seg) / result['last_time'] for
+            rcg_text_seg in temp]
     # volume
-    volume_list = feature_audio.get_volume(wave_file_processed, 3)
-    result['volume1'], result['volume2'], result['volume3'] = volume_list[0], volume_list[1], volume_list[2]
+    result['volumes'] = feature_audio.get_volume(wave_file_processed, config.SEGMENTS_VOLUME3)
 
     return result
 

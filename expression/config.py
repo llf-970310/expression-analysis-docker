@@ -48,6 +48,11 @@ MONGODB_COLLECTION_APIS = 'api_accounts'
 
 # -------------- UAAM CONFIG --------------
 INTERVAL_TIME_THRESHOLD1 = 0.7  # 第一种题型的间隔时间阈值
-INTERVAL_TIME_THRESHOLD2 = 2.0  # 第二中题型的间隔时间阈值
+SEGMENTS_VOLUME1 = 3            # 第一种题型计算音量时分的段数
+INTERVAL_TIME_THRESHOLD2 = 2.0  # 第二种题型的间隔时间阈值
+SEGMENTS_RCG2 = 3               # 第二种识别时分的段数
+SEGMENTS_VOLUME2 = 3            # 第二种题型计算音量时分的段数
 INTERVAL_TIME_THRESHOLD3 = 2.0  # 第三种题型的间隔时间阈值
-MAIN_IDEA_WORD_COUNT = 30  # 计算主旨关键词是否在前面说到时所用的字数
+SEGMENTS_RCG3 = 3               # 第三种识别时分的段数
+SEGMENTS_VOLUME3 = 3            # 第三种题型计算音量时分的段数
+MAIN_IDEA_WORD_COUNT = 30       # 计算主旨关键词是否在前面说到时所用的字数
