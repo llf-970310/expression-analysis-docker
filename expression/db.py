@@ -42,13 +42,16 @@ class Mongo(object):
         logging.debug('wave_path: %s, question: %s' % (wave_path, question))
         return wave_path, question
 
-    def save_result(self, current_id, q_num, question_info, feature=None, score=None, status='finished'):
+    def save_result(self, current_id, q_num, question_info, feature=None, score=None, status='finished', stack=None):
         """ 根据给定的current_id和q_num，
         设置当前题目status为finished，保存分析结果feature{}，保存该题score，保存分析结束时间analysis_end_time
+        若当前题目处理出错，保存堆栈信息
         """
         if status == 'finished':
             question_info['feature'] = feature
             question_info['score'] = score
+        else:
+            question_info['stack'] = stack
         question_info['status'] = status
         question_info['analysis_end_time'] = datetime.datetime.utcnow()
         self.current.update_one({'_id': ObjectId(current_id)}, {'$set': {'questions.%s' % q_num: dict(question_info)}},
