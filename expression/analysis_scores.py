@@ -45,6 +45,7 @@ score_parameters = {
 }
 
 
+
 def score1(features):
     para = score_parameters['score1']
     tone_quality = para.get('tone_quality_total_score')
@@ -188,7 +189,7 @@ def score3(features):
         structure = 0
 
     # 逻辑评分
-    # 逻辑判断所⽤用四个词库分别是:因果，转折，并列，递进
+    # 逻辑判断所用四个词库分别是:因果，转折，并列，递进
     # 击中大于3类词库对应分数80
     # 击中2类词库对应分数75
     # 击中0-1类词库对应分数60

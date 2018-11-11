@@ -9,6 +9,13 @@ from pronunciation import in_pronunciation
 '''
 
 
+def is_all_zh(s):
+    for c in s:
+        if not ('\u4e00' <= c <= '\u9fa5'):
+            return False
+    return True
+
+
 def proportion(text):
     parts = ['n', 'f', 's', 't', 'nr', 'ns', 'nt', 'nw', 'nz', 'v', 'vd', 'vn', 'a', 'ad', 'an', 'd', 'm', 'q', 'r',
              'p', 'c', 'u', 'xc', 'w', 'ne']
@@ -141,6 +148,8 @@ def words(text, answers):
 def words_pronunciation(text, answers):
     n = 0
     for answer in answers:
+        if not is_all_zh(answer) and answer in text:
+            n += 1
         if in_pronunciation(word=answer, sentence=text):
             n += 1
     return n

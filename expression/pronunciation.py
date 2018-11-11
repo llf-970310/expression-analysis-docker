@@ -141,6 +141,8 @@ consonant_vowel_destination = [
 ]
 
 
+
+
 def is_pinyin(pinyin):
     if pinyin[:1] not in consonants:
         if pinyin[:2] not in consonants:
@@ -172,14 +174,14 @@ def consonant_and_vowel(pinyin):
 
 def destination(pinyin1, pinyin2):
     # pinyin1, pinyin2 = lazy_pinyin(character1)[0], lazy_pinyin(character2)[0]
-    if not is_pinyin(pinyin1):
-        if not is_pinyin(pinyin2):
-            return 0 if pinyin1 == pinyin2 else 1
-        else:
-            return 1
-    else:
-        if not is_pinyin(pinyin2):
-            return 1
+    # if not is_pinyin(pinyin1):
+    #     if not is_pinyin(pinyin2):
+    #         return 0 if pinyin1 == pinyin2 else 1
+    #     else:
+    #         return 1
+    # else:
+    #     if not is_pinyin(pinyin2):
+    #         return 1
     consonant1, vowel1 = consonant_and_vowel(pinyin1)
     consonant2, vowel2 = consonant_and_vowel(pinyin2)
     if consonant1 and consonant2:
@@ -271,7 +273,8 @@ def in_pronunciation(word, sentence):
 
 
 if __name__ == '__main__':
-    print(in_pronunciation('22%是', '22%是个好数字'))
+    x = '这道题说的是中国的沿海地区，经济发达地区面临电力短缺的问题，比如说像上海北京。及时行乐限电措施，安徽有470家企业，7月份以来也被限制停电，另外就是中国电网说了啊长沙。老地区的确是严重缺电的，而根据剑桥能源署的饿数据显示中国有10%的电力短缺很严重。'
+    print(in_pronunciation('7月', x))
     # write_excel_into_file()
     # print(consonant_destination[11][21],consonant_destination[21][11])
     # print(in_pronunciation('高铁', '中国糕点十分出名'))
