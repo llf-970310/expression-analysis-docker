@@ -11,56 +11,89 @@ Input:  第一题的特征列表
 Output: 百分制得分
 """
 
+score_parameters = {
+    'score1': {
+        'tone_quality_total_score': 100,
+        'clr_ratio_deduct_percent': 3,
+        'clr_ratio_deduct_range': 18,
+        'cpl_ratio_deduct_percent': 3,
+        'cpl_ratio_deduct_range': 18,
+        'ftl_ratio_deduct_percent': 3,
+        'ftl_ratio_deduct_range': 18,
+        'time_range_min': 30,
+        'time_range_max': 35,
+        'time_deduct_persecond': 3,
+        'time_deduct_range': 18,
+        'phone_score_deduct_per': 0.2,
+        'phone_score_deduct_start': 95,
+        'phone_score_deduct_range': 6,
+        'fluency_score_deduct_per': 0.2,
+        'fluency_score_deduct_start': 85,
+        'fluency_score_deduct_range': 6,
+        'tone_score_deduct_per': 0.2,
+        'tone_score_deduct_start': 90,
+        'tone_score_deduct_range': 6,
+        'integrity_score_deduct_per': 0.2,
+        'integrity_score_deduct_start': 99,
+        'integrity_score_deduct_range': 6,
+        'interval_num_deduct_per': 5,
+
+    },
+    'score2': {
+    },
+    'score3': {}
+}
+
 
 def score1(features):
-    tone_quality = 100
-    temp = 300 * (1 - features['clr_ratio'])
-    if temp > 18:
-        temp = 18
+    para = score_parameters['score1']
+    tone_quality = para.get('tone_quality_total_score')
+    temp = para['clr_ratio_deduct_percent'] * 100 * (1 - features['clr_ratio'])
+    if temp > para['clr_ratio_deduct_range']:
+        temp = para['clr_ratio_deduct_range']
     tone_quality -= temp
-    temp = 300 * (1 - features['cpl_ratio'])
-    if temp > 18:
-        temp = 18
+    temp = para['cpl_ratio_deduct_percent'] * 100 * (1 - features['cpl_ratio'])
+    if temp > para['cpl_ratio_deduct_range']:
+        temp = para['cpl_ratio_deduct_range']
     tone_quality -= temp
-    if features['last_time'] > 35:
-        temp = (features['last_time'] - 35) * 3
-        if temp > 18:
-            temp = 18
+    temp = para['ftl_ratio_deduct_percent'] * 100 * features['ftl_ratio']
+    if temp > para['ftl_ratio_deduct_range']:
+        temp = para['ftl_ratio_deduct_range']
+    tone_quality -= temp
+    if features['last_time'] > para['time_range_max']:
+        temp = (features['last_time'] - para['time_range_max']) * para['time_deduct_persecond']
+        if temp > para['time_deduct_range']:
+            temp = para['time_deduct_range']
         tone_quality -= temp
-    if features['last_time'] < 30:
-        temp = (30 - features['last_time']) * 3
-        if temp > 18:
-            temp = 18
+    if features['last_time'] < para['time_range_min']:
+        temp = (para['time_range_max'] - features['last_time']) * para['time_deduct_persecond']
+        if temp > para['time_deduct_range']:
+            temp = para['time_deduct_range']
         tone_quality -= temp
-    temp = 0.2 * (95 - features['phone_score'])
+    temp = para['phone_score_deduct_per'] * (para['phone_score_deduct_start'] - features['phone_score'])
     if temp >= 0:
-        if temp >= 6:
-            temp = 6
+        if temp >= para['phone_score_deduct_range']:
+            temp = para['phone_score_deduct_range']
         tone_quality -= temp
-    temp = 0.2 * (85 - features['fluency_score'])
+    temp = para['fluency_score_deduct_per'] * (para['fluency_score_deduct_start'] - features['fluency_score'])
     if temp >= 0:
-        if temp >= 6:
-            temp = 6
+        if temp >= para['fluency_score_deduct_range']:
+            temp = para['fluency_score_deduct_range']
         tone_quality -= temp
-    temp = 0.2 * (90 - features['tone_score'])
+    temp = para['tone_score_deduct_per'] * (para['tone_score_deduct_start'] - features['tone_score'])
     if temp >= 0:
-        if temp >= 6:
-            temp = 6
+        if temp >= para['tone_score_deduct_range']:
+            temp = para['tone_score_deduct_range']
         tone_quality -= temp
-    temp = 0.2 * (99 - features['integrity_score'])
+    temp = para['integrity_score_deduct_per'] * (para['integrity_score_deduct_start'] - features['integrity_score'])
     if temp >= 0:
-        if temp >= 6:
-            temp = 6
-        tone_quality -= temp
-    temp = 300 * features['ftl_ratio']
-    if temp > 0:
-        if temp > 18:
-            temp = 18
+        if temp >= para['integrity_score_deduct_range']:
+            temp = para['integrity_score_deduct_range']
         tone_quality -= temp
     if features['interval_num'] == 1:
-        tone_quality -= 5
+        tone_quality -= para['interval_num_deduct_per']
     if features['interval_num'] >= 2:
-        tone_quality -= 10
+        tone_quality -= para['interval_num_deduct_per'] * 2
     tone_quality *= features['clr_ratio']
     tone_quality *= features['cpl_ratio']
     if tone_quality < 0:
@@ -109,7 +142,14 @@ def score2(features):
     # 按照比例乘
     single_detail = detail / len(details_num)
     for temp in details_num:
-        detail -= single_detail * (1 - temp[0] / temp[1])
+        if temp[0] / temp[1] == 1:
+            pass
+        elif temp[0] / temp[1] >= 0.5:
+            detail -= single_detail * 0.2
+        elif temp[0] / temp[1] > 0:
+            detail -= single_detail * 0.4
+        else:
+            detail -= single_detail
     # 其他可用属性：前n秒关键词['keywords_num_main']
     if main_idea <= 0:
         main_idea = 0
