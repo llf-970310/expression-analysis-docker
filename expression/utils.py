@@ -180,7 +180,7 @@ def find_and_remove_intervals(wav_file, new_wave_file_path=None, threshold=0.4):
     vad = webrtcvad.Vad()
     vad.set_mode(2)
     duration = 20  # ms
-    MAX_SILENCE_CHUNKS = threshold * 1000 // duration  # 0.4s/20ms = 20
+    _MAX_SILENCE_CHUNKS = threshold * 1000 // duration  # 0.4s/20ms = 20
 
     if isinstance(wav_file, io.BytesIO):
         wav_file.seek(0)  # seek(0) before read
@@ -209,7 +209,7 @@ def find_and_remove_intervals(wav_file, new_wave_file_path=None, threshold=0.4):
                     new_wf_frames = np.append(new_wf_frames, np.frombuffer(chunk, dtype=np.int16))
             else:
                 stats += 1
-                if stats < MAX_SILENCE_CHUNKS and new_wave_file_path is not None:
+                if stats < _MAX_SILENCE_CHUNKS and new_wave_file_path is not None:
                     new_wf_frames = np.append(new_wf_frames, np.frombuffer(chunk, dtype=np.int16))
 
             chunk = f.readframes(frame_count)

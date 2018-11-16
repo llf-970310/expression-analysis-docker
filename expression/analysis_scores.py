@@ -45,7 +45,6 @@ score_parameters = {
 }
 
 
-
 def score1(features):
     para = score_parameters['score1']
     tone_quality = para.get('tone_quality_total_score')

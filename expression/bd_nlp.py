@@ -145,7 +145,7 @@ def wrongs_of_text(text):
         return 0
     result = client.ecnet(text)
     if 'error_code' in result.keys():
-        raise Exception('\nerror of article \n text: %s\nError code:' % (text) + str(
+        raise Exception('\nerror of article \n text: %s\nError code:' % text + str(
             result['error_code']) + '\nError Message:' + result['error_msg'])
     else:
         return len(result['item']['vec_fragment'])
@@ -160,7 +160,7 @@ def emotion(text):
         }
     result = client.emotion(text)
     if 'error_code' in result.keys():
-        raise Exception('\nerror of article \n text: %s\nError code:' % (text) + str(
+        raise Exception('\nerror of article \n text: %s\nError code:' % text + str(
             result['error_code']) + '\nError Message:' + result['error_msg'])
     else:
         return {

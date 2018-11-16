@@ -15,7 +15,7 @@ import utils
 import io
 
 
-def evl(file, std_text, timeout=600):
+def _evl(file, std_text, timeout=600):
     """ file can be a file path or an io.BytesIO """
     # text: 180bytes at max, or error10109 will be raised (limit for sentence, not for chapter)
     file_content = utils.read(file, 'rb')  # 以二进制格式只读打开文件读取，bytes
@@ -61,7 +61,7 @@ def evl_and_save(wave_file, std_txt_file, evl_file, framerate=16000, stop_on_fai
         utils.wav_8kto16k(wave_file, tmp_wav_path)
         wave_file = tmp_wav_path
     text = utils.read(std_txt_file)
-    result = evl(wave_file, text, timeout=timeout)
+    result = _evl(wave_file, text, timeout=timeout)
     tmp_evl_dict = json.loads(result)
     logging.debug("Evaluation: %s" % tmp_evl_dict.get('desc'))
     if tmp_evl_dict['code'] == '0':

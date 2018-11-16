@@ -66,7 +66,7 @@ class RcgCore(threading.Thread):
         return self.result
 
 
-def rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
+def _rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
     # 音频切段：
     segment_files = {}
     if isinstance(wav_file, io.BytesIO):
@@ -125,7 +125,7 @@ def rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
 
 
 def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_key=None, stop_on_failure=True):
-    rcg_result = rcg(wave_file, segments=segments, timeout=timeout, x_appid=x_appid, api_key=api_key)
+    rcg_result = _rcg(wave_file, segments=segments, timeout=timeout, x_appid=x_appid, api_key=api_key)
     if isinstance(rcg_result, str):
         rcg_dict = json.loads(rcg_result)
         logging.debug("Recognition: %s" % rcg_dict.get('data'))
@@ -162,7 +162,7 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_k
         if segments == 0:  # 自动分段的结果自动合并
             rcgs_dict[0]['data'] = ''.join(data_lst)
         else:  # 手动指定分段的保存各次识别结果为列表
-            rcgs_dict[0]['data'] = data_lst #结果列表不要转为字符串 tangdaye 11-04
+            rcgs_dict[0]['data'] = data_lst  # 结果列表不要转为字符串 tangdaye 11-04
         utils.write(rcg_fp, json.dumps(rcgs_dict[0], ensure_ascii=False), 'w')  # dump as utf-8
     if isinstance(rcg_fp, str):
         if not os.path.exists(rcg_fp):

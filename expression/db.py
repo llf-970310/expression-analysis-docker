@@ -6,28 +6,22 @@
 import datetime
 import logging
 import pymongo
-import config
+from config import MongoConfig
 from bson.objectid import ObjectId
 
 
 class Mongo(object):
     def __init__(self):
-        host = config.MONGODB_HOST
-        port = config.MONGODB_PORT
-        password = config.MONGODB_PASSWORD
-        username = config.MONGODB_USERNAME
-        authSource = config.MONGODB_DBNAME
-        authMechanism = config.MONGODB_AUTH_MECHANISM
-
-        if config.MONGODB_NEED_AUTH:
-            client = pymongo.MongoClient(host=host, port=port, username=username, password=password,
-                                         authSource=authSource, authMechanism=authMechanism)  # 创建数据库连接
+        if MongoConfig.auth:
+            client = pymongo.MongoClient(host=MongoConfig.host, port=MongoConfig.port, username=MongoConfig.user,
+                                         password=MongoConfig.password, authSource=MongoConfig.db,
+                                         authMechanism=MongoConfig.auth)  # 创建数据库连接
         else:
-            client = pymongo.MongoClient(host=host, port=port)  # 创建数据库连接
-        mdb = client[config.MONGODB_DBNAME]  # db
-        self.current = mdb[config.MONGODB_COLLECTION_CURRENT]  # collection
-        self.questions = mdb[config.MONGODB_COLLECTION_QUESTIONS]
-        self.api_accounts = mdb[config.MONGODB_COLLECTION_APIS]
+            client = pymongo.MongoClient(host=MongoConfig.host, port=MongoConfig.port)  # 创建数据库连接
+        mdb = client[MongoConfig.db]  # db
+        self.current = mdb[MongoConfig.current]  # collection
+        self.questions = mdb[MongoConfig.questions]
+        self.api_accounts = mdb[MongoConfig.api_accounts]
 
     def get_question_info(self, current_id, q_num):
         return self.current.find_one({"_id": ObjectId(current_id)})['questions'][q_num]

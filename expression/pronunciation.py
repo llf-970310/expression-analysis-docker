@@ -141,8 +141,6 @@ consonant_vowel_destination = [
 ]
 
 
-
-
 def is_pinyin(pinyin):
     if pinyin[:1] not in consonants:
         if pinyin[:2] not in consonants:
@@ -273,7 +271,8 @@ def in_pronunciation(word, sentence):
 
 
 if __name__ == '__main__':
-    x = '这道题说的是中国的沿海地区，经济发达地区面临电力短缺的问题，比如说像上海北京。及时行乐限电措施，安徽有470家企业，7月份以来也被限制停电，另外就是中国电网说了啊长沙。老地区的确是严重缺电的，而根据剑桥能源署的饿数据显示中国有10%的电力短缺很严重。'
+    x = '这道题说的是中国的沿海地区，经济发达地区面临电力短缺的问题，比如说像上海北京。及时行乐限电措施，安徽有470家企业，7月份以来' \
+        '也被限制停电，另外就是中国电网说了啊长沙。老地区的确是严重缺电的，而根据剑桥能源署的饿数据显示中国有10%的电力短缺很严重。'
     print(in_pronunciation('7月', x))
     # write_excel_into_file()
     # print(consonant_destination[11][21],consonant_destination[21][11])

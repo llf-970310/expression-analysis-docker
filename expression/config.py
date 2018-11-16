@@ -28,21 +28,21 @@ BAIDU_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
 
 
 # -------- MongoDB --------
-# MONGODB_HOST = '127.0.0.1'
-MONGODB_HOST = '172.17.0.1'  # docker0
-# MONGODB_HOST = '47.98.174.59'
-MONGODB_PORT = 27017  # 默认27017
-# {
-MONGODB_NEED_AUTH = True
-# MONGODB_NEED_AUTH = False
-MONGODB_USERNAME = 'iselab'
-MONGODB_PASSWORD = 'iselab###nju.cn'
-MONGODB_AUTH_MECHANISM = 'SCRAM-SHA-1'
-# }
-MONGODB_DBNAME = 'expression'
-MONGODB_COLLECTION_CURRENT = 'current'
-MONGODB_COLLECTION_QUESTIONS = 'questions'
-MONGODB_COLLECTION_APIS = 'api_accounts'
+class MongoConfig(object):
+    # 'host' = '127.0.0.1'
+    host = '172.17.0.1'  # docker0
+    # 'host' = '47.98.174.59'
+    port = 27017  # 默认27017
+    # {
+    # auth = None
+    auth = 'SCRAM-SHA-1'  # auth mechanism, set to None if auth is not needed
+    user = 'iselab'
+    password = 'iselab###nju.cn'
+    # }
+    db = 'expression'
+    current = 'current'
+    questions = 'questions'
+    api_accounts = 'api_accounts'
 # -------------------------
 
 
