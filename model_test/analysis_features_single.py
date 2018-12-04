@@ -120,8 +120,11 @@ def analysis2(wave_file, wordbase, rcg_file):
         'noun_frequency_3': 0,
         'noun_frequency_4': 0,
         'keywords_num': [0, 1],
+        'keywords': [],
         'mainwords_num': [0, 1],
+        'mainwords': [],
         'detailwords_nums': [],
+        'detailwords': [],
         'keywords_num_main': [0, 1],
         'speed1': 0,
         'speed2': 0,
@@ -205,6 +208,7 @@ def analysis2(wave_file, wordbase, rcg_file):
     for word in keywords:
         if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
             result['keywords_num'][0] += 1
+            result['keywords'].append(word)
         if feature_text.words_pronunciation(text=rcg_text[:config.MAIN_IDEA_WORD_COUNT], answers=word) >= 1:
             result['keywords_num_main'][0] += 1
     result['keywords_num'][1] = len(keywords)
@@ -212,13 +216,17 @@ def analysis2(wave_file, wordbase, rcg_file):
     for word in mainwords:
         if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
             result['mainwords_num'][0] += 1
+            result['mainwords'].append(word)
     result['mainwords_num'][1] = len(mainwords)
     for temp_l in detailwords:
         x = 0
+        temp_x = []
         for word in temp_l:
             if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
                 x += 1
+                temp_x.append(word)
         result['detailwords_nums'].append([x, len(temp_l)])
+        result['detailwords'].append(temp_x)
     # speed
     if not result['last_time'] == 0:
         result['speed1'] = 3 * feature_text.len_without_punctuation(rcg_text1) / result['last_time']
@@ -267,6 +275,7 @@ def analysis3(wave_file, wordbase, rcg_file):
         'transition_num': 0,
         'progressive_num': 0,
         'parallel_num': 0,
+        'words': [],
         'speed1': 0,
         'speed2': 0,
         'speed3': 0,
