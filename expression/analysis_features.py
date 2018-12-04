@@ -88,7 +88,7 @@ def analysis1(wave_file, std_text, timeout=30):
     result['speed_deviation'] = numpy.std(speeds)
     # volume
     volume_list = feature_audio.get_volume(wave_file_processed, config.SEGMENTS_VOLUME1)
-    result['volumes'], result['volume2'], result['volume3'] = volume_list
+    result['volumes'] = volume_list
     return result
 
 
@@ -121,8 +121,11 @@ def analysis2(wave_file, wordbase, timeout=30):
         'noun_frequency_3': 0,
         'noun_frequency_4': 0,
         'keywords_num': [0, 1],
+        'keywords': [],
         'mainwords_num': [0, 1],
+        'mainwords': [],
         'detailwords_nums': [],
+        'detailwords': [],
         'keywords_num_main': [0, 1],
         'speeds': 0,
         'volumes': 0,
@@ -199,6 +202,7 @@ def analysis2(wave_file, wordbase, timeout=30):
     for word in keywords:
         if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
             result['keywords_num'][0] += 1
+            result['keywords'].append(word)
         if feature_text.words_pronunciation(text=rcg_text[:config.MAIN_IDEA_WORD_COUNT], answers=word) >= 1:
             result['keywords_num_main'][0] += 1
     result['keywords_num'][1] = len(keywords)
@@ -206,14 +210,18 @@ def analysis2(wave_file, wordbase, timeout=30):
     for word in mainwords:
         if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
             result['mainwords_num'][0] += 1
+            result['mainwords'].append(word)
     result['mainwords_num'][1] = len(mainwords)
     for temp_l in detailwords:
         x = 0
+        temp_x = []
         for word in temp_l:
             if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
                 x += 1
+                temp_x.append(word)
         result['detailwords_nums'].append([x, len(temp_l)])
-    # speeds
+        result['detailwords'].append(temp_x)
+    # speed
     if not result['last_time'] == 0:
         result['speeds'] = [
             config.SEGMENTS_RCG2 * feature_text.len_without_punctuation(rcg_text_seg) / result['last_time'] for
