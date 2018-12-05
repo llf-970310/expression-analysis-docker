@@ -35,13 +35,14 @@ if __name__ == '__main__':
                 wave_file = os.path.join('/expression', question.get('wav_upload_url'))
                 rcg_text = question.get('feature').get('rcg_text')
                 wordbase = mongo.get_question_wordbase(question_id=question.get('q_id'))
-                analysis_result['features'] = analysis_features.analysis2(wave_file, wordbase, rcg_txt=rcg_text)
-                analysis_result['score_main'], analysis_result['score_detail'] = analysis_scores.score2(
-                    analysis_result['features']).values()
-                mongo.update_or_save_analysis(analysis_result)
-                time1 = time.time()
-                print('第%d个考试第%d道题录入完成,用时:%s秒' % (i, j, str(round(time1 - time0, 2))))
-                time0 = time1
+                if os.path.exists(wave_file):
+                    analysis_result['features'] = analysis_features.analysis2(wave_file, wordbase, rcg_txt=rcg_text)
+                    analysis_result['score_main'], analysis_result['score_detail'] = analysis_scores.score2(
+                        analysis_result['features']).values()
+                    mongo.update_or_save_analysis(analysis_result)
+                    time1 = time.time()
+                    print('第%d个考试第%d道题录入完成,用时:%s秒' % (i, j, str(round(time1 - time0, 2))))
+                    time0 = time1
                 j += 1
             if question.get('q_type') == 3:
                 continue
