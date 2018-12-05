@@ -35,7 +35,7 @@ if __name__ == '__main__':
                 wave_file = os.path.join('/expression', question.get('wav_upload_url'))
                 rcg_text = question.get('feature').get('rcg_text')
                 wordbase = mongo.get_question_wordbase(question_id=question.get('q_id'))
-                if os.path.exists(wave_file):
+                if os.path.exists(wave_file) and os.path.isfile(wave_file):
                     analysis_result['features'] = analysis_features.analysis2(wave_file, wordbase, rcg_txt=rcg_text)
                     analysis_result['score_main'], analysis_result['score_detail'] = analysis_scores.score2(
                         analysis_result['features']).values()
