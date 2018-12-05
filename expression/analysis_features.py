@@ -341,15 +341,15 @@ def analysis3(wave_file, wordbase, timeout=30):
     # sentence_num
     result['sentence_num'] = len(feature_text.divide_text_to_sentence(rcg_text))
     # 词库击中 谐音
-    result['sum-aspects_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('sum-aspects'))
-    result['aspects_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('aspects'))
-    result['example_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('example'))
-    result['opinion_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('opinion'))
-    result['sum_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('sum'))
-    result['cause-affect_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('cause-affect'))
-    result['transition_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('transition'))
-    result['progressive_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('progressive'))
-    result['parallel_num'] = feature_text.words_pronunciation(rcg_text, wordbase.get('parallel'))
+    result['sum-aspects_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('sum-aspects')))
+    result['aspects_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('aspects')))
+    result['example_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('example')))
+    result['opinion_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('opinion')))
+    result['sum_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('sum')))
+    result['cause-affect_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('cause-affect')))
+    result['transition_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('transition')))
+    result['progressive_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('progressive')))
+    result['parallel_num'] = len(feature_text.words_pronunciation(rcg_text, wordbase.get('parallel')))
     # speed
     if not result['last_time'] == 0:
         result['speeds'] = [
