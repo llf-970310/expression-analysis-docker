@@ -92,7 +92,7 @@ def analysis1(wave_file, std_text, timeout=30):
     return result
 
 
-def analysis2(wave_file, wordbase, timeout=30):
+def analysis2(wave_file, wordbase, timeout=30, rcg_txt=None):
     result = {
         'rcg_text': 0,
         'num': 0,
@@ -147,13 +147,22 @@ def analysis2(wave_file, wordbase, timeout=30):
     # 识别用擦除过的文件
     rcg_result_file = io.StringIO()
     # 分段识别
-    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=config.SEGMENTS_RCG2)
-    temp = json.loads(rcg_result_file.getvalue()).get('data')
-    if temp and len(temp) == config.SEGMENTS_RCG2:
-        rcg_text = ''.join(temp)
+    if rcg_txt:
+        rcg_text = rcg_txt
     else:
-        rcg_text = ''
+        xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=config.SEGMENTS_RCG2)
+        temp = json.loads(rcg_result_file.getvalue()).get('data')
+        if temp and len(temp) == config.SEGMENTS_RCG2:
+            rcg_text = ''.join(temp)
+        else:
+            rcg_text = ''
+        # speed
+        if not result['last_time'] == 0:
+            result['speeds'] = [
+                config.SEGMENTS_RCG2 * feature_text.len_without_punctuation(rcg_text_seg) / result['last_time'] for
+                rcg_text_seg in temp]
     result['rcg_text'] = rcg_text
+
     # 字数
     result['num'] = feature_text.len_without_punctuation(rcg_text)
     # 词性比例
@@ -200,32 +209,37 @@ def analysis2(wave_file, wordbase, timeout=30):
     # ]
     keywords, mainwords, detailwords = wordbase.get('keywords'), wordbase.get('mainwords'), wordbase.get('detailwords')
     for word in keywords:
-        if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
+        hitwords = feature_text.words_pronunciation(text=rcg_text, answers=word)
+        if len(hitwords) >= 1:
             result['keywords_num'][0] += 1
-            result['keywords'].append(word)
-        if feature_text.words_pronunciation(text=rcg_text[:config.MAIN_IDEA_WORD_COUNT], answers=word) >= 1:
+            result['keywords'].append(hitwords[0])
+        else:
+            result['keywords'].append('')
+        hitwords = feature_text.words_pronunciation(text=rcg_text[:config.MAIN_IDEA_WORD_COUNT], answers=word)
+        if len(hitwords) >= 1:
             result['keywords_num_main'][0] += 1
     result['keywords_num'][1] = len(keywords)
     result['keywords_num_main'][1] = len(keywords)
     for word in mainwords:
-        if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
+        hitwords = feature_text.words_pronunciation(text=rcg_text, answers=word)
+        if len(hitwords) >= 1:
             result['mainwords_num'][0] += 1
-            result['mainwords'].append(word)
+            result['mainwords'].append(hitwords[0])
+        else:
+            result['mainwords'].append('')
     result['mainwords_num'][1] = len(mainwords)
     for temp_l in detailwords:
         x = 0
         temp_x = []
         for word in temp_l:
-            if feature_text.words_pronunciation(text=rcg_text, answers=word) >= 1:
+            hitwords = feature_text.words_pronunciation(text=rcg_text, answers=word)
+            if len(hitwords) >= 1:
                 x += 1
-                temp_x.append(word)
+                temp_x.append(hitwords[0])
+            else:
+                temp_x.append('')
         result['detailwords_nums'].append([x, len(temp_l)])
         result['detailwords'].append(temp_x)
-    # speed
-    if not result['last_time'] == 0:
-        result['speeds'] = [
-            config.SEGMENTS_RCG2 * feature_text.len_without_punctuation(rcg_text_seg) / result['last_time'] for
-            rcg_text_seg in temp]
     # volume
     result['volumes'] = feature_audio.get_volume(wave_file_processed, config.SEGMENTS_VOLUME2)
     return result

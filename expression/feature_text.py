@@ -146,13 +146,14 @@ def words(text, answers):
 
 
 def words_pronunciation(text, answers):
-    n = 0
+    hitwords = []
+
     for answer in answers:
         if not is_all_zh(answer) and answer in text:
-            n += 1
+            hitwords.append(answer)
         if in_pronunciation(word=answer, sentence=text):
-            n += 1
-    return n
+            hitwords.append(answer)
+    return hitwords
 
 
 '''
