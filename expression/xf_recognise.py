@@ -94,6 +94,8 @@ def _rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
         rcg_core.start()
         rcg_core.join()
         result = rcg_core.get_result()
+        if result is None:
+            raise Exception('No recognition results returned')
         rcg_dict = json.loads(result)
         if rcg_dict.get('code') == '10105':
             print('IP错误, 请把下面的IP添加至讯飞云IP白名单并等待两分钟再试!!')
