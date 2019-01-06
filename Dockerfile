@@ -12,6 +12,10 @@ RUN apk add --no-cache make cmake gcc g++ gfortran && \
     apk del make cmake gcc g++ gfortran && \
     rm -rf /root/.cache/pip
 
+RUN pip install redis 'celery[redis]'  && \
+    pip install --upgrade https://github.com/celery/celery/tarball/master && \
+    rm -rf /root/.cache/pip
+
 COPY expression /expression
 WORKDIR expression
-ENTRYPOINT ["python3", "main.py"]
+ENTRYPOINT ["celery", "worker", "-A", "celery_tasks.app"]

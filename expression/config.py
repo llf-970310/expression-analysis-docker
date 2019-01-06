@@ -49,6 +49,13 @@ class MongoConfig(object):
 
 # -------------------------
 
+Celery_broker = 'redis://ise#expression@172.17.0.1:6379/0'  # docker0
+Celery_backend = 'redis://ise#expression@172.17.0.1:6379/0'  # docker0
+# Celery_broker = 'redis://47.98.174.59:6379/0'  # care firewall
+# Celery_backend = 'redis://47.98.174.59:6379/0'  # care firewall
+# Celery_broker = 'redis://localhost:6379/0'
+# Celery_backend = 'redis://localhost:6379/0'
+
 
 # -------------- UAAM CONFIG --------------
 INTERVAL_TIME_THRESHOLD1 = 0.7  # 第一种题型的间隔时间阈值
