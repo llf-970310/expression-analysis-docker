@@ -49,8 +49,8 @@ class MongoConfig(object):
 
 # -------------------------
 
-Celery_broker = 'redis://ise#expression@172.17.0.1:6379/0'  # docker0
-Celery_backend = 'redis://ise#expression@172.17.0.1:6379/0'  # docker0
+Celery_broker = 'redis://:ise_expression@172.17.0.1:6379/0'  # docker0
+Celery_backend = Celery_broker
 # Celery_broker = 'redis://47.98.174.59:6379/0'  # care firewall
 # Celery_backend = 'redis://47.98.174.59:6379/0'  # care firewall
 # Celery_broker = 'redis://localhost:6379/0'
