@@ -25,8 +25,8 @@ logging.basicConfig(level=logging.DEBUG,
 
 # 配置队列
 CELERY_QUEUES = (
-    Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3'),  # consumer_arguments={'x-priority': 10}),
-    Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12'),  # consumer_arguments={'x-priority': 1}),
+    Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', consumer_arguments={'x-priority': 10}),
+    Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', consumer_arguments={'x-priority': 1}),
     Queue('default', Exchange('default'), routing_key='default'),
 )  # consumer_arguments={'x-priority': 5}   数字越大，优先级越高
 
