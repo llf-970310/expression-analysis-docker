@@ -14,7 +14,10 @@ RUN apk add --no-cache make cmake gcc g++ gfortran && \
 
 RUN pip install redis 'celery[redis]'  && \
     pip install --upgrade https://github.com/celery/celery/tarball/master && \
+    pip install flower && \
     rm -rf /root/.cache/pip
+
+EXPOSE 50080
 
 COPY expression /expression
 WORKDIR expression
