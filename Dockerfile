@@ -22,4 +22,4 @@ EXPOSE 50080
 COPY expression /expression
 WORKDIR expression
 #ENTRYPOINT ["celery", "worker", "-A", "celery_tasks.app"]
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
