@@ -34,7 +34,6 @@ CELERY_QUEUES = (
 
 
 CELERY_ROUTES = {
-    'app.tasks.analysis_main': {'queue': 'default', 'routing_key': 'default'},
     'app.tasks.analysis_main_12': {'queue': 'for_question_type12', 'routing_key': 'for_question_type12'},
     'app.tasks.analysis_main_3': {'queue': 'for_question_type3', 'routing_key': 'for_question_type3'},
 }
