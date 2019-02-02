@@ -26,16 +26,17 @@ logging.basicConfig(level=logging.DEBUG,
 # 配置队列
 CELERY_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
-    Queue('for_question_type12', Exchange('for_question_type12'), routing_key='for_question_type12',
+    Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12',
           consumer_arguments={'x-priority': 1}),
-    Queue('for_question_type3', Exchange('for_question_type3'), routing_key='for_question_type3',
+    Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3',
           consumer_arguments={'x-priority': 10}),
 )  # consumer_arguments={'x-priority': 5}   数字越大，优先级越高
 
 
 CELERY_ROUTES = {
-    'app.tasks.analysis_main_12': {'queue': 'for_question_type12', 'routing_key': 'for_question_type12'},
-    'app.tasks.analysis_main_3': {'queue': 'for_question_type3', 'routing_key': 'for_question_type3'},
+    'app.tasks.analysis_main': {'queue': 'default', 'routing_key': 'default'},
+    'app.tasks.analysis_main_12': {'queue': 'for_q_type12', 'routing_key': 'for_q_type12'},
+    'app.tasks.analysis_main_3': {'queue': 'for_q_type3', 'routing_key': 'for_q_type3'},
 }
 
 
