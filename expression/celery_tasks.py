@@ -25,18 +25,32 @@ logging.basicConfig(level=logging.DEBUG,
 
 # 配置队列
 CELERY_QUEUES = (
+    Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3'),  # consumer_arguments={'x-priority': 10}),
+    Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12'),  # consumer_arguments={'x-priority': 1}),
     Queue('default', Exchange('default'), routing_key='default'),
-    Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12',
-          consumer_arguments={'x-priority': 1}),
-    Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3',
-          consumer_arguments={'x-priority': 10}),
 )  # consumer_arguments={'x-priority': 5}   数字越大，优先级越高
 
+# CELERY_ROUTES = {
+#     'app.tasks.analysis_main': {'queue': 'default', 'routing_key': 'default'},
+#     'app.tasks.analysis_main_12': {'queue': 'for_q_type12', 'routing_key': 'for_q_type12'},
+#     'app.tasks.analysis_main_3': {'queue': 'for_q_type3', 'routing_key': 'for_q_type3'},
+# }
 
+
+# CELERY_QUEUES = (
+#     Queue('high', Exchange('high'), routing_key='high'),
+#     Queue('normal', Exchange('normal'), routing_key='normal'),
+#     Queue('low', Exchange('low'), routing_key='low'),
+# )
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE = 'default'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
 CELERY_ROUTES = {
-    'app.tasks.analysis_main': {'queue': 'default', 'routing_key': 'default'},
-    'app.tasks.analysis_main_12': {'queue': 'for_q_type12', 'routing_key': 'for_q_type12'},
-    'app.tasks.analysis_main_3': {'queue': 'for_q_type3', 'routing_key': 'for_q_type3'},
+    # -- HIGH PRIORITY QUEUE -- #
+    'app.tasks.analysis_main_3': {'queue': 'for_q_type3'},
+    # -- LOW PRIORITY QUEUE -- #
+    'app.tasks.analysis_main_12': {'queue': 'for_q_type12'},
+    'app.tasks.analysis_main': {'queue': 'default'},
 }
 
 
