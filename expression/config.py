@@ -16,11 +16,14 @@ XF_EVL_APP_ID = '5b482315'  # Ordinary account
 XF_EVL_API_KEY = 'd5eabc8c4a8ea2edb03f8e486d7076b3'
 XF_RCG_APP_ID = '5b482315'
 XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
-BAIDU_APP_ID = '11624605'
-BAIDU_API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
-BAIDU_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
 
+BD_NLP_APP_ID = '11624605'
+BD_NLP_API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
+BD_NLP_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
 
+BD_RCG_APP_ID = '14709218'
+BD_RCG_API_KEY = 'jvjUfrfUGsV5ZFycgGHMplGo'
+BD_RCG_SECRET_KEY = 'saHNIUKAe9SsnxjGSHrmhGMGzaA2zYak'
 # --------------------------
 
 
@@ -45,9 +48,8 @@ class MongoConfig(object):
     questions = 'questions'
     api_accounts = 'api_accounts'
     users = 'users'
-
-
 # -------------------------
+
 
 Celery_broker = 'amqp://ise:ise_expression@localhost:5672//'
 # Celery_broker = 'redis://:ise_expression@172.17.0.1:6379/0'  # docker0

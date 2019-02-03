@@ -4,6 +4,7 @@
 # Created by dylanchu on 19-2-3
 
 from _xf_recognise import rcg_and_save
+# from _bd_recognise import rcg_and_save
 
 
 if __name__ == '__main__':
@@ -22,6 +23,6 @@ if __name__ == '__main__':
     interval_list = utils.find_and_remove_intervals('net_test.wav', wave_file_processed)
 
     rcg_fp = io.StringIO()
-    rcg_and_save(wave_file_processed, rcg_fp, segments=3, timeout=1, stop_on_failure=True)
+    rcg_and_save(wave_file_processed, rcg_fp, segments=3, timeout=10, stop_on_failure=True)
 
     print(utils.read(rcg_fp))

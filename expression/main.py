@@ -52,9 +52,9 @@ if __name__ == '__main__':
             config.XF_EVL_API_KEY = evl_account['key']
             config.XF_RCG_APP_ID = rcg_account['appid']
             config.XF_RCG_API_KEY = rcg_account['key']
-            config.BAIDU_APP_ID = baidu_account['appid']
-            config.BAIDU_API_KEY = baidu_account['api_key']
-            config.BAIDU_SECRET_KEY = baidu_account['secret_key']
+            config.BD_NLP_APP_ID = baidu_account['appid']
+            config.BD_NLP_API_KEY = baidu_account['api_key']
+            config.BD_NLP_SECRET_KEY = baidu_account['secret_key']
             logging.info('using EVL account: %s' % evl_account)
             logging.info('using RCG account: %s' % rcg_account)
             logging.info('using BAIDU account: %s' % baidu_account)
