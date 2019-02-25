@@ -2,7 +2,7 @@
 from aip import AipNlp
 import config
 
-client = AipNlp(config.BAIDU_APP_ID, config.BAIDU_API_KEY, config.BAIDU_SECRET_KEY)
+client = AipNlp(config.BD_NLP_APP_ID, config.BD_NLP_API_KEY, config.BD_NLP_SECRET_KEY)
 
 
 # 20000字节 词法分析

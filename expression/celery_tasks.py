@@ -2,35 +2,54 @@
 # coding: utf-8
 #
 # Created by dylanchu on 18-8-18
+
 import os
-
 import logging
-import sys
-
 import traceback
-
 import config
 import db
 import analysis_features
 import analysis_scores
 
+from celery import Celery
+from kombu import Queue, Exchange
+
+app = Celery('tasks', broker=config.Celery_broker, backend=config.Celery_backend)
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        raise Exception('arguments too less')
+# 配置队列
+CELERY_QUEUES = (
+    # Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', consumer_arguments={'x-priority': 10}),
+    # Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', consumer_arguments={'x-priority': 1}),
+    Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', queue_arguments={'x-max-priority': 100}),
+    Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', queue_arguments={'x-max-priority': 2}),
+    Queue('default', Exchange('default'), routing_key='default', queue_arguments={'x-max-priority': 1}),
+)  # consumer_arguments={'x-priority': 5}   数字越大，优先级越高
 
-    current_id = sys.argv[1]
-    q_num = sys.argv[2]
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 86400}
+
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE = 'default'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
+CELERY_ROUTES = {
+    # -- HIGH PRIORITY QUEUE -- #
+    'app.tasks.analysis_main_3': {'queue': 'for_q_type3'},
+    # -- LOW PRIORITY QUEUE -- #
+    'app.tasks.analysis_main_12': {'queue': 'for_q_type12'},
+    'app.tasks.analysis_main': {'queue': 'default'},
+}
+
+
+def analysis_main(current_id, q_num):
     # current_id = "5bcde8f30b9e037b1f67ba4e"
     # q_num = "2"
     logging.info("current_id: %s, q_num: %s" % (current_id, q_num))
 
     mongo = db.Mongo()
 
-    features = dict()
     feature = {}
     score = 0
     status = 'finished'
@@ -86,3 +105,14 @@ if __name__ == '__main__':
     mongo.save_result(current_id, q_num, q_info, feature, score, status=status, stack=tr)
     os.system('rm %s' % q_info['wav_temp_url'])
     os.system('rmdir %s > /dev/null 2>&1' % os.path.dirname(q_info['wav_temp_url']))
+    return status
+
+
+@app.task
+def analysis_main_12(current_id, q_num):
+    return analysis_main(current_id, q_num)
+
+
+@app.task
+def analysis_main_3(current_id, q_num):
+    return analysis_main(current_id, q_num)

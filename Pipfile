@@ -12,6 +12,7 @@ python-levenshtein = "*"
 pymongo = "*"
 pypinyin = "*"
 zhon = "*"
+celery = {extras = ["redis"], version = "*"}
 
 [dev-packages]
 

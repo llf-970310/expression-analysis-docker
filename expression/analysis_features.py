@@ -8,8 +8,8 @@
 # # do NOT use xf_evaluate.evl directly
 
 import io
-import xf_recognise
-import xf_evaluate
+import base_recognise
+import base_evaluate
 import feature_text
 import feature_audio
 import wave
@@ -53,11 +53,11 @@ def analysis1(wave_file, std_text, timeout=30):
     rcg_result_file = io.StringIO()
     evl_result_file = io.StringIO()
 
-    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout)
+    base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout)
     rcg_text = json.loads(rcg_result_file.getvalue()).get('data')  # todo 错误处理
     result['rcg_text'] = rcg_text
 
-    xf_evaluate.evl_and_save(wave_file_processed, temp_std_text_file, evl_result_file, framerate=8000, timeout=timeout)
+    base_evaluate.evl_and_save(wave_file_processed, temp_std_text_file, evl_result_file, framerate=8000, timeout=timeout)
     eva_result = evl_result_file.getvalue()
 
     # 字数
@@ -150,7 +150,7 @@ def analysis2(wave_file, wordbase, timeout=30, rcg_txt=None):
     if rcg_txt:
         rcg_text = rcg_txt
     else:
-        xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=config.SEGMENTS_RCG2)
+        base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=config.SEGMENTS_RCG2)
         temp = json.loads(rcg_result_file.getvalue()).get('data')
         if temp and len(temp) == config.SEGMENTS_RCG2:
             rcg_text = ''.join(temp)
@@ -302,7 +302,7 @@ def analysis3(wave_file, wordbase, timeout=30):
         result['interval_ratio'] /= result['last_time']
     # 识别用擦除过的文件，显式指定分段
     rcg_result_file = io.StringIO()
-    xf_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=config.SEGMENTS_RCG3, timeout=timeout)
+    base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=config.SEGMENTS_RCG3, timeout=timeout)
     temp = json.loads(rcg_result_file.getvalue()).get('data')
     if temp and len(temp) == config.SEGMENTS_RCG3:
         rcg_text = ''.join(temp)
