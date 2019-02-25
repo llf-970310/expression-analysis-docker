@@ -12,10 +12,14 @@ XF_EVL_CATEGORY = "read_chapter"
 XF_RCG_ENGINE_TYPE = "sms8k"
 
 # -------- ACCOUNTS -------- :just default accounts, overwritten in main.py
-XF_EVL_APP_ID = '5b482315'  # Ordinary account
-XF_EVL_API_KEY = 'd5eabc8c4a8ea2edb03f8e486d7076b3'
-XF_RCG_APP_ID = '5b482315'
-XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
+# XF_EVL_APP_ID = '5b482315'  # Ordinary account
+# XF_EVL_API_KEY = 'd5eabc8c4a8ea2edb03f8e486d7076b3'
+# XF_RCG_APP_ID = '5b482315'
+# XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
+XF_EVL_APP_ID = '5be52d5e'  # Ordinary account
+XF_EVL_API_KEY = 'fa338c461e95733b40ed5adfa2e3275f'
+XF_RCG_APP_ID = '5be52d5e'
+XF_RCG_API_KEY = 'bff9e2a998b6e91f9d28d51b0e8f0d86'
 BAIDU_APP_ID = '11624605'
 BAIDU_API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
 BAIDU_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
