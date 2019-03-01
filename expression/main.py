@@ -14,7 +14,6 @@ import db
 import analysis_features
 import analysis_scores
 
-
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
@@ -61,7 +60,12 @@ if __name__ == '__main__':
 
             Q_type = q['q_type']
             if Q_type == 1:
+                # 默认百度识别，如果要是用讯飞识别，注明参数，下同
+                # feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'], timeout=30,
+                #                                       rcg_interface='xunfei')
                 feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'], timeout=30)
+                # 默认百度识别评分，如果要用讯飞识别评分，注明参数，下同
+                # score = analysis_scores.score1(feature,rcg_interface='xunfei')
                 score = analysis_scores.score1(feature)
             elif Q_type == 2:
                 feature = analysis_features.analysis2(q_info['wav_temp_url'], q['wordbase'], timeout=30)

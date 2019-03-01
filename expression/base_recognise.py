@@ -3,14 +3,27 @@
 #
 # Created by dylanchu on 19-2-3
 
-from _xf_recognise import rcg_and_save
-# from _bd_recognise import rcg_and_save
+import _xf_recognise
+import _bd_recognise
+
+
+def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, stop_on_failure=True,
+                 x_appid=None, api_key=None,
+                 bd_appid=None, bd_api_key=None, bd_secret_key=None,
+                 rcg_interface='baidu'):
+    if rcg_interface == 'xunfei':
+        return _xf_recognise.rcg_and_save(wave_file, rcg_fp, segments, timeout, stop_on_failure=stop_on_failure,
+                                          x_appid=x_appid, api_key=api_key)
+    else:
+        return _bd_recognise.rcg_and_save(wave_file, rcg_fp, segments, timeout, stop_on_failure=stop_on_failure,
+                                          bd_appid=bd_appid, bd_api_key=bd_api_key, bd_secret_key=bd_secret_key)
 
 
 if __name__ == '__main__':
     import io
     import utils
     import logging
+
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 

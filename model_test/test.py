@@ -6,13 +6,13 @@ import os
 import sys
 import time
 
-dir_name = os.path.realpath(__file__).split('model_test')[0]
-sys.path.append(dir_name)
-sys.path.append(os.path.join(dir_name, 'expression'))
-sys.path.append(os.path.join(dir_name, 'model_test'))
-import expression.analysis_scores as analysis_scores
-import expression.analysis_features as analysis_features
-import expression.xf_recognise as xf_recognise
+# dir_name = os.path.realpath(__file__).split('model_test')[0]
+# sys.path.append(dir_name)
+# sys.path.append(os.path.join(dir_name, 'expression'))
+# sys.path.append(os.path.join(dir_name, 'model_test'))
+import analysis_scores as analysis_scores
+import analysis_features as analysis_features
+import _xf_recognise as xf_recognise
 import model_test.db as db
 import numpy as np
 import matplotlib.pyplot as plt
@@ -96,6 +96,12 @@ def compare():
     plt.show()
 
 
+def test_analysis_feature(file):
+    std_text = '表达能力是一种非常有用的技能，但重要性往往被人忽视。具备优秀的表达能力，能够让你在工作、学习、生活和情感上，获得很大的优势，还能提升自信心，增加个人魅力，是一种和世界建立连接的高效方式。能够清晰准确表达自己观点的人，更加容易脱颖而出，成为人群的焦点和领导者。在一个表达力没有得到普遍重视的环境里，先意识到这点的人，将会获得巨大优势。'
+    features = analysis_features.analysis1(wave_file=file, std_text=std_text, timeout=30)
+    print(features)
+
+
 if __name__ == '__main__':
-    path = '/Users/tangdaye/dataset/audio/luozhenyu/4.wav'
-    xunfei_rcg(path)
+    path = '/Users/tangdaye/git-project/exp-docker/expression/net_test.wav'
+    test_analysis_feature(path)

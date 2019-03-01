@@ -45,7 +45,7 @@ score_parameters = {
 }
 
 
-def score1(features):
+def score1(features, rcg_interface='baidu'):
     para = score_parameters['score1']
     tone_quality = para.get('tone_quality_total_score')
     temp = para['clr_ratio_deduct_percent'] * 100 * (1 - features['clr_ratio'])
@@ -70,26 +70,27 @@ def score1(features):
         if temp > para['time_deduct_range']:
             temp = para['time_deduct_range']
         tone_quality -= temp
-    temp = para['phone_score_deduct_per'] * (para['phone_score_deduct_start'] - features['phone_score'])
-    if temp >= 0:
-        if temp >= para['phone_score_deduct_range']:
-            temp = para['phone_score_deduct_range']
-        tone_quality -= temp
-    temp = para['fluency_score_deduct_per'] * (para['fluency_score_deduct_start'] - features['fluency_score'])
-    if temp >= 0:
-        if temp >= para['fluency_score_deduct_range']:
-            temp = para['fluency_score_deduct_range']
-        tone_quality -= temp
-    temp = para['tone_score_deduct_per'] * (para['tone_score_deduct_start'] - features['tone_score'])
-    if temp >= 0:
-        if temp >= para['tone_score_deduct_range']:
-            temp = para['tone_score_deduct_range']
-        tone_quality -= temp
-    temp = para['integrity_score_deduct_per'] * (para['integrity_score_deduct_start'] - features['integrity_score'])
-    if temp >= 0:
-        if temp >= para['integrity_score_deduct_range']:
-            temp = para['integrity_score_deduct_range']
-        tone_quality -= temp
+    if rcg_interface == 'xunfei':
+        temp = para['phone_score_deduct_per'] * (para['phone_score_deduct_start'] - features['phone_score'])
+        if temp >= 0:
+            if temp >= para['phone_score_deduct_range']:
+                temp = para['phone_score_deduct_range']
+            tone_quality -= temp
+        temp = para['fluency_score_deduct_per'] * (para['fluency_score_deduct_start'] - features['fluency_score'])
+        if temp >= 0:
+            if temp >= para['fluency_score_deduct_range']:
+                temp = para['fluency_score_deduct_range']
+            tone_quality -= temp
+        temp = para['tone_score_deduct_per'] * (para['tone_score_deduct_start'] - features['tone_score'])
+        if temp >= 0:
+            if temp >= para['tone_score_deduct_range']:
+                temp = para['tone_score_deduct_range']
+            tone_quality -= temp
+        temp = para['integrity_score_deduct_per'] * (para['integrity_score_deduct_start'] - features['integrity_score'])
+        if temp >= 0:
+            if temp >= para['integrity_score_deduct_range']:
+                temp = para['integrity_score_deduct_range']
+            tone_quality -= temp
     if features['interval_num'] == 1:
         tone_quality -= para['interval_num_deduct_per']
     if features['interval_num'] >= 2:
@@ -101,7 +102,7 @@ def score1(features):
     return {"quality": tone_quality}
 
 
-def score2(features):
+def score2(features, rcg_interface='baidu'):
     main_idea, detail = 0, 0
     mainidea_time_list = [(0, 5), (5, 10), (10, 15), (15, 20), (20, 30), (30, 10000)]
     mainidea_wordcount_list = [(0, 10), (10, 30), (30, 40), (40, 50), (50, 100), (100, 120), (120, 10000)]
@@ -158,7 +159,7 @@ def score2(features):
     return {"main": main_idea, "detail": detail}
 
 
-def score3(features):
+def score3(features, rcg_interface='baidu'):
     # 结构
     # 结构判断所⽤用五个词库分别是: 总分，分点，举例，亮观点，总结
     # 评分标准: 按是否击中每类词库算，不不管击中⼏几个词，击中就算⼀一次。⽐比如说回答击中了了总分⼦子

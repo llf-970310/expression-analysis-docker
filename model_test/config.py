@@ -12,19 +12,18 @@ XF_EVL_CATEGORY = "read_chapter"
 XF_RCG_ENGINE_TYPE = "sms8k"
 
 # -------- ACCOUNTS -------- :just default accounts, overwritten in main.py
-# XF_EVL_APP_ID = '5b482315'  # Ordinary account
-# XF_EVL_API_KEY = 'd5eabc8c4a8ea2edb03f8e486d7076b3'
-# XF_RCG_APP_ID = '5b482315'
-# XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
-XF_EVL_APP_ID = '5be52d5e'  # Ordinary account
-XF_EVL_API_KEY = 'fa338c461e95733b40ed5adfa2e3275f'
-XF_RCG_APP_ID = '5be52d5e'
-XF_RCG_API_KEY = 'bff9e2a998b6e91f9d28d51b0e8f0d86'
-BAIDU_APP_ID = '11624605'
-BAIDU_API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
-BAIDU_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
+XF_EVL_APP_ID = '5b482315'  # Ordinary account
+XF_EVL_API_KEY = 'd5eabc8c4a8ea2edb03f8e486d7076b3'
+XF_RCG_APP_ID = '5b482315'
+XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
 
+BD_NLP_APP_ID = '11624605'
+BD_NLP_API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
+BD_NLP_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
 
+BD_RCG_APP_ID = '14709218'
+BD_RCG_API_KEY = 'jvjUfrfUGsV5ZFycgGHMplGo'
+BD_RCG_SECRET_KEY = 'saHNIUKAe9SsnxjGSHrmhGMGzaA2zYak'
 # --------------------------
 
 
@@ -49,16 +48,23 @@ class MongoConfig(object):
     questions = 'questions'
     api_accounts = 'api_accounts'
     users = 'users'
-    analysis = 'analysis'
-
-
 # -------------------------
+
+
+Celery_broker = 'amqp://ise:ise_expression@localhost:5672//'
+# Celery_broker = 'redis://:ise_expression@172.17.0.1:6379/0'  # docker0
+Celery_backend = Celery_broker
+# Celery_broker = 'redis://47.98.174.59:6379/0'  # care firewall
+# Celery_backend = 'redis://47.98.174.59:6379/0'  # care firewall
+# Celery_broker = 'redis://localhost:6379/0'
+# Celery_backend = 'redis://localhost:6379/0'
 
 
 # -------------- UAAM CONFIG --------------
 INTERVAL_TIME_THRESHOLD1 = 0.7  # 第一种题型的间隔时间阈值
 SEGMENTS_VOLUME1 = 3  # 第一种题型计算音量时分的段数
 INTERVAL_TIME_THRESHOLD2 = 2.0  # 第二种题型的间隔时间阈值
+SEGMENTS_RCG1 = 3  # 第二种识别时分的段数
 SEGMENTS_RCG2 = 3  # 第二种识别时分的段数
 SEGMENTS_VOLUME2 = 3  # 第二种题型计算音量时分的段数
 INTERVAL_TIME_THRESHOLD3 = 2.0  # 第三种题型的间隔时间阈值

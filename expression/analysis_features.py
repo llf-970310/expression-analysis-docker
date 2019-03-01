@@ -25,9 +25,10 @@ Output: feature列表
 """
 
 
-def analysis1(wave_file, std_text, timeout=30):
+def analysis1(wave_file, std_text, timeout=30, rcg_interface='baidu'):
     result = {
         'rcg_text': '',
+        'rcg_interface': rcg_interface,
         'num': 0,  # 字数
         'last_time': 0,  # 长度
         'interval_num': 0,  # 超过0.7秒时间间隔数量
@@ -41,27 +42,15 @@ def analysis1(wave_file, std_text, timeout=30):
         'integrity_score': 0,  # 完整度分
         'speed': 0,  # 平均语速
         'speed_deviation': 0,  # 语速标准差
+        'speeds': [],
         'volumes': 0,  # 音量列表
-
     }
     wave_file_processed = io.BytesIO()
     # 间隔
     interval_list = utils.find_and_remove_intervals(wave_file, wave_file_processed)
-
     temp_std_text_file = io.StringIO()
     temp_std_text_file.write(std_text)
     rcg_result_file = io.StringIO()
-    evl_result_file = io.StringIO()
-
-    base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout)
-    rcg_text = json.loads(rcg_result_file.getvalue()).get('data')  # todo 错误处理
-    result['rcg_text'] = rcg_text
-
-    base_evaluate.evl_and_save(wave_file_processed, temp_std_text_file, evl_result_file, framerate=8000, timeout=timeout)
-    eva_result = evl_result_file.getvalue()
-
-    # 字数
-    result['num'] = feature_text.len_without_punctuation(rcg_text)
     # last_time 时长 未擦除的文件
     with wave.open(wave_file) as wav:
         result['last_time'] = wav.getnframes() / wav.getframerate()
@@ -73,26 +62,54 @@ def analysis1(wave_file, std_text, timeout=30):
         result['interval_ratio'] = 1
     else:
         result['interval_ratio'] /= result['last_time']
+    # 识别
+    rcg_text = ''
+    if rcg_interface == 'xunfei':
+        # rcg_text
+        base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, rcg_interface=rcg_interface)
+        rcg_text = json.loads(rcg_result_file.getvalue()).get('data')
+        result['rcg_text'] = rcg_text
+        # phone_score,fluency_score,tone_score,integrity_score
+        evl_result_file = io.StringIO()
+        base_evaluate.evl_and_save(wave_file_processed, temp_std_text_file, evl_result_file, framerate=8000,
+                                   timeout=timeout)
+        eva_result = evl_result_file.getvalue()
+        chapter_scores, simp_result = feature_audio.simplify_result(eva_result, category=config.XF_EVL_CATEGORY)
+        result['phone_score'], result['fluency_score'], result['tone_score'], result['integrity_score'] = \
+            float(chapter_scores['phone_score']), float(chapter_scores['fluency_score']), float(
+                chapter_scores['tone_score']), float(chapter_scores['integrity_score'])
+        # speeds
+        speeds = numpy.array([wc / time for (wc, time) in utils.get_sentence_durations(simp_result)])
+        result['speed'] = numpy.mean(speeds)
+        result['speed_deviation'] = numpy.std(speeds)
+    elif rcg_interface == 'baidu':
+        # rcg_text，百度需要分段
+        base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout,
+                                    segments=config.SEGMENTS_RCG1, rcg_interface=rcg_interface)
+        temp = json.loads(rcg_result_file.getvalue()).get('data')
+        if temp and len(temp) == config.SEGMENTS_RCG2:
+            rcg_text = ''.join(temp)
+        else:
+            rcg_text = ''
+        result['rcg_text'] = rcg_text
+        # speed
+        if not result['last_time'] == 0:
+            result['speeds'] = [
+                config.SEGMENTS_RCG2 * feature_text.len_without_punctuation(rcg_text_seg) / result['last_time'] for
+                rcg_text_seg in temp]
     # clr_ratio,ftl_ratio,cpl_ratio
     cfc = feature_audio.get_cfc(rcg_text, std_text)
     result['clr_ratio'], result['ftl_ratio'], result['cpl_ratio'] = cfc['clr_ratio'], cfc['ftl_ratio'], cfc[
         'cpl_ratio']
-    # phone_score,fluency_score,tone_score,integrity_score
-    chapter_scores, simp_result = feature_audio.simplify_result(eva_result, category=config.XF_EVL_CATEGORY)
-    result['phone_score'], result['fluency_score'], result['tone_score'], result['integrity_score'] = \
-        float(chapter_scores['phone_score']), float(chapter_scores['fluency_score']), float(
-            chapter_scores['tone_score']), float(chapter_scores['integrity_score'])
-    # speeds
-    speeds = numpy.array([wc / time for (wc, time) in utils.get_sentence_durations(simp_result)])
-    result['speed'] = numpy.mean(speeds)
-    result['speed_deviation'] = numpy.std(speeds)
+    # 字数
+    result['num'] = feature_text.len_without_punctuation(rcg_text)
     # volume
     volume_list = feature_audio.get_volume(wave_file_processed, config.SEGMENTS_VOLUME1)
     result['volumes'] = volume_list
     return result
 
 
-def analysis2(wave_file, wordbase, timeout=30, rcg_txt=None):
+def analysis2(wave_file, wordbase, timeout=30, rcg_txt=None, rcg_interface='baidu'):
     result = {
         'rcg_text': 0,
         'num': 0,
@@ -150,7 +167,8 @@ def analysis2(wave_file, wordbase, timeout=30, rcg_txt=None):
     if rcg_txt:
         rcg_text = rcg_txt
     else:
-        base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout, segments=config.SEGMENTS_RCG2)
+        base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout,
+                                    segments=config.SEGMENTS_RCG2, rcg_interface=rcg_interface)
         temp = json.loads(rcg_result_file.getvalue()).get('data')
         if temp and len(temp) == config.SEGMENTS_RCG2:
             rcg_text = ''.join(temp)
@@ -195,18 +213,6 @@ def analysis2(wave_file, wordbase, timeout=30, rcg_txt=None):
     # sentence_num
     result['sentence_num'] = len(feature_text.divide_text_to_sentence(rcg_text))
     # 词库击中，谐音
-    # [
-    #     ['美好', '幸福', '快乐', '灿烂', '美丽', '珍惜', '愉快', '渴望', '光辉', '盼望'],
-    #     ['城市', '郊区', '大都市', '卫星城', '小城镇', '周边地区'],
-    #     ['生活', '贫困', '家庭', '与世隔绝', '穷困', '境遇', '孤独']
-    # ],
-    # [
-    #     [
-    #         ['转型', '迈进', '年轻化', '转变', '持续发展', '迈向', '蜕变', '导向', '主导', '承接'],
-    #         ['2011'],
-    #         ['50']
-    #     ]
-    # ]
     keywords, mainwords, detailwords = wordbase.get('keywords'), wordbase.get('mainwords'), wordbase.get('detailwords')
     for word in keywords:
         hitwords = feature_text.words_pronunciation(text=rcg_text, answers=word)
@@ -245,7 +251,7 @@ def analysis2(wave_file, wordbase, timeout=30, rcg_txt=None):
     return result
 
 
-def analysis3(wave_file, wordbase, timeout=30):
+def analysis3(wave_file, wordbase, timeout=30, rcg_interface='baidu'):
     result = {
         'rcg_text': '',
         'num': 0,
@@ -302,7 +308,8 @@ def analysis3(wave_file, wordbase, timeout=30):
         result['interval_ratio'] /= result['last_time']
     # 识别用擦除过的文件，显式指定分段
     rcg_result_file = io.StringIO()
-    base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=config.SEGMENTS_RCG3, timeout=timeout)
+    base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=config.SEGMENTS_RCG3, timeout=timeout,
+                                rcg_interface=rcg_interface)
     temp = json.loads(rcg_result_file.getvalue()).get('data')
     if temp and len(temp) == config.SEGMENTS_RCG3:
         rcg_text = ''.join(temp)
