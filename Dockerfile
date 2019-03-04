@@ -19,6 +19,7 @@ RUN apk add --no-cache make cmake gcc g++ gfortran && \
 
 RUN pip install redis 'celery[redis]'  && \
     pip install --upgrade https://github.com/celery/celery/tarball/master && \
+    pip install tornado==5.1.1 && \
     pip install flower && \
     rm -rf /root/.cache/pip
 
