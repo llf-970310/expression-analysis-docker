@@ -1,6 +1,11 @@
 FROM python:3.6.7-alpine3.7
 MAINTAINER dylanchu <chdy.uuid@gmail.com>
 
+ARG ALI_REPO="http://mirrors.aliyun.com/alpine/v3.7/main/\nhttp://mirrors.aliyun.com/alpine/v3.7/community/"
+RUN echo -e $ALI_REPO > /etc/apk/repositories && \
+    pip config set global.index-url http://mirrors.aliyun.com/pypi/simple/ && \
+    pip config set global.trusted-host mirrors.aliyun.com
+
 RUN apk add --no-cache tzdata && \
     cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     rm /usr/share/zoneinfo/ -rf && \
