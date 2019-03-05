@@ -23,6 +23,8 @@ RUN pip install redis 'celery[redis]'  && \
     pip install flower && \
     rm -rf /root/.cache/pip
 
+RUN pip uninstall -y baidu-aip
+
 EXPOSE 50080
 
 COPY expression /expression
