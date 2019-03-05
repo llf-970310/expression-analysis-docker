@@ -14,10 +14,11 @@ class AipSpeech(AipBase):
         Aip Speech
     """
 
-    __asrUrl = 'http://vop.baidu.com/server_api'
-    # __asrUrl = 'http://vop.baidubce.com/server_api'
+    # __asrUrl = 'http://vop.baidu.com/server_api'
+    __asrUrl = 'http://vop.baidubce.com/server_api'
 
-    __ttsUrl = 'http://tsn.baidu.com/text2audio'
+    # __ttsUrl = 'http://tsn.baidu.com/text2audio'
+    __ttsUrl = 'http://tsn.baidubce.com/text2audio'
 
     def _isPermission(self, authObj):
         """
