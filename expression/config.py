@@ -51,13 +51,11 @@ class MongoConfig(object):
 # -------------------------
 
 
-Celery_broker = 'amqp://ise:ise_expression@expression.iselab.cn:5672//'
+# Celery_broker = 'amqp://ise:ise_expression@localhost:5672//'
+Celery_broker = 'redis://:ise_expression@47.98.174.59:6379/0'  # care firewall
 # Celery_broker = 'redis://:ise_expression@172.17.0.1:6379/0'  # docker0
-Celery_backend = Celery_broker
-# Celery_broker = 'redis://47.98.174.59:6379/0'  # care firewall
-# Celery_backend = 'redis://47.98.174.59:6379/0'  # care firewall
 # Celery_broker = 'redis://localhost:6379/0'
-# Celery_backend = 'redis://localhost:6379/0'
+Celery_backend = Celery_broker
 
 
 # -------------- UAAM CONFIG --------------
