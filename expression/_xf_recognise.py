@@ -55,11 +55,15 @@ class RcgCore(object):  # 不再使用线程
                     'X-Param': x_param,
                     'X-CheckSum': x_checksum}
         req = urllib.request.Request(url=url, data=body.encode('utf-8'), headers=x_header, method='POST')
-        try:
-            rst = urllib.request.urlopen(req, timeout=self.timeout)
-            self.result = rst.read().decode('utf-8')
-        except Exception as e:
-            logging.warning(e)
+        max_retry = config.RCG_MAX_RETRY
+        for retry in range(max_retry + 1):
+            try:
+                rst = urllib.request.urlopen(req, timeout=self.timeout)
+                self.result = rst.read().decode('utf-8')
+                break
+            except Exception as e:
+                logging.warning('RcgCore: on retry %d:' % retry)
+                logging.warning(e)
 
     def get_result(self):
         return self.result

@@ -60,46 +60,41 @@ def analysis_main(current_id, q_num):
     q_info = mongo.get_question_info(current_id, q_num)
     wf, q = mongo.get_wave_path_and_question(q_info)
 
-    tries = 0
-    while tries <= 3:
-        try:
-            # get api accounts
-            evl_account = mongo.get_evl_account()
-            rcg_account = mongo.get_rcg_account()
-            baidu_account = mongo.get_baidu_account()
-            config.XF_EVL_APP_ID = evl_account['appid']
-            config.XF_EVL_API_KEY = evl_account['key']
-            config.XF_RCG_APP_ID = rcg_account['appid']
-            config.XF_RCG_API_KEY = rcg_account['key']
-            config.BD_NLP_APP_ID = baidu_account['appid']
-            config.BD_NLP_API_KEY = baidu_account['api_key']
-            config.BD_NLP_SECRET_KEY = baidu_account['secret_key']
-            logging.info('using EVL account: %s' % evl_account)
-            logging.info('using RCG account: %s' % rcg_account)
-            logging.info('using BAIDU account: %s' % baidu_account)
+    try:
+        # get api accounts
+        evl_account = mongo.get_evl_account()
+        rcg_account = mongo.get_rcg_account()
+        baidu_account = mongo.get_baidu_account()
+        config.XF_EVL_APP_ID = evl_account['appid']
+        config.XF_EVL_API_KEY = evl_account['key']
+        config.XF_RCG_APP_ID = rcg_account['appid']
+        config.XF_RCG_API_KEY = rcg_account['key']
+        config.BD_NLP_APP_ID = baidu_account['appid']
+        config.BD_NLP_API_KEY = baidu_account['api_key']
+        config.BD_NLP_SECRET_KEY = baidu_account['secret_key']
+        logging.info('using EVL account: %s' % evl_account)
+        logging.info('using RCG account: %s' % rcg_account)
+        logging.info('using BAIDU account: %s' % baidu_account)
 
-            Q_type = q['q_type']
-            if Q_type == 1:
-                feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'], timeout=30)
-                score = analysis_scores.score1(feature)
-            elif Q_type == 2:
-                feature = analysis_features.analysis2(q_info['wav_temp_url'], q['wordbase'], timeout=30)
-                score = analysis_scores.score2(feature)
-            elif Q_type == 3:
-                feature = analysis_features.analysis3(q_info['wav_temp_url'], q['wordbase'], timeout=30)
-                score = analysis_scores.score3(feature)
-            else:
-                logging.error('Invalid question type: %s' % Q_type)
-            tries = 9999
-            status = 'finished'
-            tr = None
-            break
-        except Exception as e:
-            tr = traceback.format_exc()
-            print(tr)
-            logging.error('on retry %s: %s' % (tries, e))
-            status = 'error'
-            tries += 1
+        Q_type = q['q_type']
+        if Q_type == 1:
+            feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'], timeout=30)
+            score = analysis_scores.score1(feature)
+        elif Q_type == 2:
+            feature = analysis_features.analysis2(q_info['wav_temp_url'], q['wordbase'], timeout=30)
+            score = analysis_scores.score2(feature)
+        elif Q_type == 3:
+            feature = analysis_features.analysis3(q_info['wav_temp_url'], q['wordbase'], timeout=30)
+            score = analysis_scores.score3(feature)
+        else:
+            logging.error('Invalid question type: %s' % Q_type)
+        status = 'finished'
+        tr = None
+    except Exception as e:
+        tr = traceback.format_exc()
+        print(tr)
+        logging.error('error happened during process task: %s' % e)
+        status = 'error'
 
     logging.info('Score: %s' % score)
     mongo.save_result(current_id, q_num, q_info, feature, score, status=status, stack=tr)

@@ -5,7 +5,6 @@
 
 import logging
 import os
-import threading
 import json
 import wave
 from math import ceil
@@ -31,27 +30,31 @@ class RcgCore(object):  # 不再使用线程
     def run(self):
         file_content = utils.read(self.wav_file, 'rb')
         # print(len(file_content))
-        try:
-            # 注明pcm而非wav，免去再次百度转换（可在一定情况下避免err3301：音质问题）
-            rst = self.aip_speech.asr(file_content, 'pcm', 8000,
-                                      {'dev_pid': '1537', 'lan': 'zh'})  # 1536是str，不是数字（报验证错误）
-            """
-           dev_pid	语言	                     模型      是否有标点	    备注
-            1536	普通话(支持简单的英文识别)	搜索模型	    无标点	支持自定义词库
-            1537	普通话(纯中文识别)        输入法模型	有标点	不支持自定义词库
-            1737	英语		                            无标点	不支持自定义词库
-            1637	粤语		                            有标点	不支持自定义词库
-            1837	四川话		                        有标点	不支持自定义词库
-            1936	普通话远场	            远场模型	    有标点	不支持 
-            """
-            if rst['err_no'] != 0:
-                logging.error('识别错误：%s' % rst.get('err_msg'))
-                logging.error(rst)
-                raise Exception('Recognition failed!')
-            self.result = rst['result'][0]  # rcg text
-            logging.debug("Recognition: %s" % self.result)
-        except Exception as e:
-            logging.warning(e)
+        max_retry = config.RCG_MAX_RETRY
+        for retry in range(max_retry + 1):
+            try:
+                # 注明pcm而非wav，免去再次百度转换（可在一定情况下避免err3301：音质问题）
+                rst = self.aip_speech.asr(file_content, 'pcm', 8000,
+                                          {'dev_pid': '1537', 'lan': 'zh'})  # 1536是str，不是数字（报验证错误）
+                """
+               dev_pid	语言	                     模型      是否有标点	    备注
+                1536	普通话(支持简单的英文识别)	搜索模型	    无标点	支持自定义词库
+                1537	普通话(纯中文识别)        输入法模型	有标点	不支持自定义词库
+                1737	英语		                            无标点	不支持自定义词库
+                1637	粤语		                            有标点	不支持自定义词库
+                1837	四川话		                        有标点	不支持自定义词库
+                1936	普通话远场	            远场模型	    有标点	不支持 
+                """
+                if rst['err_no'] != 0:
+                    logging.error('识别错误：%s' % rst.get('err_msg'))
+                    logging.error(rst)
+                    raise Exception('Recognition failed!')
+                self.result = rst['result'][0]  # rcg text
+                logging.debug("Recognition: %s" % self.result)
+                break
+            except Exception as e:
+                logging.warning('RcgCore: on retry %d:' % retry)
+                logging.warning(e)
 
     def get_result(self):
         return self.result

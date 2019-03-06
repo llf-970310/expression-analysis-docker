@@ -3,6 +3,11 @@
 #
 # Created by dylanchu on 18-7-17
 
+
+# -------- RCG --------
+RCG_MAX_RETRY = 3
+
+
 # XUNFEI API interface
 XF_RCG_URL = 'https://api.xfyun.cn/v1/service/v1/iat'
 XF_EVL_URL = 'https://api.xfyun.cn/v1/service/v1/ise'

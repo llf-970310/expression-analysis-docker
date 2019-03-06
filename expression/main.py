@@ -41,7 +41,7 @@ if __name__ == '__main__':
     wf, q = mongo.get_wave_path_and_question(q_info)
 
     tries = 0
-    while tries <= 3:
+    while tries <= 0:
         try:
             # get api accounts
             evl_account = mongo.get_evl_account()
