@@ -17,9 +17,8 @@ from aip import AipSpeech
 aip_speech = AipSpeech(config.BD_RCG_APP_ID, config.BD_RCG_API_KEY, config.BD_RCG_SECRET_KEY)
 
 
-class RcgCore(threading.Thread):
+class RcgCore(object):  # 不再使用线程
     def __init__(self, wav_file, timeout=600, bd_appid=None, bd_api_key=None, bd_secret_key=None):
-        threading.Thread.__init__(self)
         self.wav_file = wav_file
         self.result = None
         if bd_appid and bd_api_key and bd_secret_key:
@@ -82,26 +81,19 @@ def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_s
                     seg.writeframes(seg_data)
     # 识别：
     if segments == 1:  # return is a 'str' object
-        rcg_core = RcgCore(wav_file, timeout, bd_appid, bd_api_key, bd_secret_key)
-        rcg_core.start()
-        rcg_core.join()
-        rcg_text = rcg_core.get_result()
+        job = RcgCore(wav_file, timeout, bd_appid, bd_api_key, bd_secret_key)
+        job.run()
+        rcg_text = job.get_result()
         if rcg_text is None:
             raise Exception('No recognition results returned')
         return rcg_text
     if segments >= 2:  # return is a 'dict' object
-        threads = dict()
         results = {}
 
         for i in range(segments):
-            threads[i] = RcgCore(segment_files[i], timeout, bd_appid, bd_api_key, bd_secret_key)
-            threads[i].start()
-
-        for i in range(segments):
-            threads[i].join()
-
-        for i in range(segments):
-            results[i] = threads[i].get_result()
+            job = RcgCore(segment_files[i], timeout, bd_appid, bd_api_key, bd_secret_key)
+            job.run()
+            results[i] = job.get_result()
         logging.debug('Multi-threads rcg results: %s' % results)
         return results
 
@@ -148,6 +140,8 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, bd_appid=None, bd_a
 
 
 if __name__ == '__main__':
+    import time
+    time1 = time.time()
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
@@ -163,3 +157,4 @@ if __name__ == '__main__':
     rcg_and_save(wave_file_processed, rcg_fp, segments=3, timeout=10, stop_on_failure=True)
 
     print(utils.read(rcg_fp))
+    print(time.time() - time1)

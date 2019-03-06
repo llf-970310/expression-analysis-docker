@@ -20,9 +20,8 @@ import io
 import utils
 
 
-class RcgCore(threading.Thread):
+class RcgCore(object):  # 不再使用线程
     def __init__(self, wav_file, timeout=600, x_appid=None, api_key=None):
-        threading.Thread.__init__(self)
         self.wav_file = wav_file
         self.timeout = timeout
         self.x_appid = x_appid
@@ -60,7 +59,7 @@ class RcgCore(threading.Thread):
             rst = urllib.request.urlopen(req, timeout=self.timeout)
             self.result = rst.read().decode('utf-8')
         except Exception as e:
-            logging.warn(e)
+            logging.warning(e)
 
     def get_result(self):
         return self.result
@@ -90,10 +89,9 @@ def _rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
                     seg.writeframes(seg_data)
     # 识别：
     if segments == 1:  # return is a 'str' object
-        rcg_core = RcgCore(wav_file, timeout, x_appid, api_key)
-        rcg_core.start()
-        rcg_core.join()
-        result = rcg_core.get_result()
+        job = RcgCore(wav_file, timeout, x_appid, api_key)
+        job.run()
+        result = job.get_result()
         if result is None:
             raise Exception('No recognition results returned')
         rcg_dict = json.loads(result)
@@ -104,18 +102,12 @@ def _rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
             raise Exception('RCG IP Error')
         return result
     if segments >= 2:  # return is a 'dict' object
-        threads = dict()
         results = {}
 
         for i in range(segments):
-            threads[i] = RcgCore(segment_files[i], timeout, x_appid, api_key)
-            threads[i].start()
-
-        for i in range(segments):
-            threads[i].join()
-
-        for i in range(segments):
-            results[i] = threads[i].get_result()
+            job = RcgCore(segment_files[i], timeout, x_appid, api_key)
+            job.run()
+            results[i] = job.get_result()
             rcg_dict = json.loads(results[i])
             if rcg_dict.get('code') == '10105':
                 print('IP错误, 请把下面的IP添加至讯飞云IP白名单并等待两分钟再试!!')
@@ -173,6 +165,8 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_k
 
 
 if __name__ == '__main__':
+    import time
+    time1 = time.time()
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
@@ -188,3 +182,4 @@ if __name__ == '__main__':
     rcg_and_save(wave_file_processed, rcg_fp, segments=3, timeout=1, stop_on_failure=True)
 
     print(utils.read(rcg_fp))
+    print(time.time() - time1)
