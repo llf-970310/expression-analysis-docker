@@ -34,6 +34,7 @@ class RcgCore(object):  # 不再使用线程
         for retry in range(max_retry + 1):
             try:
                 # 注明pcm而非wav，免去再次百度转换（可在一定情况下避免err3301：音质问题）
+                # 使用1537-8k 30qps测试
                 rst = self.aip_speech.asr(file_content, 'pcm', 8000,
                                           {'dev_pid': '1537', 'lan': 'zh'})  # 1536是str，不是数字（报验证错误）
                 """
