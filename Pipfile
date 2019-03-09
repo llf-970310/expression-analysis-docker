@@ -13,6 +13,7 @@ pymongo = "*"
 pypinyin = "*"
 zhon = "*"
 celery = {extras = ["redis"], version = "*"}
+pycrypto = "*"
 
 [dev-packages]
 
