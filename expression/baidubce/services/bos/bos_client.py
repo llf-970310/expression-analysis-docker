@@ -719,7 +719,7 @@ class BosClient(BceBaseClient):
             if fp is not None:
                 fp.close()
 
-    @required(bucket=str, key=str, file_name=str)
+    @required(bucket=str, key=str, file_name=(str, io.StringIO, io.BytesIO))
     def put_object_from_file(self, bucket, key, file_name,
                              content_length=None,
                              content_md5=None,
@@ -739,7 +739,7 @@ class BosClient(BceBaseClient):
         :type key: string
         :param key: None
 
-        :type file_name: string
+        :type file_name: string, StringIO, BytesIO
         :param file_name: None
 
         :type options: dict
@@ -747,7 +747,9 @@ class BosClient(BceBaseClient):
         :return:
             **HttpResponse Class**
         """
-        fp = open(file_name, 'rb')
+        fp = file_name
+        if isinstance(file_name, str):
+            fp = open(file_name, 'rb')
         try:
             if content_length is None:
                 fp.seek(0, os.SEEK_END)

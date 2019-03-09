@@ -55,7 +55,9 @@ def get_md5_from_fp(fp, offset=0, length=-1, buf_size=8192):
         buf = fp.read(bytes_to_read)
         if not buf:
             break
-        md5.update(buf.encode(baidubce.DEFAULT_ENCODING))
+        if not isinstance(buf, bytes):
+            buf = buf.encode(baidubce.DEFAULT_ENCODING)
+        md5.update(buf)
         if length > 0:
             length -= len(buf)
         if length == 0:
