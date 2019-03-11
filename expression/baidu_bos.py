@@ -17,11 +17,24 @@ bos_host = config.BD_BOS_HOST
 bucket_name = config.BD_BOS_BUCKET
 
 
-logger = logging.getLogger("baidubce.http.bce_http_client")
-logger.setLevel(logging.DEBUG)
+def get_file(path, location='bos'):
+    if location == 'bos':
+        logger = logging.getLogger("baidubce.http.bce_http_client")
+        logger.setLevel(logging.DEBUG)
 
-bos_config = BceClientConfiguration(credentials=BceCredentials(access_key_id, secret_access_key), endpoint=bos_host)
-bos_client = BosClient(bos_config)
+        bos_config = BceClientConfiguration(credentials=BceCredentials(access_key_id, secret_access_key),
+                                            endpoint=bos_host)
+        bos_client = BosClient(bos_config)
+        content = bos_client.get_object_as_string(bucket_name=bucket_name, key=path)
+
+        audio = io.BytesIO(content)  # this would auto seek(0)
+        return audio
+    else:
+        return path
+
+
+if __name__ == '__main__':
+    get_file('/audio/batchtest/1.wav')
 
 # response = bos_client.list_buckets()
 # for bucket in response.buckets:
@@ -38,13 +51,15 @@ bos_client = BosClient(bos_config)
 # f2 = io.StringIO('hello world')
 # ret = bos_client.put_object_from_file(bucket='ise-expression-bos', key='/test.txt', file_name=f2)
 # print(ret)
+# logger = logging.getLogger("baidubce.http.bce_http_client")
+# logger.setLevel(logging.DEBUG)
+#
+# bos_config = BceClientConfiguration(credentials=BceCredentials(access_key_id, secret_access_key),
+#                                     endpoint=bos_host)
+# bos_client = BosClient(bos_config)
+# content = bos_client.get_object_as_string(bucket_name=bucket_name, key='/audio/batchtest/1.wav')
+#
+# print('cc' + str(type(content)))
+# print(content)
 
-content = bos_client.get_object_as_string(bucket_name=bucket_name, key='/audio/batchtest/1.wav')
-print(type(content))
-print(content)
-
-audio = io.BytesIO(content)  # this would auto seek(0)
-import wave
-
-with wave.open(audio, 'rb') as f:
-    print(f.getparams())
+# audio = io.BytesIO(content)  # this would auto seek(0)

@@ -13,6 +13,7 @@ import config
 import db
 import analysis_features
 import analysis_scores
+import baidu_bos
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
@@ -59,19 +60,21 @@ if __name__ == '__main__':
             logging.info('using BAIDU account: %s' % baidu_account)
 
             Q_type = q['q_type']
+            # 文件路径应该由参数上传，暂时用local
+            path = baidu_bos.get_file(q_info['wav_temp_url'], location='local')
             if Q_type == 1:
                 # 默认百度识别，如果要是用讯飞识别，注明参数，下同
-                # feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'], timeout=30,
+                # feature = analysis_features.analysis1(path, q['text'], timeout=30,
                 #                                       rcg_interface='xunfei')
-                feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'], timeout=30)
+                feature = analysis_features.analysis1(path, q['text'], timeout=30)
                 # 默认百度识别评分，如果要用讯飞识别评分，注明参数，下同
                 # score = analysis_scores.score1(feature,rcg_interface='xunfei')
                 score = analysis_scores.score1(feature)
             elif Q_type == 2:
-                feature = analysis_features.analysis2(q_info['wav_temp_url'], q['wordbase'], timeout=30)
+                feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
                 score = analysis_scores.score2(feature)
             elif Q_type == 3:
-                feature = analysis_features.analysis3(q_info['wav_temp_url'], q['wordbase'], timeout=30)
+                feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
                 score = analysis_scores.score3(feature)
             else:
                 logging.error('Invalid question type: %s' % Q_type)

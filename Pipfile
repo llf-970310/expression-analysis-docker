@@ -6,14 +6,15 @@ name = "pypi"
 
 [packages]
 numpy = "*"
-baidu-aip = "*"
 webrtcvad = "*"
 python-levenshtein = "*"
 pymongo = "*"
 pypinyin = "*"
 zhon = "*"
-celery = {extras = ["redis"], version = "*"}
+celery = {extras = ["redis"],version = "*"}
 pycrypto = "*"
+scipy = "*"
+requests = "*"
 
 [dev-packages]
 
