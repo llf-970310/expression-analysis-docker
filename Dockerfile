@@ -13,7 +13,12 @@ RUN apk add --no-cache tzdata && \
     cp -f /etc/localtime /usr/share/zoneinfo/Asia/Shanghai
 
 RUN apk add --no-cache make cmake gcc g++ gfortran && \
-    pip install numpy pycrypto webrtcvad python-levenshtein pymongo pypinyin zhon && \
+    pip install numpy pycrypto gevent && \
+    apk del make cmake gcc g++ gfortran && \
+    rm -rf /root/.cache/pip
+
+RUN apk add --no-cache make cmake gcc g++ gfortran && \
+    pip install webrtcvad python-levenshtein pymongo pypinyin zhon && \
     apk del make cmake gcc g++ gfortran && \
     rm -rf /root/.cache/pip
 
