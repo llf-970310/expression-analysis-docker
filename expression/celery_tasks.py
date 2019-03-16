@@ -6,6 +6,7 @@
 import os
 import logging
 import traceback
+import baidu_bos
 import config
 import db
 import analysis_features
@@ -77,17 +78,24 @@ def analysis_main(current_id, q_num):
         logging.info('using BAIDU account: %s' % baidu_account)
 
         Q_type = q['q_type']
+        file_location = q.get('file_location', 'local')
+        path = baidu_bos.get_file(q_info['wav_temp_url'], location=file_location)
+
         if Q_type == 1:
-            feature = analysis_features.analysis1(q_info['wav_temp_url'], q['text'], timeout=30)
+            feature = analysis_features.analysis1(path, q['text'], timeout=30)
             score = analysis_scores.score1(feature)
+            # 默认百度识别，若用讯飞识别，需注明参数：
+            # feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='xunfei')
+            # score = analysis_scores.score1(feature,rcg_interface='xunfei')
         elif Q_type == 2:
-            feature = analysis_features.analysis2(q_info['wav_temp_url'], q['wordbase'], timeout=30)
+            feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
             score = analysis_scores.score2(feature)
         elif Q_type == 3:
-            feature = analysis_features.analysis3(q_info['wav_temp_url'], q['wordbase'], timeout=30)
+            feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
             score = analysis_scores.score3(feature)
         else:
             logging.error('Invalid question type: %s' % Q_type)
+
         status = 'finished'
         tr = None
     except Exception as e:
