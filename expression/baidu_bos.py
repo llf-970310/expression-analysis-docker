@@ -21,6 +21,7 @@ def get_file(path, location='bos'):
     if location == 'bos' or location == 'BOS':
         logger = logging.getLogger("baidubce.http.bce_http_client")
         logger.setLevel(logging.DEBUG)
+        logger.info('Getting file from Baidu BOS...')
 
         bos_config = BceClientConfiguration(credentials=BceCredentials(access_key_id, secret_access_key),
                                             endpoint=bos_host)
