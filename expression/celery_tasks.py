@@ -58,8 +58,10 @@ def analysis_main(current_id, q_num):
     # feature = get_feature(wf, q)
     # score = get_score(q, feature)
 
-    q_info = mongo.get_question_info(current_id, q_num)
-    wf, q = mongo.get_wave_path_and_question(q_info)
+    user_answer_info = mongo.get_user_answer_info(current_id, q_num)
+    # 要使用传入的 q_num 而不使用 current表中的 current_q_num，因为 current_q_num 只是django维护的临时标记，随时会改变。
+
+    q = mongo.get_problem(user_answer_info['q_id'])
 
     try:
         # get api accounts
@@ -77,9 +79,11 @@ def analysis_main(current_id, q_num):
         # logging.info('using RCG account: %s' % rcg_account)
         # logging.info('using BAIDU account: %s' % baidu_account)
 
+        file_location = user_answer_info.get('file_location', 'local')
+        audio_key = user_answer_info['wav_upload_url']
+        path = baidu_bos.get_file(audio_key, location=file_location)
+
         Q_type = q['q_type']
-        file_location = q.get('file_location', 'local')
-        path = baidu_bos.get_file(q_info['wav_upload_url'], location=file_location)
 
         if Q_type == 1:
             feature = analysis_features.analysis1(path, q['text'], timeout=30)
@@ -105,7 +109,7 @@ def analysis_main(current_id, q_num):
         status = 'error'
 
     logging.info('Score: %s' % score)
-    mongo.save_result(current_id, q_num, q_info, feature, score, status=status, stack=tr)
+    mongo.save_result(current_id, q_num, user_answer_info, feature, score, status=status, stack=tr)
     return status
 
 

@@ -26,18 +26,14 @@ class Mongo(object):
         self.users = mdb[MongoConfig.users]
         self.current = mdb[MongoConfig.current]
 
-    def get_question_info(self, current_id, q_num):
+    def get_user_answer_info(self, current_id, q_num):
         return self.current.find_one({"_id": ObjectId(current_id)})['questions'][q_num]
 
-    def get_wave_path_and_question(self, question_info):  # current_id and q_num should be strings
-        """ 获取： 音频文件路径 和 要分析问题的详细信息
-        要使用传入的 q_num 而不使用 current表中的 current_q_num，因为 current_q_num 只是django维护的临时标记，随时会改变。
-        """
-        logging.debug(question_info)
-        wave_path = question_info['wav_upload_url']
-        question = self.questions.find_one({"_id": ObjectId(question_info['q_id'])})
-        logging.debug('wave_path: %s, question: %s' % (wave_path, question))
-        return wave_path, question
+    def get_problem(self, problem_id):
+        """ 获取： 要分析问题的原题 """
+        q = self.questions.find_one({"_id": ObjectId(problem_id)})
+        logging.debug('question: %s' % q)
+        return q
 
     def save_result(self, current_id, q_num, question_info, feature=None, score=None, status='finished', stack=None):
         """ 根据给定的current_id和q_num，
