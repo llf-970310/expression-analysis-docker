@@ -30,8 +30,8 @@ def get_file(path, location='bos'):
 
         audio = io.BytesIO(content)  # this would auto seek(0)
         return audio
-    else:
-        return path
+    elif location == 'local' or location == 'LOCAL':
+        return '/expression/%s' % path
 
 
 if __name__ == '__main__':
