@@ -21,7 +21,7 @@ def get_file(path, location='bos'):
     if location == 'bos' or location == 'BOS':
         logger = logging.getLogger("baidubce.http.bce_http_client")
         logger.setLevel(logging.DEBUG)
-        logger.info('Getting file from Baidu BOS...')
+        logging.info('Getting file from Baidu BOS...')
 
         bos_config = BceClientConfiguration(credentials=BceCredentials(access_key_id, secret_access_key),
                                             endpoint=bos_host)
@@ -35,7 +35,10 @@ def get_file(path, location='bos'):
 
 
 if __name__ == '__main__':
-    get_file('/audio/batchtest/1.wav')
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
+    print(get_file('audio/batchtest/1.wav'))  # BOS默认目录是根目录，最前有无/都可以
+    print(get_file('/audio/batchtest/1.wav'))
 
 # response = bos_client.list_buckets()
 # for bucket in response.buckets:
