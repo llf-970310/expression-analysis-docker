@@ -18,7 +18,7 @@ bucket_name = config.BD_BOS_BUCKET
 
 
 def get_file(path, location='bos'):
-    if location == 'bos':
+    if location == 'bos' or location == 'BOS':
         logger = logging.getLogger("baidubce.http.bce_http_client")
         logger.setLevel(logging.DEBUG)
 

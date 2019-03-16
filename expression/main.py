@@ -60,8 +60,9 @@ if __name__ == '__main__':
             logging.info('using BAIDU account: %s' % baidu_account)
 
             Q_type = q['q_type']
+            audio_location = q.get('location', 'local')
             # 文件路径应该由参数上传，暂时用local
-            path = baidu_bos.get_file(q_info['wav_temp_url'], location='local')
+            path = baidu_bos.get_file(q_info['wav_temp_url'], location=audio_location)
             if Q_type == 1:
                 # 默认百度识别，如果要是用讯飞识别，注明参数，下同
                 # feature = analysis_features.analysis1(path, q['text'], timeout=30,
