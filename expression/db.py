@@ -34,7 +34,7 @@ class Mongo(object):
         要使用传入的 q_num 而不使用 current表中的 current_q_num，因为 current_q_num 只是django维护的临时标记，随时会改变。
         """
         logging.debug(question_info)
-        wave_path = question_info['wav_temp_url']
+        wave_path = question_info['wav_upload_url']
         question = self.questions.find_one({"_id": ObjectId(question_info['q_id'])})
         logging.debug('wave_path: %s, question: %s' % (wave_path, question))
         return wave_path, question
