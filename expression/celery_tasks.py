@@ -79,7 +79,7 @@ def analysis_main(current_id, q_num):
 
         Q_type = q['q_type']
         file_location = q.get('file_location', 'local')
-        path = baidu_bos.get_file(q_info['wav_temp_url'], location=file_location)
+        path = baidu_bos.get_file(q_info['wav_upload_url'], location=file_location)
 
         if Q_type == 1:
             feature = analysis_features.analysis1(path, q['text'], timeout=30)
@@ -106,8 +106,6 @@ def analysis_main(current_id, q_num):
 
     logging.info('Score: %s' % score)
     mongo.save_result(current_id, q_num, q_info, feature, score, status=status, stack=tr)
-    os.system('rm %s' % q_info['wav_temp_url'])
-    os.system('rmdir %s > /dev/null 2>&1' % os.path.dirname(q_info['wav_temp_url']))
     return status
 
 
