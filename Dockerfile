@@ -23,7 +23,8 @@ RUN pip install redis 'celery[redis]'  && \
     pip install flower && \
     rm -rf /root/.cache/pip
 
-RUN pip uninstall -y baidu-aip
+RUN pip install requests && \
+    rm -rf /root/.cache/pip
 
 EXPOSE 50080
 
