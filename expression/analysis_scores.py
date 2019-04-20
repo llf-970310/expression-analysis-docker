@@ -11,6 +11,9 @@ Input:  第一题的特征列表
 Output: 百分制得分
 """
 
+import numpy as np
+from functools import reduce
+
 score_parameters = {
     'score1': {
         'tone_quality_total_score': 100,
@@ -102,60 +105,18 @@ def score1(features, rcg_interface='baidu'):
     return {"quality": tone_quality}
 
 
-def score2(features, rcg_interface='baidu'):
-    main_idea, detail = 0, 0
-    mainidea_time_list = [(0, 5), (5, 10), (10, 15), (15, 20), (20, 30), (30, 10000)]
-    mainidea_wordcount_list = [(0, 10), (10, 30), (30, 40), (40, 50), (50, 100), (100, 120), (120, 10000)]
-    mainidea_score_list = [[0, 0, 0, 0, 0, 0, 0],
-                           [0, 40, 60, 100, 100, 100, 100],
-                           [0, 100, 100, 100, 100, 100, 100],
-                           [0, 100, 100, 100, 100, 100, 100],
-                           [0, 100, 100, 100, 100, 100, 100],
-                           [0, 100, 100, 100, 100, 100, 100]]
-    detail_time_list = [(0, 5), (5, 10), (10, 15), (15, 20), (20, 30), (30, 10000)]
-    detail_wordcount_list = [(0, 10), (10, 30), (30, 50), (50, 80), (80, 100), (100, 120), (120, 10000)]
-    detail_score_list = [[0, 0, 0, 0, 0, 0, 0],
-                         [0, 30, 30, 30, 30, 30, 30],
-                         [0, 30, 60, 60, 60, 60, 60],
-                         [0, 30, 60, 80, 80, 80, 80],
-                         [0, 30, 60, 80, 100, 100, 100],
-                         [0, 30, 80, 100, 100, 100, 100]]
-    # 基础分
-    last_time = features['last_time']
-    words_count = features['num']
-    for i in range(len(mainidea_time_list)):
-        for j in range(len(mainidea_wordcount_list)):
-            if mainidea_time_list[i][0] <= last_time < mainidea_time_list[i][1]:
-                if mainidea_wordcount_list[j][0] <= words_count < mainidea_wordcount_list[j][1]:
-                    main_idea = mainidea_score_list[i][j]
-    for i in range(len(detail_time_list)):
-        for j in range(len(detail_wordcount_list)):
-            if detail_time_list[i][0] <= last_time < detail_time_list[i][1]:
-                if detail_wordcount_list[j][0] <= words_count < detail_wordcount_list[j][1]:
-                    detail = detail_score_list[i][j]
-    keywords_num = features['keywords_num']
-    mainwords_num = features['mainwords_num']
-    details_num = features['detailwords_nums']
-    # 按照比例乘
-    main_idea *= (keywords_num[0] / keywords_num[1])
-    # 每少1个主干关键词扣6分
-    main_idea -= (mainwords_num[1] - mainwords_num[0]) * 6
-    # 按照比例乘
-    single_detail = detail / len(details_num)
-    for temp in details_num:
-        if temp[0] / temp[1] == 1:
-            pass
-        elif temp[0] / temp[1] >= 0.5:
-            detail -= single_detail * 0.2
-        elif temp[0] / temp[1] > 0:
-            detail -= single_detail * 0.4
-        else:
-            detail -= single_detail
-    # 其他可用属性：前n秒关键词['keywords_num_main']
-    if main_idea <= 0:
-        main_idea = 0
-    if detail <= 0:
-        detail = 0
+def score2(key_hits, detail_hits, key_weights, detail_weights,  rcg_interface='baidu'):
+    np_key_hits = np.array([1] + key_hits)
+    temp_detail_hits = reduce(lambda x, y: x + y, detail_hits)
+    np_detail_hits = np.array([1] + temp_detail_hits)
+    np_key_weights = np.array(key_weights)
+    np_detail_weights = np.array(detail_weights)
+    key = 0 if np_key_hits[1:].sum() == 0 else (np_key_hits * np_key_weights).sum()
+    detail = 0 if np_detail_hits[1:].sum() == 0 else (np_detail_hits * np_detail_weights).sum()
+    return {
+        'key': key if 0 <= key <= 100 else ( 0 if key < 0 else 100),
+        'detail': detail if 0 <= detail <= 100 else ( 0 if detail < 0 else 100)
+    }
     return {"main": main_idea, "detail": detail}
 
 

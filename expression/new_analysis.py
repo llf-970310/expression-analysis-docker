@@ -10,6 +10,7 @@ import numpy
 import json
 
 import numpy as np
+from functools import reduce
 
 
 def analysis_features(wave_file, wordbase, timeout=30, voice_features=None, rcg_interface='baidu'):
@@ -112,9 +113,7 @@ def analysis_features(wave_file, wordbase, timeout=30, voice_features=None, rcg_
 
 def compute_score(key_hits, detail_hits, key_weights, detail_weights):
     np_key_hits = np.array([1] + key_hits)
-    temp_detail_hits = []
-    for w in detail_hits:
-        temp_detail_hits += w
+    temp_detail_hits = reduce(lambda x, y: x + y, detail_hits)
     np_detail_hits = np.array([1] + temp_detail_hits)
     np_key_weights = np.array(key_weights)
     np_detail_weights = np.array(detail_weights)

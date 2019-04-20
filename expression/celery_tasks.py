@@ -92,8 +92,10 @@ def analysis_main(current_id, q_num):
             # feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='xunfei')
             # score = analysis_scores.score1(feature,rcg_interface='xunfei')
         elif Q_type == 2:
+            key_weights = q['weights']['key']
+            detail_weights = q['weights']['detail']
             feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
-            score = analysis_scores.score2(feature)
+            score = analysis_scores.score2(feature['key_hits'], feature['detail_hits'], key_weights, detail_weights)
         elif Q_type == 3:
             feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
             score = analysis_scores.score3(feature)
@@ -121,3 +123,8 @@ def analysis_main_12(current_id, q_num):
 @app.task
 def analysis_main_3(current_id, q_num):
     return analysis_main(current_id, q_num)
+
+
+if __name__ == '__main__':
+    status = analysis_main("5bea5322dd626213f79b945c", "2")
+    print(status)
