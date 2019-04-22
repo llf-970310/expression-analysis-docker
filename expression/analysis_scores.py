@@ -117,7 +117,6 @@ def score2(key_hits, detail_hits, key_weights, detail_weights,  rcg_interface='b
         'key': key if 0 <= key <= 100 else ( 0 if key < 0 else 100),
         'detail': detail if 0 <= detail <= 100 else ( 0 if detail < 0 else 100)
     }
-    return {"main": main_idea, "detail": detail}
 
 
 def score3(features, rcg_interface='baidu'):
