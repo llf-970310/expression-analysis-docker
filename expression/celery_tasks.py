@@ -105,7 +105,7 @@ def analysis_main(current_id, q_num):
         status = 'finished'
         tr = None
     except Exception as e:
-        tr = traceback.format_exc()
+        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location+"\naudio:"+path
         print(tr)
         logging.error('error happened during process task: %s' % e)
         status = 'error'
