@@ -62,7 +62,9 @@ def analysis_main(current_id, q_num):
     # 要使用传入的 q_num 而不使用 current表中的 current_q_num，因为 current_q_num 只是django维护的临时标记，随时会改变。
 
     q = mongo.get_problem(user_answer_info['q_id'])
-
+    file_location = ''
+    audio_key = ''
+    path = ''
     try:
         # get api accounts
         # evl_account = mongo.get_evl_account()
