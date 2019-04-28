@@ -31,11 +31,10 @@ def get_file(path, location='bos'):
         content = ''
         count = 0
         while content == '':
-            time.sleep(2)
             content = bos_client.get_object_as_string(bucket_name=bucket_name, key=path)
             audio = io.BytesIO(content)  # this would auto seek(0)
             count += 1
-            if count > 5:
+            if count > 10:
                 break
         return audio
     elif location == 'local' or location == 'LOCAL':
