@@ -27,15 +27,8 @@ def get_file(path, location='bos'):
         bos_config = BceClientConfiguration(credentials=BceCredentials(access_key_id, secret_access_key),
                                             endpoint=bos_host)
         bos_client = BosClient(bos_config)
-        audio = ''
-        content = ''
-        count = 0
-        while content == '':
-            content = bos_client.get_object_as_string(bucket_name=bucket_name, key=path)
-            audio = io.BytesIO(content)  # this would auto seek(0)
-            count += 1
-            if count > 100:
-                break
+        content = bos_client.get_object_as_string(bucket_name=bucket_name, key=path)
+        audio = io.BytesIO(content)  # this would auto seek(0)
         return audio
     elif location == 'local' or location == 'LOCAL':
         return '/expression/%s' % path
