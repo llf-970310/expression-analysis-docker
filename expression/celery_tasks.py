@@ -11,6 +11,7 @@ import config
 import db
 import analysis_features
 import analysis_scores
+import time
 
 from celery import Celery
 from kombu import Queue, Exchange
@@ -83,9 +84,13 @@ def analysis_main(current_id, q_num):
 
         file_location = user_answer_info.get('file_location', 'local')
         audio_key = user_answer_info['wav_upload_url']
-
+        count = 0
         while path == '':
+            time.sleep(1)
             path = baidu_bos.get_file(audio_key, location=file_location)
+            count += 1
+            if count >10:
+                break
 
         Q_type = q['q_type']
 
