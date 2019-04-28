@@ -83,7 +83,10 @@ def analysis_main(current_id, q_num):
 
         file_location = user_answer_info.get('file_location', 'local')
         audio_key = user_answer_info['wav_upload_url']
+
         path = baidu_bos.get_file(audio_key, location=file_location)
+
+
 
         Q_type = q['q_type']
 
@@ -107,7 +110,7 @@ def analysis_main(current_id, q_num):
         status = 'finished'
         tr = None
     except Exception as e:
-        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location+"\naudio:"+path
+        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location+"\npath:"+path
         print(tr)
         logging.error('error happened during process task: %s' % e)
         status = 'error'
