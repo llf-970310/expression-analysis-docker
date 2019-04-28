@@ -86,33 +86,35 @@ def analysis_main(current_id, q_num):
         audio_key = user_answer_info['wav_upload_url']
         count = 0
         while path == '':
-            time.sleep(1)
+            time.sleep(2)
             path = baidu_bos.get_file(audio_key, location=file_location)
             count += 1
             if count >10:
                 break
 
         Q_type = q['q_type']
-
-        if Q_type == 1:
-            feature = analysis_features.analysis1(path, q['text'], timeout=30)
-            score = analysis_scores.score1(feature)
+        if path != '':
+            if Q_type == 1:
+                feature = analysis_features.analysis1(path, q['text'], timeout=30)
+                score = analysis_scores.score1(feature)
             # 默认百度识别，若用讯飞识别，需注明参数：
             # feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='xunfei')
             # score = analysis_scores.score1(feature,rcg_interface='xunfei')
-        elif Q_type == 2:
-            key_weights = q['weights']['key']
-            detail_weights = q['weights']['detail']
-            feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
-            score = analysis_scores.score2(feature['key_hits'], feature['detail_hits'], key_weights, detail_weights)
-        elif Q_type == 3:
-            feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
-            score = analysis_scores.score3(feature)
+            elif Q_type == 2:
+                key_weights = q['weights']['key']
+                detail_weights = q['weights']['detail']
+                feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
+                score = analysis_scores.score2(feature['key_hits'], feature['detail_hits'], key_weights, detail_weights)
+            elif Q_type == 3:
+                feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
+                score = analysis_scores.score3(feature)
+            else:
+                logging.error('Invalid question type: %s' % Q_type)
+            status = 'finished'
+            tr = None
         else:
-            logging.error('Invalid question type: %s' % Q_type)
+            status = 'error'
 
-        status = 'finished'
-        tr = None
     except Exception as e:
         tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location+"\npath:"+path
         print(tr)
