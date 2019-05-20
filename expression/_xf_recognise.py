@@ -69,7 +69,7 @@ class RcgCore(object):  # 不再使用线程
         return self.result
 
 
-def _rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
+def _rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None) -> dict:
     # 音频切段：
     segment_files = {}
     if isinstance(wav_file, io.BytesIO):
@@ -80,6 +80,8 @@ def _rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
         duration = nframes / framerate
         if segments == 0:  # if segments is not assigned manually, calculate segments count
             segments = ceil(duration / 60)
+        if segments == 1:
+            segment_files[0] = wav_file
         if segments >= 2:  # cut wav into segments (average length)
             logging.debug("Cutting %s by into %d segments..." % (wav_file, segments))
             seg_length = ceil(duration / segments * framerate)  # how many frames per segment
@@ -92,50 +94,24 @@ def _rcg(wav_file, timeout=600, segments=0, x_appid=None, api_key=None):
                     seg.setframerate(framerate)
                     seg.writeframes(seg_data)
     # 识别：
-    if segments == 1:  # return is a 'str' object
-        job = RcgCore(wav_file, timeout, x_appid, api_key)
+    results = {}
+    for i in range(segments):
+        job = RcgCore(segment_files[i], timeout, x_appid, api_key)
         job.run()
-        result = job.get_result()
-        if result is None:
-            raise Exception('No recognition results returned')
-        rcg_dict = json.loads(result)
+        results[i] = job.get_result()
+        rcg_dict = json.loads(results[i])
         if rcg_dict.get('code') == '10105':
             print('IP错误, 请把下面的IP添加至讯飞云IP白名单并等待两分钟再试!!')
             print(rcg_dict.get('desc').strip('illegal access|illegal client_ip: '))  # no need to use replace here
             print()
             raise Exception('RCG IP Error')
-        return result
-    if segments >= 2:  # return is a 'dict' object
-        results = {}
-
-        for i in range(segments):
-            job = RcgCore(segment_files[i], timeout, x_appid, api_key)
-            job.run()
-            results[i] = job.get_result()
-            rcg_dict = json.loads(results[i])
-            if rcg_dict.get('code') == '10105':
-                print('IP错误, 请把下面的IP添加至讯飞云IP白名单并等待两分钟再试!!')
-                print(rcg_dict.get('desc').strip('illegal access|illegal client_ip: '))  # no need to use replace here
-                print()
-                raise Exception('RCG IP Error')
-        logging.debug('Multi-threads rcg results: %s' % results)
-        return results
+    logging.debug('summarized rcg results: %s' % results)
+    return results
 
 
 def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_key=None, stop_on_failure=True):
     rcg_result = _rcg(wave_file, segments=segments, timeout=timeout, x_appid=x_appid, api_key=api_key)
-    if isinstance(rcg_result, str):
-        rcg_dict = json.loads(rcg_result)
-        logging.debug("Recognition: %s" % rcg_dict.get('data'))
-        logging.info("Recognition: %s" % rcg_dict.get('desc'))
-        if rcg_dict.get('code') == '0':
-            utils.write(rcg_fp, rcg_result, 'w')
-        else:
-            if stop_on_failure:
-                raise Exception('rcg failure: %s - %s' % (wave_file, rcg_dict.get('code')))
-            else:
-                logging.info('rcg failure: %s - %s' % (wave_file, rcg_dict.get('code')))
-    elif isinstance(rcg_result, dict):
+    if rcg_result:
         rcgs_dict = {}
         rcgs_status = {}
         data_lst = []

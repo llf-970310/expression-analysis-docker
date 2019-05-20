@@ -77,6 +77,8 @@ def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_s
         duration = nframes / framerate
         if segments == 0:  # if segments is not assigned manually, calculate segments count
             segments = ceil(duration / 60)
+        if segments == 1:
+            segment_files[0] = wav_file
         if segments >= 2:  # cut wav into segments (average length)
             logging.debug("Cutting %s by into %d segments..." % (wav_file, segments))
             seg_length = ceil(duration / segments * framerate)  # how many frames per segment
@@ -90,16 +92,11 @@ def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_s
                     seg.writeframes(seg_data)
     # 识别：
     results = {}
-    if segments == 1:
-        job = RcgCore(wav_file, timeout, bd_appid, bd_api_key, bd_secret_key)
+    for i in range(segments):
+        job = RcgCore(segment_files[i], timeout, bd_appid, bd_api_key, bd_secret_key)
         job.run()
-        results[0] = job.get_result()
-    if segments >= 2:
-        for i in range(segments):
-            job = RcgCore(segment_files[i], timeout, bd_appid, bd_api_key, bd_secret_key)
-            job.run()
-            results[i] = job.get_result()
-        logging.debug('Multi-threads rcg results: %s' % results)
+        results[i] = job.get_result()
+    logging.debug('summarized rcg results: %s' % results)
     return results
 
 
