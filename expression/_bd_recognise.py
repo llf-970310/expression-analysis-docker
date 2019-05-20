@@ -46,13 +46,18 @@ class RcgCore(object):  # 不再使用线程
                 1837	四川话		                        有标点	不支持自定义词库
                 1936	普通话远场	            远场模型	    有标点	不支持 
                 """
-                if rst['err_no'] != 0:
+                if rst['err_no'] == 0:
+                    self.result = rst['result'][0]  # rcg text
+                    logging.debug("Recognition: %s" % self.result)
+                    break
+                elif rst['err_no'] == 3301:  # 音质差，返回空结果，不再重试
+                    self.result = ''
+                    logging.warning('音频质量差：%s' % rst.get('err_msg'))
+                    break
+                else:
                     logging.error('识别错误：%s' % rst.get('err_msg'))
                     logging.error(rst)
                     raise Exception('Recognition failed!')
-                self.result = rst['result'][0]  # rcg text
-                logging.debug("Recognition: %s" % self.result)
-                break
             except Exception as e:
                 logging.warning('RcgCore: on retry %d:' % retry)
                 logging.warning(e)
@@ -61,7 +66,7 @@ class RcgCore(object):  # 不再使用线程
         return self.result
 
 
-def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_secret_key=None):
+def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_secret_key=None) -> dict:
     # 音频切段：
     segment_files = {}
     if isinstance(wav_file, io.BytesIO):
@@ -84,44 +89,38 @@ def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_s
                     seg.setframerate(framerate)
                     seg.writeframes(seg_data)
     # 识别：
-    if segments == 1:  # return is a 'str' object
+    results = {}
+    if segments == 1:
         job = RcgCore(wav_file, timeout, bd_appid, bd_api_key, bd_secret_key)
         job.run()
-        rcg_text = job.get_result()
-        if rcg_text is None:
-            raise Exception('No recognition results returned')
-        return rcg_text
-    if segments >= 2:  # return is a 'dict' object
-        results = {}
-
+        results[0] = job.get_result()
+    if segments >= 2:
         for i in range(segments):
             job = RcgCore(segment_files[i], timeout, bd_appid, bd_api_key, bd_secret_key)
             job.run()
             results[i] = job.get_result()
         logging.debug('Multi-threads rcg results: %s' % results)
-        return results
+    return results
 
 
 def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, bd_appid=None, bd_api_key=None, bd_secret_key=None,
                  stop_on_failure=True):
     rcg_result = _rcg(wave_file, segments=segments, timeout=timeout, bd_appid=bd_appid, bd_api_key=bd_api_key,
                       bd_secret_key=bd_secret_key)
-    if isinstance(rcg_result, str):
-        if rcg_result is None:
-            if stop_on_failure:
-                raise Exception('file rcg failure: %s' % wave_file)
-            else:
-                logging.info('file rcg failure: %s' % wave_file)
-        rcg_dict = {'code': '0', 'data': rcg_result, 'desc': 'None'}
-        utils.write(rcg_fp, json.dumps(rcg_dict, ensure_ascii=False), 'w')
-    elif isinstance(rcg_result, dict):
+    if rcg_result:
         data_lst = []
         for i in range(len(rcg_result)):
             if rcg_result[i] is None:
                 if stop_on_failure:
-                    raise Exception('file rcg failure: %s SEG %d' % (wave_file, i))
+                    if len(rcg_result) == 1:
+                        raise Exception('file rcg failure: %s' % wave_file)
+                    else:
+                        raise Exception('file rcg failure: %s SEG %d' % (wave_file, i))
                 else:
-                    logging.info('file rcg failure: %s SEG %d' % (wave_file, i))
+                    if len(rcg_result) == 1:
+                        logging.info('file rcg failure: %s' % wave_file)
+                    else:
+                        logging.info('file rcg failure: %s SEG %d' % (wave_file, i))
                 data_lst.append('')
             else:
                 data_lst.append(rcg_result[i])
