@@ -2,7 +2,7 @@
 # coding: utf-8
 #
 # Created by dylanchu on 18-8-18
-
+import io
 import os
 import logging
 import traceback
@@ -103,11 +103,13 @@ def analysis_main(current_id, q_num):
             # feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='xunfei')
             # score = analysis_scores.score1(feature,rcg_interface='xunfei')
             elif Q_type == 2:
+                path = io.BytesIO(path)
                 key_weights = q['weights']['key']
                 detail_weights = q['weights']['detail']
                 feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
                 score = analysis_scores.score2(feature['key_hits'], feature['detail_hits'], key_weights, detail_weights)
             elif Q_type == 3:
+                path = io.BytesIO(path)
                 feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
                 score = analysis_scores.score3(feature)
             else:

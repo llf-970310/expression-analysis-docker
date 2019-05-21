@@ -28,8 +28,8 @@ def get_file(path, location='bos'):
                                             endpoint=bos_host)
         bos_client = BosClient(bos_config)
         content = bos_client.get_object_as_string(bucket_name=bucket_name, key=path)
-        audio = io.BytesIO(content)  # this would auto seek(0)
-        return audio
+        # audio = io.BytesIO(content)  # this would auto seek(0)
+        return content
     elif location == 'local' or location == 'LOCAL':
         return '/expression/%s' % path
 
