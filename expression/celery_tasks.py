@@ -65,7 +65,7 @@ def analysis_main(current_id, q_num):
     q = mongo.get_problem(user_answer_info['q_id'])
     file_location = ''
     audio_key = ''
-    path = ''
+
     try:
         # get api accounts
         # evl_account = mongo.get_evl_account()
@@ -85,15 +85,16 @@ def analysis_main(current_id, q_num):
         file_location = user_answer_info.get('file_location', 'local')
         audio_key = user_answer_info['wav_upload_url']
         count = 0
-        while path == '':
+        path = baidu_bos.get_file(audio_key, location=file_location)
+        while path is None:
             time.sleep(2)
             path = baidu_bos.get_file(audio_key, location=file_location)
             count += 1
-            if count >10:
+            if count > 10:
                 break
 
         Q_type = q['q_type']
-        if path != '':
+        if path is not None:
             if Q_type == 1:
                 feature = analysis_features.analysis1(path, q['text'], timeout=30)
                 score = analysis_scores.score1(feature)
