@@ -48,6 +48,7 @@ CELERY_ROUTES = {
 def analysis_main(current_id, q_num):
     # current_id = "5bcde8f30b9e037b1f67ba4e"
     # q_num = "2"
+    global path
     logging.info("current_id: %s, q_num: %s" % (current_id, q_num))
 
     mongo = db.Mongo()
