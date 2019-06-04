@@ -28,6 +28,7 @@ CELERY_QUEUES = (
     # Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', consumer_arguments={'x-priority': 1}),
     Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', queue_arguments={'x-max-priority': 100}),
     Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', queue_arguments={'x-max-priority': 2}),
+    Queue('for_test', Exchange('for_test'), routing_key='for_test', queue_arguments={'x-max-priority': 500}),
     Queue('default', Exchange('default'), routing_key='default', queue_arguments={'x-max-priority': 1}),
 )  # consumer_arguments={'x-priority': 5}   数字越大，优先级越高
 
