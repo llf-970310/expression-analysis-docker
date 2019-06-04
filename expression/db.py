@@ -25,6 +25,10 @@ class Mongo(object):
         self.api_accounts = mdb[MongoConfig.api_accounts]
         self.users = mdb[MongoConfig.users]
         self.current = mdb[MongoConfig.current]
+        self.wav_test = mdb[MongoConfig.wav_test]
+
+    def get_wav_test_info(self, test_id):
+        return self.current.find_one({"_id": ObjectId(test_id)})
 
     def get_user_answer_info(self, current_id, q_num):
         return self.current.find_one({"_id": ObjectId(current_id)})['questions'][q_num]
@@ -50,6 +54,12 @@ class Mongo(object):
         self.current.update_one({'_id': ObjectId(current_id)}, {'$set': {'questions.%s' % q_num: dict(question_info)}},
                                 True)  # 参数分别是：条件，更新内容，不存在时是否插入
 
+    def save_test_result(self, test_id, result):
+        """ 
+        保存音频测试的结果
+        """
+        self.wav_test.update_one({'id': ObjectId(test_id)}, {'$set': {'result': dict(result)}}, True)
+        
     # def test_insert_data(self):
     #     with open('/tmp/current.json', 'r') as f:
     #         data = json.loads(f.read())

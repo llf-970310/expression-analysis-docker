@@ -58,6 +58,7 @@ class MongoConfig(object):
     questions = 'questions'
     api_accounts = 'api_accounts'
     users = 'users'
+    wav_test = 'wav_test'
 # -------------------------
 
 

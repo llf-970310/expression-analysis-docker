@@ -44,6 +44,33 @@ CELERY_ROUTES = {
     'app.tasks.analysis_main': {'queue': 'default'},
 }
 
+def analysis_test(test_id):
+    logging.info("test_id: %s" % test_id)
+
+    mongo = db.Mongo()
+    wav_test_info = mongo.get_wav_test_info(test_id)
+
+    result = {"status": "finished", "feature": {}}
+    try:
+        file_location = wav_test_info.get('file_location', 'local')
+        audio_key = wav_test_info['wav_upload_url']
+        count = 0
+        path = baidu_bos.get_file(audio_key, location=file_location)
+        while path is None:
+            time.sleep(2)
+            path = baidu_bos.get_file(audio_key, location=file_location)
+            count += 1
+            if count > 10:
+                break 
+        if path is not None:
+            result["feature"] = analysis_features.analysis1(path, wav_test_info['text'], timeout=30)
+    except Exception as e:
+        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location+"\npath:"+path
+        print(tr)
+        logging.error('error happened during process task: %s' % e)
+        result["status"] = 'error'
+    mongo.save_test_result(test_id, result)
+    
 
 def analysis_main(current_id, q_num):
     # current_id = "5bcde8f30b9e037b1f67ba4e"
@@ -136,6 +163,10 @@ def analysis_main_12(current_id, q_num):
 @app.task
 def analysis_main_3(current_id, q_num):
     return analysis_main(current_id, q_num)
+
+@app.task
+def test_wav_quality(test_id):
+    return analysis_test(test_id)
 
 
 if __name__ == '__main__':
