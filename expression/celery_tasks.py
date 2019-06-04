@@ -40,6 +40,7 @@ CELERY_DEFAULT_ROUTING_KEY = 'default'
 CELERY_ROUTES = {
     # -- HIGH PRIORITY QUEUE -- #
     'app.tasks.analysis_main_3': {'queue': 'for_q_type3'},
+    'app.tasks.analysis_wav_test': {'queue': 'for_test'},
     # -- LOW PRIORITY QUEUE -- #
     'app.tasks.analysis_main_12': {'queue': 'for_q_type12'},
     'app.tasks.analysis_main': {'queue': 'default'},
