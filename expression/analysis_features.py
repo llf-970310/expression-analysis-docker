@@ -52,8 +52,7 @@ def analysis1(wave_file, std_text, timeout=30, rcg_interface='baidu'):
     temp_std_text_file.write(std_text)
     rcg_result_file = io.StringIO()
     # last_time 时长 未擦除的文件
-    with wave.open(wave_file) as wav:
-        result['last_time'] = wav.getnframes() / wav.getframerate()
+    result['last_time'] = utils.get_audio_length(wave_file)
     for (start, last) in interval_list:
         if last > config.INTERVAL_TIME_THRESHOLD1 and start > 0 and start + last > result['last_time'] - 0.02:
             result['interval_num'] += 1

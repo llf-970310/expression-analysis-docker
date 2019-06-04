@@ -11,6 +11,7 @@ import config
 import db
 import analysis_features
 import analysis_scores
+import time
 
 from celery import Celery
 from kombu import Queue, Exchange
@@ -47,6 +48,7 @@ CELERY_ROUTES = {
 def analysis_main(current_id, q_num):
     # current_id = "5bcde8f30b9e037b1f67ba4e"
     # q_num = "2"
+    global path
     logging.info("current_id: %s, q_num: %s" % (current_id, q_num))
 
     mongo = db.Mongo()
@@ -62,6 +64,8 @@ def analysis_main(current_id, q_num):
     # 要使用传入的 q_num 而不使用 current表中的 current_q_num，因为 current_q_num 只是django维护的临时标记，随时会改变。
 
     q = mongo.get_problem(user_answer_info['q_id'])
+    file_location = ''
+    audio_key = ''
 
     try:
         # get api accounts
@@ -81,31 +85,40 @@ def analysis_main(current_id, q_num):
 
         file_location = user_answer_info.get('file_location', 'local')
         audio_key = user_answer_info['wav_upload_url']
+        count = 0
         path = baidu_bos.get_file(audio_key, location=file_location)
+        while path is None:
+            time.sleep(2)
+            path = baidu_bos.get_file(audio_key, location=file_location)
+            count += 1
+            if count > 10:
+                break
 
         Q_type = q['q_type']
-
-        if Q_type == 1:
-            feature = analysis_features.analysis1(path, q['text'], timeout=30)
-            score = analysis_scores.score1(feature)
+        if path is not None:
+            if Q_type == 1:
+                feature = analysis_features.analysis1(path, q['text'], timeout=30)
+                score = analysis_scores.score1(feature)
             # 默认百度识别，若用讯飞识别，需注明参数：
             # feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='xunfei')
             # score = analysis_scores.score1(feature,rcg_interface='xunfei')
-        elif Q_type == 2:
-            key_weights = q['weights']['key']
-            detail_weights = q['weights']['detail']
-            feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
-            score = analysis_scores.score2(feature['key_hits'], feature['detail_hits'], key_weights, detail_weights)
-        elif Q_type == 3:
-            feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
-            score = analysis_scores.score3(feature)
+            elif Q_type == 2:
+                key_weights = q['weights']['key']
+                detail_weights = q['weights']['detail']
+                feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
+                score = analysis_scores.score2(feature['key_hits'], feature['detail_hits'], key_weights, detail_weights)
+            elif Q_type == 3:
+                feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
+                score = analysis_scores.score3(feature)
+            else:
+                logging.error('Invalid question type: %s' % Q_type)
+            status = 'finished'
+            tr = None
         else:
-            logging.error('Invalid question type: %s' % Q_type)
+            status = 'error'
 
-        status = 'finished'
-        tr = None
     except Exception as e:
-        tr = traceback.format_exc()
+        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location+"\npath:"+path
         print(tr)
         logging.error('error happened during process task: %s' % e)
         status = 'error'

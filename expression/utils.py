@@ -323,3 +323,10 @@ def write(target, content, mode='w'):
     else:
         with open(target, mode) as f:
             return f.write(content)
+
+
+def get_audio_length(wav_file):
+    if isinstance(wav_file, io.BytesIO) or isinstance(wav_file, io.StringIO):
+        wav_file.seek(0)  # seek(0) before read
+    with wave.open(wav_file, 'rb') as wav:
+        return wav.getnframes() / wav.getframerate()
