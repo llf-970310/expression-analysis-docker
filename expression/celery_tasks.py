@@ -167,7 +167,7 @@ def analysis_main_3(current_id, q_num):
     return analysis_main(current_id, q_num)
 
 @app.task
-def test_wav_quality(test_id):
+def analysis_wav_test(test_id):
     return analysis_test(test_id)
 
 
