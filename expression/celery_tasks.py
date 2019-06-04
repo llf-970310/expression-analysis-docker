@@ -26,9 +26,9 @@ logging.basicConfig(level=logging.DEBUG,
 CELERY_QUEUES = (
     # Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', consumer_arguments={'x-priority': 10}),
     # Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', consumer_arguments={'x-priority': 1}),
-    Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', queue_arguments={'x-max-priority': 100}),
-    Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', queue_arguments={'x-max-priority': 2}),
-    Queue('for_test', Exchange('for_test'), routing_key='for_test', queue_arguments={'x-max-priority': 500}),
+    Queue('q_type3', Exchange('for_q_type3'), routing_key='q_type3', queue_arguments={'x-max-priority': 100}),
+    Queue('q_type12', Exchange('for_q_type12'), routing_key='q_type12', queue_arguments={'x-max-priority': 2}),
+    Queue('q_pre_test', Exchange('for_test'), routing_key='q_pre_test', queue_arguments={'x-max-priority': 500}),
     Queue('default', Exchange('default'), routing_key='default', queue_arguments={'x-max-priority': 1}),
 )  # consumer_arguments={'x-priority': 5}   数字越大，优先级越高
 
@@ -39,10 +39,10 @@ CELERY_DEFAULT_EXCHANGE = 'default'
 CELERY_DEFAULT_ROUTING_KEY = 'default'
 CELERY_ROUTES = {
     # -- HIGH PRIORITY QUEUE -- #
-    'app.tasks.analysis_main_3': {'queue': 'for_q_type3'},
-    'app.tasks.analysis_wav_test': {'queue': 'for_test'},
+    'app.tasks.analysis_main_3': {'queue': 'q_type3'},
+    'app.tasks.analysis_wav_test': {'queue': 'q_pre_test'},
     # -- LOW PRIORITY QUEUE -- #
-    'app.tasks.analysis_main_12': {'queue': 'for_q_type12'},
+    'app.tasks.analysis_main_12': {'queue': 'q_type12'},
     'app.tasks.analysis_main': {'queue': 'default'},
 }
 
