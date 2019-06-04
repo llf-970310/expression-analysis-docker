@@ -26,9 +26,9 @@ logging.basicConfig(level=logging.DEBUG,
 CELERY_QUEUES = (
     # Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', consumer_arguments={'x-priority': 10}),
     # Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', consumer_arguments={'x-priority': 1}),
-    Queue('q_type3', Exchange('for_q_type3'), routing_key='q_type3', queue_arguments={'x-max-priority': 100}),
-    Queue('q_type12', Exchange('for_q_type12'), routing_key='q_type12', queue_arguments={'x-max-priority': 2}),
-    Queue('q_pre_test', Exchange('for_test'), routing_key='q_pre_test', queue_arguments={'x-max-priority': 500}),
+    Queue('q_type3', Exchange('q_type3'), routing_key='q_type3', queue_arguments={'x-max-priority': 100}),
+    Queue('q_type12', Exchange('q_type12'), routing_key='q_type12', queue_arguments={'x-max-priority': 2}),
+    Queue('q_pre_test', Exchange('q_pre_test'), routing_key='q_pre_test', queue_arguments={'x-max-priority': 500}),
     Queue('default', Exchange('default'), routing_key='default', queue_arguments={'x-max-priority': 1}),
 )  # consumer_arguments={'x-priority': 5}   数字越大，优先级越高
 
