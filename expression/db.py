@@ -28,7 +28,7 @@ class Mongo(object):
         self.wav_test = mdb[MongoConfig.wav_test]
 
     def get_wav_test_info(self, test_id):
-        return self.current.find_one({"_id": ObjectId(test_id)})
+        return self.wav_test.find_one({"_id": ObjectId(test_id)})
 
     def get_user_answer_info(self, current_id, q_num):
         return self.current.find_one({"_id": ObjectId(current_id)})['questions'][q_num]

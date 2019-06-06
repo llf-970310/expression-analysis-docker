@@ -72,6 +72,7 @@ def analysis_test(test_id):
         logging.error('error happened during process task: %s' % e)
         result["status"] = 'error'
     mongo.save_test_result(test_id, result)
+    return result["status"]
     
 
 def analysis_main(current_id, q_num):
@@ -172,5 +173,5 @@ def analysis_wav_test(test_id):
 
 
 if __name__ == '__main__':
-    status = analysis_main("5bea5322dd626213f79b945c", "2")
+    status = analysis_test("5cf8f83b52ab92fa6e12565b")
     print(status)
