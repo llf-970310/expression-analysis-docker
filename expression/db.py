@@ -58,8 +58,10 @@ class Mongo(object):
         """ 
         保存音频测试的结果
         """
+        print('id: %s' % test_id)
+        print('result %s' % str(result))
         self.wav_test.update_one({'id': ObjectId(test_id)}, {'$set': {'result': dict(result)}}, True)
-        
+
     # def test_insert_data(self):
     #     with open('/tmp/current.json', 'r') as f:
     #         data = json.loads(f.read())
