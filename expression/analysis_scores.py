@@ -111,8 +111,8 @@ def score2(key_hits, detail_hits, key_weights, detail_weights,  rcg_interface='b
     np_detail_hits = np.array([1] + temp_detail_hits)
     np_key_weights = np.array(key_weights)
     np_detail_weights = np.array(detail_weights)
-    key = 0 if np_key_hits[1:].sum() == 0 else (np_key_hits * np_key_weights).sum()
-    detail = 0 if np_detail_hits[1:].sum() == 0 else (np_detail_hits * np_detail_weights).sum()
+    key = float(0 if np_key_hits[1:].sum() == 0 else (np_key_hits * np_key_weights).sum())
+    detail = float(0 if np_detail_hits[1:].sum() == 0 else (np_detail_hits * np_detail_weights).sum())
     return {
         'key': key if 0 <= key <= 100 else ( 0 if key < 0 else 100),
         'detail': detail if 0 <= detail <= 100 else ( 0 if detail < 0 else 100)
