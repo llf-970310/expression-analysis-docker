@@ -12,3 +12,4 @@ report.html
 *.csv
 Pipfile.lock
 *.wav
+.vscode
