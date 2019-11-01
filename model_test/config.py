@@ -35,7 +35,7 @@ BD_RCG_SECRET_KEY = 'saHNIUKAe9SsnxjGSHrmhGMGzaA2zYak'
 class MongoConfig(object):
     # 'host' = '127.0.0.1'
     # host = '172.17.0.1'  # docker0
-    host = '47.98.174.59'
+    host = 'redis-server.expression.hosts'
     port = 27017  # 默认27017
     # {
     # auth = None
@@ -54,8 +54,8 @@ class MongoConfig(object):
 Celery_broker = 'amqp://ise:ise_expression@localhost:5672//'
 # Celery_broker = 'redis://:ise_expression@172.17.0.1:6379/0'  # docker0
 Celery_backend = Celery_broker
-# Celery_broker = 'redis://47.98.174.59:6379/0'  # care firewall
-# Celery_backend = 'redis://47.98.174.59:6379/0'  # care firewall
+# Celery_broker = 'redis://redis-server.expression.hosts:6379/0'  # care firewall
+# Celery_backend = 'redis://redis-server.expression.hosts:6379/0'  # care firewall
 # Celery_broker = 'redis://localhost:6379/0'
 # Celery_backend = 'redis://localhost:6379/0'
 
