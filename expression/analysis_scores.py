@@ -17,16 +17,14 @@ from functools import reduce
 score_parameters = {
     'score1': {
         'tone_quality_total_score': 100,
-        'clr_ratio_deduct_percent': 3,
+        'clr_ratio_deduct_percent': 2,
         'clr_ratio_deduct_range': 18,
-        'cpl_ratio_deduct_percent': 3,
-        'cpl_ratio_deduct_range': 18,
         'ftl_ratio_deduct_percent': 3,
         'ftl_ratio_deduct_range': 18,
         'time_range_min': 30,
         'time_range_max': 35,
         'time_deduct_persecond': 3,
-        'time_deduct_range': 18,
+        'time_deduct_range': 15,
         'phone_score_deduct_per': 0.2,
         'phone_score_deduct_start': 95,
         'phone_score_deduct_range': 6,
@@ -54,10 +52,6 @@ def score1(features, rcg_interface='baidu'):
     temp = para['clr_ratio_deduct_percent'] * 100 * (1 - features['clr_ratio'])
     if temp > para['clr_ratio_deduct_range']:
         temp = para['clr_ratio_deduct_range']
-    tone_quality -= temp
-    temp = para['cpl_ratio_deduct_percent'] * 100 * (1 - features['cpl_ratio'])
-    if temp > para['cpl_ratio_deduct_range']:
-        temp = para['cpl_ratio_deduct_range']
     tone_quality -= temp
     temp = para['ftl_ratio_deduct_percent'] * 100 * features['ftl_ratio']
     if temp > para['ftl_ratio_deduct_range']:
@@ -98,7 +92,6 @@ def score1(features, rcg_interface='baidu'):
         tone_quality -= para['interval_num_deduct_per']
     if features['interval_num'] >= 2:
         tone_quality -= para['interval_num_deduct_per'] * 2
-    tone_quality *= features['clr_ratio']
     tone_quality *= features['cpl_ratio']
     if tone_quality < 0:
         tone_quality = 0

@@ -23,6 +23,19 @@ class Mongo(object):
         self.api_accounts = list(mdb[MongoConfig.api_accounts].find({}))
         self.users = list(mdb[MongoConfig.users].find({}))
         self.analysis = mdb[MongoConfig.analysis]
+        self.history = list(mdb[MongoConfig.history].find({}))
+
+    def get_all_answer(self, type=1):
+        temp_score = ['', 'quality', 'key', 'logic']
+        result = []
+        for t in self.history:
+            questions = t.get('questions')
+            for k, q in questions.items():
+                if 'q_type' in q and 'score' in q and temp_score[type] in q.get('score'):
+                    if q.get('q_type') == type and q.get('score').get(temp_score[type]) > 10:
+                        result.append(q)
+
+        return result
 
     def get_user(self, user_id):
         for user in self.users:

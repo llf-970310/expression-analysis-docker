@@ -47,6 +47,8 @@ class MongoConfig(object):
     current = 'current'
     questions = 'questions'
     api_accounts = 'api_accounts'
+    history = 'history'
+    analysis = 'analysis'
     users = 'users'
 # -------------------------
 

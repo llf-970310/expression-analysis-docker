@@ -102,6 +102,30 @@ def test_analysis_feature(file):
     print(features)
 
 
+def question1_test_1030():
+    mongo = db.Mongo()
+    qs = mongo.get_all_answer()
+    result = [
+        [
+            q.get('score').get('quality'),
+            q.get('wav_upload_url'),
+            q.get('feature').get('clr_ratio'),
+            q.get('feature').get('ftl_ratio'),
+            q.get('feature').get('cpl_ratio'),
+            q.get('feature').get('phone_score'),
+            q.get('feature').get('fluency_score'),
+            q.get('feature').get('tone_score'),
+            q.get('feature').get('integrity_score'),
+            q.get('feature').get('rcg_text'),
+        ]
+        for q in qs
+    ]
+    result = [q for q in result if q[0] > 20]
+    with open('/Users/tangdaye/第一部分.csv', 'w') as f:
+        f.writelines('\n'.join([q.__str__()[1:-1] for q in result]))
+
+
 if __name__ == '__main__':
-    path = '/Users/tangdaye/git-project/exp-docker/expression/net_test.wav'
-    test_analysis_feature(path)
+    question1_test_1030()
+    # path = '/Users/tangdaye/git-project/exp-docker/expression/net_test.wav'
+    # test_analysis_feature(pat
