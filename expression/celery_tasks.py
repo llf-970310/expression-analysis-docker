@@ -148,7 +148,7 @@ def analysis_main(current_id, q_num):
             status = 'error'
 
     except Exception as e:
-        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location+"\npath:"+path
+        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location
         print(tr)
         logging.error('error happened during process task: %s' % e)
         status = 'error'
@@ -173,5 +173,5 @@ def analysis_wav_test(test_id):
 
 
 if __name__ == '__main__':
-    status = analysis_test("5cf8f83b52ab92fa6e12565b")
+    status = analysis_main("5d6735dd15b52d6910d22c14", "3")
     print(status)
