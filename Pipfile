@@ -11,7 +11,8 @@ python-levenshtein = "*"
 pymongo = "*"
 pypinyin = "*"
 zhon = "*"
-celery = {extras = ["redis"],version = "*"}
+kombu = "==4.6.3"
+celery = {version = "==4.3.0", extras = ["redis"]}
 pycrypto = "*"
 scipy = "*"
 requests = "*"
