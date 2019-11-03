@@ -3,17 +3,14 @@
 echo executing entrypoint.sh ...
 # celery worker -A celery_tasks.app -n worker_Qtype3 -Q q_type3 --loglevel=info --concurrency=30 &
 # celery worker -A celery_tasks.app -n worker_Qtype12 -Q q_type12 --loglevel=info --concurrency=30 &
-celery worker -P gevent -A celery_tasks.app -n %h_Type3_worker1 -Q q_type3 -l info -c 10 &
-celery worker -P gevent -A celery_tasks.app -n %h_Type3_worker2 -Q q_type3 -l info -c 10 &
-celery worker -P gevent -A celery_tasks.app -n %h_Type3_worker3 -Q q_type3 -l info -c 10 &
-celery worker -P gevent -A celery_tasks.app -n %h_Type12_worker1 -Q q_type12 -l info -c 10 &
-celery worker -P gevent -A celery_tasks.app -n %h_Type12_worker2 -Q q_type12 -l info -c 10 &
-celery worker -P gevent -A celery_tasks.app -n %h_Type12_worker3 -Q q_type12 -l info -c 10 &
-celery worker -P gevent -A celery_tasks.app -n %h_PreTest_worker1 -Q q_pre_test -l info -c 10 &
-celery worker -P gevent -A celery_tasks.app -n %h_PreTest_worker2 -Q q_pre_test -l info -c 10 &
-celery worker -P gevent -A celery_tasks.app -n %h_PreTest_worker3 -Q q_pre_test -l info -c 10
+# celery worker -A celery_tasks.app -n worker_Type123 -Q q_type3,q_type12 --loglevel=info --concurrency=10 &
 # celery multi start 2 -P gevent -A celery_tasks.app -n worker_Type3@%h -Q q_type3 -l info -c:1-2 15 &
 # celery multi start 2 -P gevent -A celery_tasks.app -n worker_Type12@%h -Q q_type12 -l info -c:1-2 15 &
-# celery worker -A celery_tasks.app -n worker_Type123 -Q q_type3,q_type12 --loglevel=info --concurrency=10 &
+celery worker -P gevent -A celery_tasks.app -n %h_PreTest_worker1 -Q q_pre_test -l info -c 15 &
+celery worker -P gevent -A celery_tasks.app -n %h_PreTest_worker2 -Q q_pre_test -l info -c 15 &
+celery worker -P gevent -A celery_tasks.app -n %h_Type12_worker1 -Q q_type12 -l info -c 15 &
+celery worker -P gevent -A celery_tasks.app -n %h_Type12_worker2 -Q q_type12 -l info -c 15 &
+celery worker -P gevent -A celery_tasks.app -n %h_Type3_worker1 -Q q_type3 -l info -c 15 &
+celery worker -P gevent -A celery_tasks.app -n %h_Type3_worker2 -Q q_type3 -l info -c 15
 
 # celery flower -A celery_tasks.app --address=0.0.0.0 --port=50080
