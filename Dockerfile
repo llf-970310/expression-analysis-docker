@@ -22,10 +22,10 @@ RUN apk add --no-cache make cmake gcc g++ gfortran && \
     apk del make cmake gcc g++ gfortran && \
     rm -rf /root/.cache/pip
 
-RUN pip install redis 'celery[redis]'  && \
-    pip install --upgrade https://github.com/celery/celery/tarball/master && \
+RUN pip install redis 'kombu==4.6.3' 'celery[redis]==4.3.0'  && \
+#    pip install --upgrade https://github.com/celery/celery/tarball/master && \
     pip install tornado==5.1.1 && \
-    pip install flower && \
+#    pip install flower && \
     rm -rf /root/.cache/pip
 
 RUN pip install requests && \
