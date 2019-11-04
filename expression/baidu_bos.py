@@ -44,7 +44,7 @@ if __name__ == '__main__':
 # for bucket in response.buckets:
 #     print(bucket.name)
 
-# ret = bos_client.put_object_from_string(bucket='ise-expression-bos', key='/test.txt', data='hello world')
+# ret = bos_client.put_object_from_string(bucket=bucket_name, key='/test.txt', data='hello world')
 # print(ret)
 # with open('net_test.wav', 'rb') as f:
 #     data = f.read()
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 # ret = bos_client.put_object_from_file(bucket=bucket_name, key='/test-BytesIO-file.wav', file_name=wf)
 # print(ret)
 # f2 = io.StringIO('hello world')
-# ret = bos_client.put_object_from_file(bucket='ise-expression-bos', key='/test.txt', file_name=f2)
+# ret = bos_client.put_object_from_file(bucket=bucket_name, key='/test.txt', file_name=f2)
 # print(ret)
 # logger = logging.getLogger("baidubce.http.bce_http_client")
 # logger.setLevel(logging.DEBUG)

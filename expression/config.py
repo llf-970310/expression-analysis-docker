@@ -30,10 +30,10 @@ BD_RCG_APP_ID = '15566115'
 BD_RCG_API_KEY = '6KBIuABS3kMI7R657yyfyHlC'
 BD_RCG_SECRET_KEY = 'kaTBEB3b9S3ySQrGbt7ZbRXWFw9Ro6wf'
 
-BD_BOS_AK = '62d41797b866439b88a516fc4c8e28df'  # chu
-BD_BOS_SK = '7b181acf3d5448e9b36e9e9eced6e3c8'
+BD_BOS_AK = '6ff21a46abcf4fa2828478d337f4f91b'  # parclab
+BD_BOS_SK = 'a244696b2607431090b4a0e7f5c0947a'
 BD_BOS_HOST = 'su.bcebos.com'
-BD_BOS_BUCKET = 'ise-expression-bos'
+BD_BOS_BUCKET = 'bos-parclab-exp'
 # --------------------------
 
 
