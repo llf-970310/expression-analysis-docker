@@ -112,11 +112,9 @@ def analysis_main(current_id, q_num):
         Q_type = q['q_type']
         if path is not None:
             if Q_type == 1:
-                feature = analysis_features.analysis1(path, q['text'], timeout=30)
-                score = analysis_scores.score1(feature)
+                feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='xunfei')
+                score = analysis_scores.score1(feature, rcg_interface='xunfei')
             # 默认百度识别，若用讯飞识别，需注明参数：
-            # feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='xunfei')
-            # score = analysis_scores.score1(feature,rcg_interface='xunfei')
             elif Q_type == 2:
                 key_weights = q['weights']['key']
                 detail_weights = q['weights']['detail']
