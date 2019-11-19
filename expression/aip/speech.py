@@ -15,7 +15,7 @@ class AipSpeech(AipBase):
         Aip Speech
     """
 
-    __asrUrl = 'https://vop.baidu.com/pro_api'
+    __asrUrl = 'https://vop.baidubce.com/pro_api'
 
     def _isPermission(self, authObj):
         """

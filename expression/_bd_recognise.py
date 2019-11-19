@@ -28,7 +28,9 @@ class RcgCore(object):  # 不再使用线程
         self.aip_speech.setSocketTimeoutInMillis(timeout * 1000)
 
     def run(self):
-        file_content = utils.read(self.wav_file, 'rb')
+        tmp_wav_path = io.BytesIO()
+        utils.wav_8kto16k(self.wav_file,tmp_wav_path)
+        file_content = utils.read(tmp_wav_path, 'rb')
         # print(len(file_content))
         max_retry = config.RCG_MAX_RETRY
         for retry in range(max_retry + 1):
@@ -36,7 +38,7 @@ class RcgCore(object):  # 不再使用线程
                 # 注明pcm而非wav，免去再次百度转换（可在一定情况下避免err3301：音质问题）
                 # 使用1537-8k 30qps测试
                 rst = self.aip_speech.asr(file_content, 'pcm', 16000,
-                                          {'dev_pid': 80001, 'lan': 'zh'})  # 1536是str，不是数字（报验证错误）
+                                          {'dev_pid': 80001, 'lan': 'zh'})
                 """
                dev_pid	语言	                     模型      是否有标点	    备注
                 1536	普通话(支持简单的英文识别)	搜索模型	    无标点	支持自定义词库
@@ -151,11 +153,11 @@ if __name__ == '__main__':
     # print(isinstance(result, str))
     # print(isinstance(result, dict))
 
-    wave_file_processed = io.BytesIO()
-    utils.wav_8kto16k('net_test.wav', wave_file_processed)
+    # wave_file_processed = io.BytesIO()
+    # utils.wav_8kto16k(, wave_file_processed)
 
     rcg_fp = io.StringIO()
-    rcg_and_save(wave_file_processed, rcg_fp, segments=3, timeout=10, stop_on_failure=True)
+    rcg_and_save('6.wav', rcg_fp, segments=3, timeout=10, stop_on_failure=True)
 
     print(utils.read(rcg_fp))
     print(time.time() - time1)
