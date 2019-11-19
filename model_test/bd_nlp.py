@@ -170,8 +170,8 @@ def emotion(text):
 
 
 if __name__ == '__main__':
-    print(divide_words(''))
-    # print(divide_words('我想吃饭'))
+    # print(divide_words(''))
+    print(divide_words('我想吃饭'))
     # print(smooth_of_text('我想吃饭'))
     # print(similar_of_texts('的', '麦当劳'))
     # print(text_classify('我不想吃饭'))

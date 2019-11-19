@@ -35,8 +35,8 @@ class RcgCore(object):  # 不再使用线程
             try:
                 # 注明pcm而非wav，免去再次百度转换（可在一定情况下避免err3301：音质问题）
                 # 使用1537-8k 30qps测试
-                rst = self.aip_speech.asr(file_content, 'pcm', 8000,
-                                          {'dev_pid': '1537', 'lan': 'zh'})  # 1536是str，不是数字（报验证错误）
+                rst = self.aip_speech.asr(file_content, 'pcm', 16000,
+                                          {'dev_pid': 80001, 'lan': 'zh'})  # 1536是str，不是数字（报验证错误）
                 """
                dev_pid	语言	                     模型      是否有标点	    备注
                 1536	普通话(支持简单的英文识别)	搜索模型	    无标点	支持自定义词库
@@ -140,6 +140,7 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, bd_appid=None, bd_a
 
 
 if __name__ == '__main__':
+    print(config.BD_RCG_APP_ID, config.BD_RCG_API_KEY, config.BD_RCG_SECRET_KEY)
     import time
     time1 = time.time()
     logging.basicConfig(level=logging.DEBUG,
@@ -151,7 +152,7 @@ if __name__ == '__main__':
     # print(isinstance(result, dict))
 
     wave_file_processed = io.BytesIO()
-    interval_list = utils.find_and_remove_intervals('net_test.wav', wave_file_processed)
+    utils.wav_8kto16k('net_test.wav', wave_file_processed)
 
     rcg_fp = io.StringIO()
     rcg_and_save(wave_file_processed, rcg_fp, segments=3, timeout=10, stop_on_failure=True)

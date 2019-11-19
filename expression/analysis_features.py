@@ -273,33 +273,6 @@ def analysis3(wave_file, wordbase, timeout=30, rcg_interface='baidu'):
     result['rcg_text'] = rcg_text
     # 字数
     result['num'] = feature_text.len_without_punctuation(rcg_text)
-    # 词性比例
-    # proportions = feature_text.proportion(rcg_text)
-    # all_words_num = proportions['all']
-    # if all_words_num == 0:
-    #     all_words_num = 1
-    # result['n_ratio'] = proportions['n'] / all_words_num
-    # result['v_ratio'] = proportions['v'] / all_words_num
-    # result['vd_ratio'] = proportions['vd'] / all_words_num
-    # result['vn_ratio'] = proportions['vn'] / all_words_num
-    # result['a_ratio'] = proportions['a'] / all_words_num
-    # result['ad_ratio'] = proportions['ad'] / all_words_num
-    # result['an_ratio'] = proportions['an'] / all_words_num
-    # result['d_ratio'] = proportions['d'] / all_words_num
-    # result['m_ratio'] = proportions['m'] / all_words_num
-    # result['q_ratio'] = proportions['q'] / all_words_num
-    # result['r_ratio'] = proportions['r'] / all_words_num
-    # result['p_ratio'] = proportions['p'] / all_words_num
-    # result['c_ratio'] = proportions['c'] / all_words_num
-    # result['u_ratio'] = proportions['u'] / all_words_num
-    # result['xc_ratio'] = proportions['xc'] / all_words_num
-    # result['w_ratio'] = proportions['w'] / all_words_num
-    # result['ne_ratio'] = proportions['ne'] / all_words_num
-    # result['word_num'] = all_words_num
-    # # noun frequency 名词 人名 地名 机构名 作品名 其他专名 专名识别缩略词
-    # nouns = proportions['nouns']
-    # result['noun_frequency_2'], result['noun_frequency_3'], result['noun_frequency_4'] = feature_text.words_frequency(
-    #     nouns)
     # sentence_num
     result['sentence_num'] = len(feature_text.divide_text_to_sentence(rcg_text))
     # 词库击中 谐音
@@ -325,4 +298,3 @@ def analysis3(wave_file, wordbase, timeout=30, rcg_interface='baidu'):
 
 if __name__ == '__main__':
     pass
-    # analysis1('audio/1/1.wav')

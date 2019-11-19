@@ -21,9 +21,9 @@ BD_NLP_APP_ID = '11624605'
 BD_NLP_API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
 BD_NLP_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
 
-BD_RCG_APP_ID = '14709218'
-BD_RCG_API_KEY = 'jvjUfrfUGsV5ZFycgGHMplGo'
-BD_RCG_SECRET_KEY = 'saHNIUKAe9SsnxjGSHrmhGMGzaA2zYak'
+BD_RCG_APP_ID = '17806567' # parclab.com注册的百度账号
+BD_RCG_API_KEY = '4AEOoAjSupTpev4pLz72SI2M'
+BD_RCG_SECRET_KEY = 'dUdOlfNGPG1kERSBwhqRuo6QnMTX32ME'
 # --------------------------
 
 

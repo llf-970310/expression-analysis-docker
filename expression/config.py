@@ -16,19 +16,15 @@ XF_EVL_CATEGORY = "read_chapter"
 # rcg_param
 XF_RCG_ENGINE_TYPE = "sms8k"
 
-# -------- ACCOUNTS -------- :just default accounts, overwritten in main.py
+# -------- ACCOUNTS --------
 XF_EVL_APP_ID = '5b482315'  # Ordinary account
 XF_EVL_API_KEY = 'd5eabc8c4a8ea2edb03f8e486d7076b3'
 XF_RCG_APP_ID = '5b482315'
 XF_RCG_API_KEY = '33d2e52fe4bdddae35e09026f2167867'
 
-BD_NLP_APP_ID = '11624605'
-BD_NLP_API_KEY = 'Fe0cUsrl9N5zmjhmkSoE0mzL'
-BD_NLP_SECRET_KEY = 'cbz66d97eOwKLnvYkzhgDEoSqgMuciWO'
-
-BD_RCG_APP_ID = '15566115'
-BD_RCG_API_KEY = '6KBIuABS3kMI7R657yyfyHlC'
-BD_RCG_SECRET_KEY = 'kaTBEB3b9S3ySQrGbt7ZbRXWFw9Ro6wf'
+BD_RCG_APP_ID = '17806567' # parclab.com注册的百度账号
+BD_RCG_API_KEY = '4AEOoAjSupTpev4pLz72SI2M'
+BD_RCG_SECRET_KEY = 'dUdOlfNGPG1kERSBwhqRuo6QnMTX32ME'
 
 BD_BOS_AK = '6ff21a46abcf4fa2828478d337f4f91b'  # parclab
 BD_BOS_SK = 'a244696b2607431090b4a0e7f5c0947a'

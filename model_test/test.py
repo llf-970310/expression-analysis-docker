@@ -13,7 +13,7 @@ import time
 import analysis_scores as analysis_scores
 import analysis_features as analysis_features
 import _xf_recognise as xf_recognise
-import model_test.db as db
+import db
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import spline

@@ -9,16 +9,13 @@ from .base import base64
 from .base import hashlib
 from .base import json
 
+
 class AipSpeech(AipBase):
     """
         Aip Speech
     """
 
-    # __asrUrl = 'http://vop.baidu.com/server_api'
-    __asrUrl = 'http://vop.baidubce.com/server_api'
-
-    # __ttsUrl = 'http://tsn.baidu.com/text2audio'
-    __ttsUrl = 'http://tsn.baidubce.com/text2audio'
+    __asrUrl = 'https://vop.baidu.com/pro_api'
 
     def _isPermission(self, authObj):
         """
@@ -78,25 +75,6 @@ class AipSpeech(AipBase):
         data = dict(data, **(options or {}))
 
         return self._request(self.__asrUrl, data)
-
-    def synthesis(self, text, lang='zh', ctp=1, options=None):
-        """
-            语音合成
-        """
-        data ={}
-
-        data['tex'] = text
-        data['lan'] = lang
-        data['ctp'] = ctp
-
-        data = dict(data, **(options or {}))
-
-        result = self._request(self.__ttsUrl, data)
-
-        if '__json_decode_error' in result:
-            return result['__json_decode_error']
-
-        return result
 
 
 
