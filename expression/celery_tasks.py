@@ -139,7 +139,14 @@ def analysis_main(current_id, q_num):
         status = 'error'
 
     logging.info('Score: %s' % score)
-    mongo.save_result(current_id, q_num, user_answer_info, feature, score, status=status, stack=tr)
+    tries = 1
+    while tries <= 3:
+        try:
+            mongo.save_result(current_id, q_num, user_answer_info, feature, score, status=status, stack=tr)
+            tries = 99
+        except Exception as e:
+            logging.exception('Exception(tries:%d/3) saving (%s) result to mongodb: %s' % (tries, current_id, str(e)))
+            tries += 1
     return status
 
 
