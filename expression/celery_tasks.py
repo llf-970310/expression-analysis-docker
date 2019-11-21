@@ -18,7 +18,6 @@ from kombu import Queue, Exchange
 
 app = Celery('tasks', broker=config.Celery_broker, backend=config.Celery_backend)
 
-
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
@@ -46,6 +45,20 @@ CELERY_ROUTES = {
     'app.tasks.analysis_main': {'queue': 'default'},
 }
 
+
+def _get_file(file_key, location='bos'):
+    cnt = 0
+    file = None
+    while cnt <= 10:
+        file = baidu_bos.get_file(file_key, location=location)
+        if file is not None:
+            break
+        else:
+            time.sleep(2)
+            cnt += 1
+    return file
+
+
 def analysis_test(test_id):
     logging.info("test_id: %s" % test_id)
 
@@ -53,39 +66,34 @@ def analysis_test(test_id):
     wav_test_info = mongo.get_wav_test_info(test_id)
 
     result = {"status": "finished", "feature": {}}
+    audio_key = ''
+    file_location = ''
     try:
         file_location = wav_test_info.get('file_location', 'local')
         audio_key = wav_test_info['wav_upload_url']
-        count = 0
-        path = baidu_bos.get_file(audio_key, location=file_location)
-        while path is None:
-            time.sleep(2)
-            path = baidu_bos.get_file(audio_key, location=file_location)
-            count += 1
-            if count > 10:
-                break 
-        if path is not None:
-            result["feature"] = analysis_features.analysis1(path, wav_test_info['text'], timeout=30)
+        file = _get_file(audio_key, file_location)
+        if file is not None:
+            result["feature"] = analysis_features.analysis1(file, wav_test_info['text'], timeout=30)
+        else:
+            logging.error('pre-test: Finally failed to get audio file from %s after retries.' % file_location)
     except Exception as e:
-        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location+"\npath:"+path
+        tr = traceback.format_exc() + "\naudio:" + audio_key + "\nfile_location:" + file_location
         print(tr)
         logging.error('error happened during process task: %s' % e)
         result["status"] = 'error'
     mongo.save_test_result(test_id, result)
     return result["status"]
-    
+
 
 def analysis_main(current_id, q_num):
     # current_id = "5bcde8f30b9e037b1f67ba4e"
     # q_num = "2"
-    global path
     logging.info("current_id: %s, q_num: %s" % (current_id, q_num))
 
     mongo = db.Mongo()
 
     feature = {}
     score = 0
-    status = 'finished'
     tr = None
     # feature = get_feature(wf, q)
     # score = get_score(q, feature)
@@ -100,40 +108,33 @@ def analysis_main(current_id, q_num):
     try:
         file_location = user_answer_info.get('file_location', 'local')
         audio_key = user_answer_info['wav_upload_url']
-        count = 0
-        path = baidu_bos.get_file(audio_key, location=file_location)
-        while path is None:
-            time.sleep(2)
-            path = baidu_bos.get_file(audio_key, location=file_location)
-            count += 1
-            if count > 10:
-                break
-
         Q_type = q['q_type']
-        if path is not None:
+        file = _get_file(audio_key, file_location)
+        if file is not None:
             if Q_type == 1:
                 # 默认用百度识别
-                feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='baidu')
+                feature = analysis_features.analysis1(file, q['text'], timeout=30, rcg_interface='baidu')
                 score = analysis_scores.score1(feature, rcg_interface='baidu')
-                # feature = analysis_features.analysis1(path, q['text'], timeout=30, rcg_interface='xunfei')
+                # feature = analysis_features.analysis1(file, q['text'], timeout=30, rcg_interface='xunfei')
                 # score = analysis_scores.score1(feature,rcg_interface='xunfei')
             elif Q_type == 2:
                 key_weights = q['weights']['key']
                 detail_weights = q['weights']['detail']
-                feature = analysis_features.analysis2(path, q['wordbase'], timeout=30)
+                feature = analysis_features.analysis2(file, q['wordbase'], timeout=30)
                 score = analysis_scores.score2(feature['key_hits'], feature['detail_hits'], key_weights, detail_weights)
             elif Q_type == 3:
-                feature = analysis_features.analysis3(path, q['wordbase'], timeout=30)
+                feature = analysis_features.analysis3(file, q['wordbase'], timeout=30)
                 score = analysis_scores.score3(feature)
             else:
                 logging.error('Invalid question type: %s' % Q_type)
             status = 'finished'
             tr = None
         else:
+            logging.error('analysis_main: Finally failed to get audio file from %s after retries.' % file_location)
             status = 'error'
 
     except Exception as e:
-        tr = traceback.format_exc()+"\naudio:"+audio_key+"\nfile_location:"+file_location
+        tr = traceback.format_exc() + "\naudio:" + audio_key + "\nfile_location:" + file_location
         print(tr)
         logging.error('error happened during process task: %s' % e)
         status = 'error'
@@ -143,7 +144,7 @@ def analysis_main(current_id, q_num):
     while tries <= 3:
         try:
             mongo.save_result(current_id, q_num, user_answer_info, feature, score, status=status, stack=tr)
-            tries = 99
+            break
         except Exception as e:
             logging.exception('Exception(tries:%d/3) saving (%s) result to mongodb: %s' % (tries, current_id, str(e)))
             tries += 1
@@ -159,11 +160,12 @@ def analysis_main_12(current_id, q_num):
 def analysis_main_3(current_id, q_num):
     return analysis_main(current_id, q_num)
 
+
 @app.task
 def analysis_wav_test(test_id):
     return analysis_test(test_id)
 
 
 if __name__ == '__main__':
-    status = analysis_main("5d6735dd15b52d6910d22c14", "3")
-    print(status)
+    status1 = analysis_main("5d6735dd15b52d6910d22c14", "3")
+    print(status1)
