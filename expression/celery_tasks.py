@@ -3,7 +3,6 @@
 #
 # Created by dylanchu on 18-8-18
 
-import os
 import logging
 import traceback
 import baidu_bos
@@ -24,7 +23,6 @@ logging.basicConfig(level=logging.DEBUG,
 # 配置队列
 CELERY_QUEUES = (
     # Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', consumer_arguments={'x-priority': 10}),
-    # Queue('for_q_type12', Exchange('for_q_type12'), routing_key='for_q_type12', consumer_arguments={'x-priority': 1}),
     Queue('q_type3', Exchange('q_type3'), routing_key='q_type3', queue_arguments={'x-max-priority': 100}),
     Queue('q_type12', Exchange('q_type12'), routing_key='q_type12', queue_arguments={'x-max-priority': 2}),
     Queue('q_pre_test', Exchange('q_pre_test'), routing_key='q_pre_test', queue_arguments={'x-max-priority': 500}),
@@ -89,24 +87,19 @@ def analysis_test(test_id):
 
 
 def analysis_main(current_id, q_num):
-    # current_id = "5bcde8f30b9e037b1f67ba4e"
-    # q_num = "2"
     logging.info("current_id: %s, q_num: %s" % (current_id, q_num))
-
-    mongo = db.Mongo()
-
     feature = {}
     score = 0
     tr = None
-    # feature = get_feature(wf, q)
-    # score = get_score(q, feature)
+    file_location = ''
+    audio_key = ''
+
+    mongo = db.Mongo()
 
     user_answer_info = mongo.get_user_answer_info(current_id, q_num)
     # 要使用传入的 q_num 而不使用 current表中的 current_q_num，因为 current_q_num 只是django维护的临时标记，随时会改变。
 
     q = mongo.get_problem(user_answer_info['q_id'])
-    file_location = ''
-    audio_key = ''
 
     try:
         file_location = user_answer_info.get('file_location', 'local')
