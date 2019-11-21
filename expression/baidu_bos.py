@@ -18,26 +18,23 @@ bos_host = config.BD_BOS_HOST
 bucket_name = config.BD_BOS_BUCKET
 
 
-def get_file(path, location='bos'):
-    if location == 'bos' or location == 'BOS':
-        logger = logging.getLogger("baidubce.http.bce_http_client")
-        logger.setLevel(logging.DEBUG)
-        logging.info('Getting file from Baidu BOS...')
+def get_file(path):
+    logger = logging.getLogger("baidubce.http.bce_http_client")
+    logger.setLevel(logging.DEBUG)
+    logging.info('Getting file from Baidu BOS...')
 
-        bos_config = BceClientConfiguration(credentials=BceCredentials(access_key_id, secret_access_key),
-                                            endpoint=bos_host)
-        bos_client = BosClient(bos_config)
-        content = bos_client.get_object_as_string(bucket_name=bucket_name, key=path)
-        audio = io.BytesIO(content)  # this would auto seek(0)
-        return audio
-    elif location == 'local' or location == 'LOCAL':
-        return '/expression/%s' % path
+    bos_config = BceClientConfiguration(credentials=BceCredentials(access_key_id, secret_access_key),
+                                        endpoint=bos_host)
+    bos_client = BosClient(bos_config)
+    content = bos_client.get_object_as_string(bucket_name=bucket_name, key=path)
+    audio = io.BytesIO(content)  # this would auto seek(0)
+    return audio
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
-    print(get_file('audio/2019-05-21/5c939bb4cb08361b85b63be9/1558444193r688.wav','BOS'))  # BOS默认目录是根目录，最前有无/都可以
+    print(get_file('audio/2019-05-21/5c939bb4cb08361b85b63be9/1558444193r688.wav'))  # BOS默认目录是根目录，最前有无/都可以
     # print(get_file('/audio/batchtest/1.wav'))
 
 # response = bos_client.list_buckets()

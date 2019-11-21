@@ -47,16 +47,19 @@ CELERY_ROUTES = {
 
 
 def _get_file(file_key, location='bos'):
-    cnt = 0
-    file = None
-    while cnt <= 10:
-        file = baidu_bos.get_file(file_key, location=location)
-        if file is not None:
-            break
-        else:
-            time.sleep(2)
-            cnt += 1
-    return file
+    if location == 'bos' or location == 'BOS':
+        cnt = 0
+        file = None
+        while cnt <= 10:
+            file = baidu_bos.get_file(file_key)
+            if file is not None:
+                break
+            else:
+                time.sleep(2)
+                cnt += 1
+        return file
+    elif location == 'local' or location == 'LOCAL':
+        return '/expression/%s' % file_key
 
 
 def analysis_test(test_id):
