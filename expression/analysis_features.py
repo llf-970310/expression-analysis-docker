@@ -86,8 +86,11 @@ def analysis1(wave_file, std_text, timeout=30, rcg_interface='baidu', segments=c
         base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout,
                                     segments=segments, rcg_interface=rcg_interface)
         temp = json.loads(rcg_result_file.getvalue()).get('data')
-        if temp and len(temp) == config.SEGMENTS_RCG2:
-            rcg_text = ''.join(temp)
+        if temp :
+            if  type(temp) == list and len(temp) == segments:
+                rcg_text = ''.join(temp)
+            else:
+                rcg_text = temp
         else:
             rcg_text = ''
         result['rcg_text'] = rcg_text

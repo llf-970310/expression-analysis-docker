@@ -133,10 +133,7 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, x_appid=None, api_k
         if rcg_result[0] is None:
             rcgs_dict[0] = {'code': '0', 'data': '', 'desc': 'None'}
 
-        if segments == 0:  # 自动分段的结果自动合并
-            rcgs_dict[0]['data'] = ''.join(data_lst)
-        else:  # 手动指定分段的保存各次识别结果为列表
-            rcgs_dict[0]['data'] = data_lst  # 结果列表不要转为字符串 tangdaye 11-04
+        rcgs_dict[0]['data'] = data_lst  # 结果一直是列表，如果只有一段就是长度为1的列表 tangdaye 11-21
         utils.write(rcg_fp, json.dumps(rcgs_dict[0], ensure_ascii=False), 'w')  # dump as utf-8
     if isinstance(rcg_fp, str):
         if not os.path.exists(rcg_fp):
