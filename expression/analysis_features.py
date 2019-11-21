@@ -25,7 +25,7 @@ Output: feature列表
 """
 
 
-def analysis1(wave_file, std_text, timeout=30, rcg_interface='baidu'):
+def analysis1(wave_file, std_text, timeout=30, rcg_interface='baidu', segments=config.SEGMENTS_RCG1):
     result = {
         'rcg_text': '',
         'rcg_interface': rcg_interface,
@@ -84,7 +84,7 @@ def analysis1(wave_file, std_text, timeout=30, rcg_interface='baidu'):
     elif rcg_interface == 'baidu':
         # rcg_text，百度需要分段
         base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, timeout=timeout,
-                                    segments=config.SEGMENTS_RCG1, rcg_interface=rcg_interface)
+                                    segments=segments, rcg_interface=rcg_interface)
         temp = json.loads(rcg_result_file.getvalue()).get('data')
         if temp and len(temp) == config.SEGMENTS_RCG2:
             rcg_text = ''.join(temp)

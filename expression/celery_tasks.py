@@ -3,6 +3,7 @@
 #
 # Created by dylanchu on 18-8-18
 
+import datetime
 import logging
 import traceback
 import baidu_bos
@@ -74,7 +75,9 @@ def analysis_test(test_id):
         audio_key = wav_test_info['wav_upload_url']
         file = _get_file(audio_key, file_location)
         if file is not None:
-            result["feature"] = analysis_features.analysis1(file, wav_test_info['text'], timeout=30)
+            result['feature'] = analysis_features.analysis1(file, wav_test_info['text'], timeout=30,
+                                                            rcg_interface='baidu', segments=1)
+            result['analysis_end_time'] = datetime.datetime.utcnow()
         else:
             logging.error('pre-test: Finally failed to get audio file from %s after retries.' % file_location)
     except Exception as e:
