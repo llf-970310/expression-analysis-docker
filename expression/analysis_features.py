@@ -264,7 +264,7 @@ def analysis3(wave_file, wordbase, timeout=30, rcg_interface='baidu'):
     # 识别用擦除过的文件，显式指定分段
     rcg_result_file = io.StringIO()
     base_recognise.rcg_and_save(wave_file_processed, rcg_result_file, segments=config.SEGMENTS_RCG3, timeout=timeout,
-                                rcg_interface=rcg_interface, use_pro_api=False)
+                                rcg_interface=rcg_interface, use_pro_api=True)  # pro_api: 极速版50qps,16k
     temp = json.loads(rcg_result_file.getvalue()).get('data')
     if temp and len(temp) == config.SEGMENTS_RCG3:
         rcg_text = ''.join(temp)
