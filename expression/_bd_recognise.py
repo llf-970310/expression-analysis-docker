@@ -5,6 +5,7 @@
 
 import logging
 import os
+import time
 import json
 import wave
 from math import ceil
@@ -149,23 +150,23 @@ def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, bd_appid=None, bd_a
             utils.write(rcg_fp, json.dumps(rcg_dict, ensure_ascii=False), 'w')  # dump as utf-8
 
 
-if __name__ == '__main__':
-    print(config.BD_RCG_APP_ID, config.BD_RCG_API_KEY, config.BD_RCG_SECRET_KEY)
-    import time
-    time1 = time.time()
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
-
-    # result = rcg(config.WAV_FILE_PATH, segments=1, timeout=100)
-    # rcg(config.WAV_FILE_PATH, timeout=10, segments=3)
-    # print(isinstance(result, str))
-    # print(isinstance(result, dict))
-
-    # wave_file_processed = io.BytesIO()
-    # utils.wav_8kto16k(, wave_file_processed)
-
-    rcg_fp = io.StringIO()
-    rcg_and_save('6.wav', rcg_fp, segments=3, timeout=10, stop_on_failure=True, use_pro_api=True)
-
-    print(utils.read(rcg_fp))
-    print(time.time() - time1)
+# if __name__ == '__main__':
+#     print(config.BD_RCG_APP_ID, config.BD_RCG_API_KEY, config.BD_RCG_SECRET_KEY)
+#     import time
+#     time1 = time.time()
+#     logging.basicConfig(level=logging.DEBUG,
+#                         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
+#
+#     # result = rcg(config.WAV_FILE_PATH, segments=1, timeout=100)
+#     # rcg(config.WAV_FILE_PATH, timeout=10, segments=3)
+#     # print(isinstance(result, str))
+#     # print(isinstance(result, dict))
+#
+#     # wave_file_processed = io.BytesIO()
+#     # utils.wav_8kto16k(, wave_file_processed)
+#
+#     rcg_fp = io.StringIO()
+#     rcg_and_save('6.wav', rcg_fp, segments=3, timeout=10, stop_on_failure=True, use_pro_api=True)
+#
+#     print(utils.read(rcg_fp))
+#     print(time.time() - time1)
