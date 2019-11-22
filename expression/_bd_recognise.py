@@ -17,7 +17,7 @@ aip_speech = AipSpeech(config.BD_RCG_APP_ID, config.BD_RCG_API_KEY, config.BD_RC
 
 
 class RcgCore(object):  # 不再使用线程
-    def __init__(self, wav_file, timeout=600, bd_appid=None, bd_api_key=None, bd_secret_key=None):
+    def __init__(self, wav_file, timeout=600, bd_appid=None, bd_api_key=None, bd_secret_key=None, use_pro_api=True):
         self.wav_file = wav_file
         self.result = None
         if bd_appid and bd_api_key and bd_secret_key:
@@ -26,19 +26,27 @@ class RcgCore(object):  # 不再使用线程
             self.aip_speech = aip_speech
         self.aip_speech.setConnectionTimeoutInMillis(timeout * 1000)
         self.aip_speech.setSocketTimeoutInMillis(timeout * 1000)
+        self.use_pro_api = use_pro_api
 
     def run(self):
-        tmp_wav_path = io.BytesIO()
-        utils.wav_8kto16k(self.wav_file,tmp_wav_path)
-        file_content = utils.read(tmp_wav_path, 'rb')
+        if self.use_pro_api:
+            tmp_wav_path = io.BytesIO()
+            utils.wav_8kto16k(self.wav_file,tmp_wav_path)
+            file_content = utils.read(tmp_wav_path, 'rb')
+        else:
+            file_content = utils.read(self.wav_file, 'rb')
         # print(len(file_content))
         max_retry = config.RCG_MAX_RETRY
         for retry in range(max_retry + 1):
             try:
                 # 注明pcm而非wav，免去再次百度转换（可在一定情况下避免err3301：音质问题）
                 # 使用1537-8k 30qps测试
-                rst = self.aip_speech.asr(file_content, 'pcm', 16000,
-                                          {'dev_pid': 80001, 'lan': 'zh'})
+                if self.use_pro_api:
+                    rst = self.aip_speech.asr_pro(file_content, 'pcm', 16000,
+                                            {'dev_pid': 80001, 'lan': 'zh'})
+                else:
+                    rst = self.aip_speech.asr(file_content, 'pcm', 8000,
+                                            {'dev_pid': '1537', 'lan': 'zh'})
                 """
                dev_pid	语言	                     模型      是否有标点	    备注
                 1536	普通话(支持简单的英文识别)	搜索模型	    无标点	支持自定义词库
@@ -68,7 +76,7 @@ class RcgCore(object):  # 不再使用线程
         return self.result
 
 
-def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_secret_key=None) -> dict:
+def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_secret_key=None,use_pro_api=True) -> dict:
     # 音频切段：
     segment_files = {}
     if isinstance(wav_file, io.BytesIO):
@@ -95,7 +103,7 @@ def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_s
     # 识别：
     results = {}
     for i in range(segments):
-        job = RcgCore(segment_files[i], timeout, bd_appid, bd_api_key, bd_secret_key)
+        job = RcgCore(segment_files[i], timeout, bd_appid, bd_api_key, bd_secret_key, use_pro_api)
         job.run()
         results[i] = job.get_result()
     logging.debug('summarized rcg results: %s' % results)
@@ -103,9 +111,9 @@ def _rcg(wav_file, timeout=600, segments=0, bd_appid=None, bd_api_key=None, bd_s
 
 
 def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, bd_appid=None, bd_api_key=None, bd_secret_key=None,
-                 stop_on_failure=True):
+                 stop_on_failure=True, use_pro_api=True):
     rcg_result = _rcg(wave_file, segments=segments, timeout=timeout, bd_appid=bd_appid, bd_api_key=bd_api_key,
-                      bd_secret_key=bd_secret_key)
+                      bd_secret_key=bd_secret_key, use_pro_api=use_pro_api)
     if rcg_result:
         data_lst = []
         for i in range(len(rcg_result)):

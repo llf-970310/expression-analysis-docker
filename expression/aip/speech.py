@@ -15,7 +15,8 @@ class AipSpeech(AipBase):
         Aip Speech
     """
 
-    __asrUrl = 'https://vop.baidubce.com/pro_api'
+    __asrProUrl = 'https://vop.baidubce.com/pro_api'
+    __asrUrl = 'http://vop.baidubce.com/server_api'
 
     def _isPermission(self, authObj):
         """
@@ -56,6 +57,25 @@ class AipSpeech(AipBase):
             return {
                 '__json_decode_error': content,
             }
+
+    def asr_pro(self, speech=None, format='pcm', rate=16000, options=None):
+        """
+            语音识别
+        """
+
+        data = {}
+
+        if speech:
+            data['speech'] = base64.b64encode(speech).decode()
+            data['len'] = len(speech)
+
+        data['channel'] = 1
+        data['format'] = format
+        data['rate'] = rate
+
+        data = dict(data, **(options or {}))
+
+        return self._request(self.__asrProUrl, data)
 
     def asr(self, speech=None, format='pcm', rate=16000, options=None):
         """

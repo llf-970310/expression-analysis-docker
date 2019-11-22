@@ -10,13 +10,14 @@ import _bd_recognise
 def rcg_and_save(wave_file, rcg_fp, segments=0, timeout=600, stop_on_failure=True,
                  x_appid=None, api_key=None,
                  bd_appid=None, bd_api_key=None, bd_secret_key=None,
-                 rcg_interface='baidu'):
+                 rcg_interface='baidu',use_pro_api=True):
     if rcg_interface == 'xunfei':
         return _xf_recognise.rcg_and_save(wave_file, rcg_fp, segments, timeout, stop_on_failure=stop_on_failure,
                                           x_appid=x_appid, api_key=api_key)
     else:
         return _bd_recognise.rcg_and_save(wave_file, rcg_fp, segments, timeout, stop_on_failure=stop_on_failure,
-                                          bd_appid=bd_appid, bd_api_key=bd_api_key, bd_secret_key=bd_secret_key)
+                                          bd_appid=bd_appid, bd_api_key=bd_api_key, bd_secret_key=bd_secret_key,
+                                          use_pro_api=use_pro_api)
 
 
 if __name__ == '__main__':
