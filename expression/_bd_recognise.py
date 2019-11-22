@@ -60,6 +60,9 @@ class RcgCore(object):  # 不再使用线程
                     self.result = rst['result'][0]  # rcg text
                     logging.debug("Recognition: %s" % self.result)
                     break
+                elif rst['err_no'] == 3304 or rst['err_no'] == '3304':  # qps超限，等待一秒
+                    logging.warning('qps超限(等待1秒)：%s' % rst.get('err_msg'))
+                    time.sleep(1)
                 elif rst['err_no'] == 3301:  # 音质差，返回空结果，不再重试
                     self.result = ''
                     logging.warning('音频质量差：%s' % rst.get('err_msg'))
