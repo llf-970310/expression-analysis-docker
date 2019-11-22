@@ -31,6 +31,9 @@ RUN pip install redis 'kombu==4.6.3' 'celery[redis]==4.3.0'  && \
 RUN pip install requests && \
     rm -rf /root/.cache/pip
 
+RUN pip install 'celery[gevent]' 'celery[threads]' 'celery[redis]==4.3.0'  && \
+    rm -rf /root/.cache/pip
+
 EXPOSE 50080
 
 COPY expression /expression
