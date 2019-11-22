@@ -43,10 +43,10 @@ class RcgCore(object):  # 不再使用线程
                 # 使用1537-8k 30qps测试
                 if self.use_pro_api:
                     rst = self.aip_speech.asr_pro(file_content, 'pcm', 16000,
-                                            {'dev_pid': 80001, 'lan': 'zh'})
+                                            {'dev_pid': 80001})
                 else:
                     rst = self.aip_speech.asr(file_content, 'pcm', 8000,
-                                            {'dev_pid': '1537', 'lan': 'zh'})
+                                            {'dev_pid': 1537})
                 """
                dev_pid	语言	                     模型      是否有标点	    备注
                 1536	普通话(支持简单的英文识别)	搜索模型	    无标点	支持自定义词库
@@ -162,7 +162,7 @@ if __name__ == '__main__':
     # utils.wav_8kto16k(, wave_file_processed)
 
     rcg_fp = io.StringIO()
-    rcg_and_save('6.wav', rcg_fp, segments=3, timeout=10, stop_on_failure=True)
+    rcg_and_save('6.wav', rcg_fp, segments=3, timeout=10, stop_on_failure=True, use_pro_api=True)
 
     print(utils.read(rcg_fp))
     print(time.time() - time1)

@@ -85,7 +85,6 @@ class AipBase(object):
             result = self._validate(url, data)
             if result != True:
                 return result
-
             authObj = self._auth()
             params = self._getParams(authObj)
 

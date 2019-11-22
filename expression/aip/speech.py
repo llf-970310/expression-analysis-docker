@@ -35,11 +35,8 @@ class AipSpeech(AipBase):
         if not data.get('cuid', ''):
             data['cuid'] = hashlib.md5(token.encode()).hexdigest()
 
-        if url == self.__asrUrl:
-            data['token'] = token
-            data = json.dumps(data)
-        else:
-            data['tok'] = token
+        data['token'] = token
+        data = json.dumps(data)
 
         if 'access_token' in params:
             del params['access_token']
