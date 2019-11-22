@@ -12,8 +12,6 @@ celery worker -P gevent -A celery_tasks.app -n $this_ip"-Qt-Pre_p1" -Q q_pre_tes
 celery worker -P gevent -A celery_tasks.app -n $this_ip"-Qt-12_p1" -Q q_type12 -l info -c 12 &
 celery worker -P gevent -A celery_tasks.app -n $this_ip"-Qt-12_p2" -Q q_type12 -l info -c 13 &
 celery worker -P gevent -A celery_tasks.app -n $this_ip"-Qt-3_p1" -Q q_type3 -l info -c 8 &
-celery worker -P gevent -A celery_tasks.app -n $this_ip"-Qt-3_p2" -Q q_type3 -l info -c 8 &
-celery worker -P gevent -A celery_tasks.app -n $this_ip"-Qt-3_p3" -Q q_type3 -l info -c 8 &
-celery worker -P gevent -A celery_tasks.app -n $this_ip"-Qt-3_p4" -Q q_type3 -l info -c 6
+celery worker -P gevent -A celery_tasks.app -n $this_ip"-Qt-3_p4" -Q q_type3 -l info -c 8
 
 # celery flower -A celery_tasks.app --address=0.0.0.0 --port=50080
