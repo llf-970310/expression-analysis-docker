@@ -6,6 +6,8 @@
 import datetime
 import logging
 import traceback
+from io import BytesIO
+
 import baidu_bos
 import config
 import db
@@ -15,6 +17,7 @@ import time
 
 from celery import Celery
 from kombu import Queue, Exchange
+from utils_ffmpeg import m4a2wav_bytes_io
 
 app = Celery('tasks', broker=config.Celery_broker, backend=config.Celery_backend)
 
@@ -45,20 +48,23 @@ CELERY_ROUTES = {
 }
 
 
-def _get_file(file_key, location='bos'):
+def _get_BytesIO_file(file_key, location='bos'):
+    file = None
     if location == 'bos' or location == 'BOS':
         cnt = 0
-        file = None
         while cnt <= 10:
-            file = baidu_bos.get_file(file_key)
+            file = baidu_bos.get_BytesIO_file(file_key)
             if file is not None:
                 break
             else:
                 time.sleep(2)
                 cnt += 1
-        return file
     elif location == 'local' or location == 'LOCAL':
-        return '/expression/%s' % file_key
+        with open(file_key, 'rb') as f:
+            file = BytesIO(f.read())
+    if file_key.strip().endswith('.m4a'):  # 小程序的m4a转换为pcm
+        file = m4a2wav_bytes_io(file)
+    return file
 
 
 def analysis_test(test_id):
@@ -73,7 +79,7 @@ def analysis_test(test_id):
     try:
         file_location = wav_test_info.get('file_location', 'local')
         audio_key = wav_test_info['wav_upload_url']
-        file = _get_file(audio_key, file_location)
+        file = _get_BytesIO_file(audio_key, file_location)
         if file is not None:
             result['feature'] = analysis_features.analysis1(file, wav_test_info['text'], timeout=30,
                                                             rcg_interface='baidu', segments=1)
@@ -108,7 +114,7 @@ def analysis_main(current_id, q_num):
         file_location = user_answer_info.get('file_location', 'local')
         audio_key = user_answer_info['wav_upload_url']
         Q_type = q['q_type']
-        file = _get_file(audio_key, file_location)
+        file = _get_BytesIO_file(audio_key, file_location)
         if file is not None:
             if Q_type == 1:
                 # 默认用百度识别
@@ -165,6 +171,6 @@ def analysis_wav_test(test_id):
     return analysis_test(test_id)
 
 
-if __name__ == '__main__':
-    status1 = analysis_main("5d6735dd15b52d6910d22c14", "3")
-    print(status1)
+# if __name__ == '__main__':
+#     status1 = analysis_main("5d6735dd15b52d6910d22c14", "3")
+#     print(status1)

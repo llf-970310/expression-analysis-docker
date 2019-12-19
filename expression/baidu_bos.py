@@ -18,7 +18,7 @@ bos_host = config.BD_BOS_HOST
 bucket_name = config.BD_BOS_BUCKET
 
 
-def get_file(path):
+def get_BytesIO_file(path):
     logger = logging.getLogger("baidubce.http.bce_http_client")
     logger.setLevel(logging.DEBUG)
     logging.info('Getting file from Baidu BOS...')
@@ -34,8 +34,8 @@ def get_file(path):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
-    print(get_file('audio/2019-05-21/5c939bb4cb08361b85b63be9/1558444193r688.wav'))  # BOS默认目录是根目录，最前有无/都可以
-    # print(get_file('/audio/batchtest/1.wav'))
+    print(get_BytesIO_file('audio/2019-05-21/5c939bb4cb08361b85b63be9/1558444193r688.wav'))  # BOS默认目录是根目录，最前有无/都可以
+    # print(get_BytesIO_file('/audio/batchtest/1.wav'))
 
 # response = bos_client.list_buckets()
 # for bucket in response.buckets:
