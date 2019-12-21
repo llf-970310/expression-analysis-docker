@@ -31,6 +31,8 @@ RUN pip install redis 'kombu==4.6.3' 'celery[redis]==4.3.0'  && \
 RUN pip install requests && \
     rm -rf /root/.cache/pip
 
+RUN apk add --no-cache ffmpeg
+
 EXPOSE 50080
 
 COPY expression /expression
