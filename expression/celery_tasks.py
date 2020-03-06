@@ -156,18 +156,18 @@ def analysis_main(current_id, q_num):
     return status
 
 
-@app.task
+@app.task(name='analysis_12')
 def analysis_main_12(current_id, q_num):
     return analysis_main(current_id, q_num)
 
 
-@app.task
+@app.task(name='analysis_3')
 def analysis_main_3(current_id, q_num):
     return analysis_main(current_id, q_num)
 
 
-@app.task
-def analysis_wav_test(test_id):
+@app.task(name='analysis_pretest')
+def analysis_wav_pretest(test_id):
     return analysis_test(test_id)
 
 
