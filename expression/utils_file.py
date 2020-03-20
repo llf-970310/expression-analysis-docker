@@ -54,15 +54,20 @@ def get_wav_file_bytes_io(file_key, location='bos', bos_retries=10, retry_interv
     if location.lower() == 'bos':
         cnt = 0
         while cnt <= bos_retries:
-            file = get_bos_file_bytes_io(file_key)
-            if file is not None:
-                break
-            else:
+            try:
+                file = get_bos_file_bytes_io(file_key)
+                if file:
+                    break
+                cnt += 1  # 保安全，万一不except
+            except Exception as e:
+                print('Exception on retry %s:%s' % (cnt, e))
                 time.sleep(retry_interval)
                 cnt += 1
     elif location.lower() == 'local':
         with open(file_key, 'rb') as f:
             file = io.BytesIO(f.read())
+    if file is None:
+        raise Exception('Failed to get file from BOS after retries %s' % bos_retries)
     if file_key.strip().endswith('.m4a'):  # 小程序的m4a转换为pcm
         file = bytes_io_m4a2wav(file)
     return file

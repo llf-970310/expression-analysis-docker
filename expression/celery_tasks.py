@@ -65,6 +65,7 @@ def analysis_main(current_id, q_num):
 
     q = mongo.get_problem(user_answer_info['q_id'])
 
+    celery_result = 'no exception or been caught'
     try:
         file_location = user_answer_info.get('file_location', 'local')
         audio_key = user_answer_info['wav_upload_url']
@@ -98,6 +99,7 @@ def analysis_main(current_id, q_num):
         print(tr)
         logging.error('error happened during process task: %s' % e)
         status = 'error'
+        celery_result = str(e)
 
     logging.info('Score: %s' % score)
     tries = 1
@@ -108,7 +110,7 @@ def analysis_main(current_id, q_num):
         except Exception as e:
             logging.exception('Exception(tries:%d/3) saving (%s) result to mongodb: %s' % (tries, current_id, str(e)))
             tries += 1
-    return status
+    return celery_result
 
 
 @app.task(name='analysis_12')
