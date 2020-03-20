@@ -6,65 +6,20 @@
 import datetime
 import logging
 import traceback
-from io import BytesIO
+from celery import Celery
 
-import baidu_bos
+from utils_file import get_wav_file_bytes_io
+import celery_config
 import config
 import db
 import analysis_features
 import analysis_scores
-import time
-
-from celery import Celery
-from kombu import Queue, Exchange
-from utils_ffmpeg import m4a2wav_bytes_io
 
 app = Celery('tasks', broker=config.Celery_broker, backend=config.Celery_backend)
+app.config_from_object(celery_config)
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
-
-# 配置队列
-CELERY_QUEUES = (
-    # Queue('for_q_type3', Exchange('for_q_type3'), routing_key='for_q_type3', consumer_arguments={'x-priority': 10}),
-    Queue('q_type3', Exchange('q_type3'), routing_key='q_type3', queue_arguments={'x-max-priority': 100}),
-    Queue('q_type12', Exchange('q_type12'), routing_key='q_type12', queue_arguments={'x-max-priority': 2}),
-    Queue('q_pre_test', Exchange('q_pre_test'), routing_key='q_pre_test', queue_arguments={'x-max-priority': 500}),
-    Queue('default', Exchange('default'), routing_key='default', queue_arguments={'x-max-priority': 1}),
-)  # consumer_arguments={'x-priority': 5}   数字越大，优先级越高
-
-BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 86400}
-
-CELERY_DEFAULT_QUEUE = 'default'
-CELERY_DEFAULT_EXCHANGE = 'default'
-CELERY_DEFAULT_ROUTING_KEY = 'default'
-CELERY_ROUTES = {
-    # -- HIGH PRIORITY QUEUE -- #
-    'app.tasks.analysis_main_3': {'queue': 'q_type3'},
-    'app.tasks.analysis_wav_test': {'queue': 'q_pre_test'},
-    # -- LOW PRIORITY QUEUE -- #
-    'app.tasks.analysis_main_12': {'queue': 'q_type12'},
-    'app.tasks.analysis_main': {'queue': 'default'},
-}
-
-
-def _get_BytesIO_file(file_key, location='bos'):
-    file = None
-    if location == 'bos' or location == 'BOS':
-        cnt = 0
-        while cnt <= 10:
-            file = baidu_bos.get_BytesIO_file(file_key)
-            if file is not None:
-                break
-            else:
-                time.sleep(2)
-                cnt += 1
-    elif location == 'local' or location == 'LOCAL':
-        with open(file_key, 'rb') as f:
-            file = BytesIO(f.read())
-    if file_key.strip().endswith('.m4a'):  # 小程序的m4a转换为pcm
-        file = m4a2wav_bytes_io(file)
-    return file
 
 
 def analysis_test(test_id):
@@ -79,7 +34,7 @@ def analysis_test(test_id):
     try:
         file_location = wav_test_info.get('file_location', 'local')
         audio_key = wav_test_info['wav_upload_url']
-        file = _get_BytesIO_file(audio_key, file_location)
+        file = get_wav_file_bytes_io(audio_key, file_location)
         if file is not None:
             result['feature'] = analysis_features.analysis1(file, wav_test_info['text'], timeout=30,
                                                             rcg_interface='baidu', segments=1)
@@ -114,7 +69,7 @@ def analysis_main(current_id, q_num):
         file_location = user_answer_info.get('file_location', 'local')
         audio_key = user_answer_info['wav_upload_url']
         Q_type = q['q_type']
-        file = _get_BytesIO_file(audio_key, file_location)
+        file = get_wav_file_bytes_io(audio_key, file_location)
         if file is not None:
             if Q_type == 1:
                 # 默认用百度识别
