@@ -66,6 +66,7 @@ def analysis_test(test_id):
 
 
 def analysis_main(current_id, q_num):
+    _start_time = datetime.datetime.utcnow()
     logging.info("current_id: %s, q_num: %s" % (current_id, q_num))
     feature = {}
     score = 0
@@ -116,6 +117,7 @@ def analysis_main(current_id, q_num):
         status = 'error'
         celery_result = str(e)
 
+    user_answer_info['analysis_start_time'] = _start_time
     logging.info('Score: %s' % score)
     tries = 1
     while tries <= 3:
