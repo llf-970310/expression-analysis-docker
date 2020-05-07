@@ -22,6 +22,21 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
 
 
+@app.task(name='analysis_12')
+def analysis_main_12(current_id, q_num):
+    return analysis_main(current_id, q_num)
+
+
+@app.task(name='analysis_3')
+def analysis_main_3(current_id, q_num):
+    return analysis_main(current_id, q_num)
+
+
+@app.task(name='analysis_pretest')
+def analysis_wav_pretest(test_id):
+    return analysis_test(test_id)
+
+
 def analysis_test(test_id):
     logging.info("test_id: %s" % test_id)
 
@@ -78,7 +93,7 @@ def analysis_main(current_id, q_num):
                 score = analysis_scores.score1(feature, rcg_interface='baidu')
                 # feature = analysis_features.analysis1(file, q['text'], timeout=30, rcg_interface='xunfei')
                 # score = analysis_scores.score1(feature,rcg_interface='xunfei')
-            elif Q_type == 2:
+            elif Q_type in [2, 5, 6]:
                 key_weights = q['weights']['key']
                 detail_weights = q['weights']['detail']
                 feature = analysis_features.analysis2(file, q['wordbase'], timeout=30)
@@ -111,22 +126,6 @@ def analysis_main(current_id, q_num):
             logging.exception('Exception(tries:%d/3) saving (%s) result to mongodb: %s' % (tries, current_id, str(e)))
             tries += 1
     return celery_result
-
-
-@app.task(name='analysis_12')
-def analysis_main_12(current_id, q_num):
-    return analysis_main(current_id, q_num)
-
-
-@app.task(name='analysis_3')
-def analysis_main_3(current_id, q_num):
-    return analysis_main(current_id, q_num)
-
-
-@app.task(name='analysis_pretest')
-def analysis_wav_pretest(test_id):
-    return analysis_test(test_id)
-
 
 # if __name__ == '__main__':
 #     status1 = analysis_main("5d6735dd15b52d6910d22c14", "3")
