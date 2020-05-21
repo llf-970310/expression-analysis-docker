@@ -94,7 +94,7 @@ def analysis_main(current_id, q_num):
                 score = analysis_scores.score1(feature, rcg_interface='baidu')
                 # feature = analysis_features.analysis1(file, q['text'], timeout=30, rcg_interface='xunfei')
                 # score = analysis_scores.score1(feature,rcg_interface='xunfei')
-            elif Q_type in [2, 5, 6]:
+            elif Q_type in [2, 5, 6, 7]:
                 key_weights = q['weights']['key']
                 detail_weights = q['weights']['detail']
                 feature = analysis_features.analysis2(file, q['wordbase'], timeout=30)
