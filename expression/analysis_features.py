@@ -94,8 +94,10 @@ def analysis1(wave_file, std_text, timeout=30, rcg_interface='baidu', segments=c
         # speed
         if not result['last_time'] == 0:
             result['speeds'] = [
-                config.SEGMENTS_RCG2 * feature_text.len_without_punctuation(rcg_text_seg) / result['last_time'] for
+                segments * feature_text.len_without_punctuation(rcg_text_seg) / result['last_time'] for
                 rcg_text_seg in temp]
+            result['speed'] = numpy.mean(result['speeds'])
+            result['speed_deviation'] = numpy.std(result['speeds'])
     # clr_ratio,ftl_ratio,cpl_ratio
     cfc = feature_audio.get_cfc(rcg_text, std_text)
     result['clr_ratio'], result['ftl_ratio'], result['cpl_ratio'] = cfc['clr_ratio'], cfc['ftl_ratio'], cfc[
