@@ -61,10 +61,10 @@ class MongoConfig(object):
 
 
 # Celery_broker = 'amqp://ise:ise_expression@localhost:5672//'
-Celery_broker = 'redis://:ise_expression@redis-server.expression.hosts:6379/7'  # care firewall
+Celery_broker = 'amqp://admin:ise_expression@redis-server.expression.hosts:5672/'  # care firewall
 # Celery_broker = 'redis://:ise_expression@172.17.0.1:6379/7'  # docker0
 # Celery_broker = 'redis://localhost:6379/7'
-Celery_backend = Celery_broker
+Celery_backend = 'redis://:ise_expression@redis-server.expression.hosts:6379/7'
 
 
 # -------------- UAAM CONFIG --------------
