@@ -4,9 +4,14 @@
 # Created by dylanchu on 18-8-18
 
 import datetime
+import json
 import logging
 import traceback
+
+import Levenshtein
+import thriftpy2
 from celery import Celery
+from thriftpy2.rpc import make_client
 
 from utils_file import get_wav_file_bytes_io
 import celery_config
@@ -20,6 +25,9 @@ app.config_from_object(celery_config)
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s:\t%(message)s')
+
+analysis_thrift = thriftpy2.load("./analysis.thrift", module_name="analysis_thrift")
+analysis_client = make_client(analysis_thrift.AnalysisService, '81.68.117.198', 9093, timeout=10000)
 
 
 @app.task(name='analysis_12')
@@ -35,6 +43,27 @@ def analysis_main_3(current_id, q_num):
 @app.task(name='analysis_pretest')
 def analysis_wav_pretest(test_id):
     return analysis_test(test_id)
+
+
+@app.task(name='analysis_audio_test')
+def analysis_audio_test(std_text: str, wav_file_url: str) -> dict:
+    result = {"status": "finished", "lev_ratio": 0}
+
+    resp = analysis_client.analyzeReadingQuestion(
+        analysis_thrift.AnalyzeReadingQuestionRequest(
+            filePath=wav_file_url,
+            stdText=std_text
+        )
+    )
+    if resp is None or resp.statusCode != 0:
+        logging.error("[analysis_pretest] analysis_client.analyzeReadingQuestion failed. msg=%s" % resp.statusMsg)
+        result["status"] = 'error'
+        return result
+
+    feature = json.loads(resp.feature)
+    lev_ratio = Levenshtein.ratio(feature["rcg_text"], std_text)
+    result["lev_ratio"] = lev_ratio
+    return result
 
 
 def analysis_test(test_id):

@@ -18,17 +18,17 @@ RUN apk add --no-cache make cmake gcc g++ gfortran && \
     rm -rf /root/.cache/pip
 
 RUN apk add --no-cache make cmake gcc g++ gfortran && \
-    pip install webrtcvad python-levenshtein pymongo pypinyin zhon && \
+    pip install webrtcvad python-levenshtein pymongo pypinyin zhon thriftpy2 && \
     apk del make cmake gcc g++ gfortran && \
     rm -rf /root/.cache/pip
 
-RUN pip install redis 'kombu==4.6.3' 'celery[redis]==4.3.0'  && \
+RUN pip install redis 'kombu==4.6.3' 'celery[redis]==4.3.0' 'vine==1.3.0' && \
 #    pip install --upgrade https://github.com/celery/celery/tarball/master && \
     pip install tornado==5.1.1 && \
 #    pip install flower && \
     rm -rf /root/.cache/pip
 
-RUN pip install requests && \
+RUN pip install requests thrift && \
     rm -rf /root/.cache/pip
 
 RUN apk add --no-cache ffmpeg
