@@ -40,13 +40,15 @@ def analysis_main_3(current_id, q_num):
     return analysis_main(current_id, q_num)
 
 
+# 音频测试分析，使用数据库
 @app.task(name='analysis_pretest')
 def analysis_wav_pretest(test_id):
     return analysis_test(test_id)
 
 
+# 音频测试分析，不使用数据库，由 celery 传递信息
 @app.task(name='analysis_audio_test')
-def analysis_audio_test(std_text: str, wav_file_url: str) -> dict:
+def analysis_audio_test(std_text: str, wav_file_url: str, user: str) -> dict:
     result = {"status": "finished", "lev_ratio": 0}
 
     resp = analysis_client.analyzeReadingQuestion(
